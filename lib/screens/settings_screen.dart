@@ -1,4 +1,4 @@
-import 'package:itk_app/theme/app_colors.dart';
+import 'package:itk_app/services/auth_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
 import 'package:itk_app/utils/auth_actions.dart';
 import 'package:material_ui/material_ui.dart';
@@ -11,122 +11,130 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final _scrollController = ScrollController();
+  final _authService = AuthService.instance;
 
-  double _collapseProgress = 0.0;
-  static const _collapseRange = 130.0;
+  final _searchController = TextEditingController();
+  int? _currentUserId = AuthService.instance.cachedUser?.id;
 
-  void _onScroll() {
-    final progress =
-        (_scrollController.offset / _collapseRange).clamp(0.0, 1.0);
-    if (progress != _collapseProgress) {
-      setState(() => _collapseProgress = progress);
-    }
+  Future<void> _loadCurrentUser() async {
+    final user = await _authService.getSessionUser();
+    if (!mounted) return;
+    setState(() => _currentUserId = user?.id);
   }
 
   @override
   void initState() {
     super.initState();
-    _scrollController.addListener(_onScroll);
+    _loadCurrentUser();
   }
 
   @override
   void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Full size is 320: 260 + 60 preferredSize height
     const collapsedHeight = 60.0;
-    const expandedHeight = 240.0;
+    const expandedHeight = 260.0;
+    const preferredSizeHeight = 60.0;
+    const fullHeight = expandedHeight + preferredSizeHeight;
+    const halfHeight = fullHeight / 2;
+    const separatorOffset = 20.0;
+    const cardAlignY = (separatorOffset + 0) / 100.0;
+    const separatorHeight = halfHeight + separatorOffset;
 
     return Scaffold(
-      body: CustomScrollView(
-        controller: _scrollController,
-        slivers: [
-          SliverAppBar(
-            expandedHeight: expandedHeight,
-            collapsedHeight: collapsedHeight,
-            floating: true,
-            pinned: true,
-            scrolledUnderElevation: 0,
-            backgroundColor: Theme.of(context).colorScheme.surface,
-            actionsPadding: const EdgeInsets.all(8),
-            actions: [
-              IconButton(
-                onPressed: () => performLogout(context),
-                icon: Icon(Icons.logout_rounded,
-                    color: Theme.of(context).colorScheme.onSurface, size: 20),
-                style: IconButton.styleFrom(
-                  backgroundColor:
-                      Theme.of(context).colorScheme.surfaceContainer,
-                  shape: const CircleBorder(),
-                  padding: const EdgeInsets.all(10),
-                ),
-              ),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              collapseMode: CollapseMode.pin,
-              centerTitle: true,
-              title: Text(
-                'Beállítások',
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineSmall
-                    ?.merge(topBarTitleStyle),
-              ),
-              background: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.topCenter,
-                    child: Container(
-                      height: expandedHeight - collapsedHeight,
-                      color: Theme.of(context).colorScheme.primaryContainer,
-                    ),
-                  ),
-                  Align(
-                    alignment: const Alignment(0, 0.3),
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: ShapeDecoration(
-                        color: Theme.of(context).colorScheme.surface,
+      body: Stack(
+        children: [
+          CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                expandedHeight: expandedHeight,
+                collapsedHeight: collapsedHeight,
+                floating: true,
+                pinned: true,
+                scrolledUnderElevation: 0,
+                // backgroundColor: Colors.amber, //test
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                actionsPadding: const EdgeInsets.symmetric(horizontal: 16),
+                actions: [
+                  SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: IconButton(
+                      onPressed: () => performLogout(context),
+                      icon: Icon(Icons.logout_rounded,
+                          color: Theme.of(context).colorScheme.onSurface,
+                          size: 20),
+                      style: IconButton.styleFrom(
+                        backgroundColor:
+                            Theme.of(context).colorScheme.surfaceContainer,
                         shape: const CircleBorder(),
-                      ),
-                      child: CircleAvatar(
-                        radius: 22,
-                        backgroundColor: Colors.white.withValues(alpha: 0.25),
-                        child: const Text(
-                          '?',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w800,
-                            color: kTextDark,
-                          ),
-                        ),
+                        padding: EdgeInsets.zero,
                       ),
                     ),
                   ),
                 ],
-              ),
-            ),
-          ),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 20, 16, 32),
-            sliver: SliverList.separated(
-              itemCount: 16,
-              itemBuilder: (context, index) => Container(
-                height: 56,
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(16),
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin,
+                  title: Text(
+                    'Beállítások',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.merge(topBarTitleStyle),
+                  ),
+                  centerTitle: true,
+                  background: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          height: separatorHeight,
+                          color: Theme.of(context).colorScheme.primaryContainer,
+                        ),
+                      ),
+                      Align(
+                        // Push by 20px
+                        alignment: const Alignment(0, cardAlignY),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: CircleAvatar(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surface,
+                            radius: 55,
+                            child: CircleAvatar(
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              radius: 45,
+                              child: Text('$_currentUserId'),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text('Beállítás ${index + 1}'), // placeholder
               ),
-              separatorBuilder: (context, index) => const SizedBox(height: 10),
-            ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(16, 20, 16, 140),
+                sliver: SliverList.separated(
+                  itemCount: 20,
+                  itemBuilder: (context, index) => const SizedBox(
+                    height: 150,
+                    child: Card(
+                      color: Colors.white,
+                      child: Text('test'),
+                    ),
+                  ),
+                  separatorBuilder: (context, index) =>
+                      const SizedBox(height: 10),
+                ),
+              ),
+            ],
           ),
         ],
       ),

@@ -19,14 +19,19 @@ class _MySiteScreenState extends State<MySiteScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _urlController = TextEditingController();
-  final _tagsController = TextEditingController();
   List<String> tags = [];
 
-  String _category = 'current';
+  final String _category = 'current';
 
   bool _loading = true;
   bool _saving = false;
   bool _hasExistingSite = false;
+
+  static const _categories = [
+    ('og', 'OG', Colors.blue),
+    ('current', 'Mostani', Colors.blue),
+    ('wip', 'WIP', Colors.blue),
+  ];
 
   @override
   void initState() {
@@ -38,7 +43,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
   void dispose() {
     _nameController.dispose();
     _urlController.dispose();
-    _tagsController.dispose();
     super.dispose();
   }
 
@@ -51,9 +55,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
         _nameController.text = response.name;
         _urlController.text = response.url
             .replaceFirst(RegExp(r'^https://users.itk.ppke.hu/~'), '');
-        _tagsController.text = response.tags.join(', ');
         tags = response.tags;
-        _category = response.category;
         _hasExistingSite = true;
       } else {
         _hasExistingSite = false;
@@ -86,7 +88,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Elmentve!')),
       );
-      // Catch the exception thrown if ZOD validation fails on backend
     } on DioException catch (e) {
       if (!mounted) return;
       setState(() => _saving = false);
@@ -115,8 +116,11 @@ class _MySiteScreenState extends State<MySiteScreen> {
             onPressed: () => Navigator.pop(context, false),
             child: const Text('Mégse'),
           ),
-          TextButton(
+          FilledButton(
             onPressed: () => Navigator.pop(context, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: const Text('Törlés'),
           ),
         ],
@@ -137,7 +141,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
   }
 
   Future<void> _openTagPicker() async {
-    final result = await Navigator.push(
+    final result = await Navigator.push<List<String>>(
       context,
       MaterialPageRoute(
         builder: (_) => MySiteTagsScreen(currentTags: tags),
@@ -145,78 +149,120 @@ class _MySiteScreenState extends State<MySiteScreen> {
     );
 
     if (result != null) {
-      setState(() {
-        tags = result;
-      });
+      setState(() => tags = result);
     }
+  }
+
+  Widget _buildSectionCard(BuildContext context,
+      {required String title, required Widget child}) {
+    final scheme = Theme.of(context).colorScheme;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerHigh,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: scheme.onSurfaceVariant,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(height: 14),
+          child,
+        ],
+      ),
+    );
   }
 
   Widget _buildForm(BuildContext context) {
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const FieldLabel('Név'),
-            TextFormField(
-              controller: _nameController,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-              textInputAction: TextInputAction.next,
-              validator: (v) =>
-                  (v == null || v.trim().isEmpty) ? 'Kötelező mező' : null,
-            ),
-            const SizedBox(height: 18),
-            const FieldLabel('URL'),
-            TextFormField(
-              controller: _urlController,
-              style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-              keyboardType: TextInputType.url,
-              textInputAction: TextInputAction.next,
-              decoration: const InputDecoration(
-                prefixText: 'https://users.itk.ppke.hu/~',
-                hintText: 'naszy',
+            _buildSectionCard(
+              context,
+              title: 'ALAPADATOK',
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const FieldLabel('Név'),
+                  TextFormField(
+                    controller: _nameController,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface),
+                    textInputAction: TextInputAction.next,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Kötelező mező'
+                        : null,
+                  ),
+                  const SizedBox(height: 18),
+                  const FieldLabel('URL'),
+                  TextFormField(
+                    controller: _urlController,
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface),
+                    keyboardType: TextInputType.url,
+                    textInputAction: TextInputAction.next,
+                    decoration: const InputDecoration(
+                      prefixText: 'https://users.itk.ppke.hu/~',
+                      hintText: 'naszy',
+                    ),
+                    validator: (v) {
+                      if (v == null || v.trim().isEmpty) {
+                        return 'Kötelező mező';
+                      }
+                      final uri = Uri.tryParse('https://${v.trim()}');
+                      if (uri == null || !uri.isAbsolute) {
+                        return 'Érvénytelen URL';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
               ),
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Kötelező mező';
-                final uri = Uri.tryParse('https://${v.trim()}');
-                if (uri == null || !uri.isAbsolute) return 'Érvénytelen URL';
-                return null;
-              },
             ),
-            const SizedBox(height: 18),
-            const FieldLabel('Címkék'),
-            Wrap(spacing: 6, runSpacing: 6, children: [
-              ActionChip(
-                avatar: const Icon(Icons.add_rounded, size: 18),
-                label: const Text('Új címke'),
-                onPressed: () => _openTagPicker(),
+            const SizedBox(height: 14),
+            _buildSectionCard(
+              context,
+              title: 'CÍMKÉK',
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  ActionChip(
+                    avatar: const Icon(Icons.add_rounded, size: 18),
+                    label: const Text('Új címke'),
+                    onPressed: _openTagPicker,
+                  ),
+                  ...tags.map((tag) => Chip(
+                        label: Text(tag),
+                        onDeleted: () => setState(() => tags.remove(tag)),
+                      )),
+                ],
               ),
-              ...tags.take(3).map((tag) {
-                return Chip(label: Text(tag));
-              })
-            ]),
-            const SizedBox(height: 20),
-            // const FieldLabel('Kategória'),
-            // const SizedBox(height: 4),
-            // SegmentedButton<String>(
-            //   segments: const [
-            //     ButtonSegment(value: 'og', label: Text('OG')),
-            //     ButtonSegment(value: 'current', label: Text('Mostani')),
-            //     ButtonSegment(value: 'wip', label: Text('WIP')),
-            //   ],
-            //   selected: {_category},
-            //   onSelectionChanged: (selection) {
-            //     setState(() => _category = selection.first);
-            //   },
-            // ),
-            // const SizedBox(height: 28),
+            ),
+            const SizedBox(height: 28),
             SizedBox(
               height: 52,
-              child: FilledButton(
+              child: FilledButton.icon(
                 onPressed: _saving ? null : _submit,
-                child: _saving
+                icon: _saving
+                    ? null
+                    : Icon(_hasExistingSite
+                        ? Icons.save_rounded
+                        : Icons.add_circle_outline_rounded),
+                label: _saving
                     ? SizedBox(
                         height: 20,
                         width: 20,
@@ -228,6 +274,22 @@ class _MySiteScreenState extends State<MySiteScreen> {
                     : Text(_hasExistingSite ? 'Mentés' : 'Profil létrehozása'),
               ),
             ),
+            if (_hasExistingSite) ...[
+              const SizedBox(height: 12),
+              SizedBox(
+                height: 52,
+                child: OutlinedButton.icon(
+                  onPressed: _delete,
+                  icon: const Icon(Icons.delete_outline_rounded),
+                  label: const Text('Oldal törlése'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Theme.of(context).colorScheme.error,
+                    side:
+                        BorderSide(color: Theme.of(context).colorScheme.error),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -242,13 +304,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
         elevation: 0,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         title: Text(_hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása'),
-        actions: [
-          if (_hasExistingSite)
-            IconButton(
-              onPressed: _delete,
-              icon: const Icon(Icons.delete_outline_rounded),
-            ),
-        ],
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: _loading

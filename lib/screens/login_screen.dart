@@ -1,8 +1,8 @@
 import 'package:itk_app/screens/app_scaffold.dart';
+import 'package:itk_app/theme/app_theme_colors.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle, TextInput;
 import '../services/auth_service.dart';
-import 'package:itk_app/theme/app_colors.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Container(
               height: 150,
               decoration: BoxDecoration(
-                color: kCardBlue,
+                color: const Color(0xFFD6E4FB),
                 borderRadius: BorderRadius.circular(20),
               ),
               alignment: Alignment.center,
@@ -111,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
               height: 100,
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: kCardPink,
+                color: const Color(0xFFF7D9E4),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: const Column(
@@ -178,7 +178,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _usernameController,
                       decoration: const InputDecoration(hintText: 'pl. naszy'),
-                      style: const TextStyle(color: kTextDark),
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .extension<AppThemeColors>()!
+                              .textDark),
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.username],
                     ),
@@ -193,7 +196,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             _obscurePassword
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
-                            color: kTextDark,
+                            color: Theme.of(context)
+                                .extension<AppThemeColors>()!
+                                .textDark,
                             size: 20,
                           ),
                           onPressed: () {
@@ -202,7 +207,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                       ),
-                      style: const TextStyle(color: kTextDark),
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .extension<AppThemeColors>()!
+                              .textDark),
                       obscureText: _obscurePassword,
                       textInputAction: TextInputAction.done,
                       autofillHints: const [AutofillHints.password],

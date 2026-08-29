@@ -1,4 +1,5 @@
 import 'package:itk_app/theme/app_fonts.dart';
+import 'package:itk_app/theme/app_theme_colors.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'services/api_client.dart';
@@ -11,14 +12,18 @@ Future<void> main() async {
 }
 
 const _seedColor = Color.fromARGB(255, 142, 136, 230);
+//const _seedColor = Color(0xFF00A6E7);
 
 ThemeData _buildTheme(ColorScheme scheme) {
   final TextTheme base =
       ThemeData(colorScheme: scheme, useMaterial3: true).textTheme;
 
+  final isDark = scheme.brightness == Brightness.dark;
+
   return ThemeData(
     colorScheme: scheme,
     useMaterial3: true,
+    extensions: [isDark ? AppThemeColors.dark : AppThemeColors.light],
     textTheme: buildITKAppTextTheme(base),
     inputDecorationTheme: InputDecorationThemeData(
       hintStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),

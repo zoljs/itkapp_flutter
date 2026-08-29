@@ -14,6 +14,7 @@ class _AppScaffoldState extends State<AppScaffold> {
   int _selectedIndex = 0;
   final List<Widget> navItems = [
     const HomeScreenTest(),
+    const HomeScreenTest(),
     const WikiScreen(),
     const SettingsScreen(),
   ];
@@ -72,10 +73,12 @@ class _AppScaffoldState extends State<AppScaffold> {
                       children: [
                         _buildNavItem(
                             Icons.golf_course, Icons.golf_course, 0, 'ITK'),
+                        _buildNavItem(Icons.calendar_month_outlined,
+                            Icons.calendar_month, 1, 'Naptár'),
                         _buildNavItem(Icons.library_books_outlined,
-                            Icons.library_books, 1, 'Wiki'),
+                            Icons.library_books, 2, 'Wiki'),
                         _buildNavItem(Icons.settings_outlined, Icons.settings,
-                            2, 'Beállítások'),
+                            3, 'Beállítások'),
                       ],
                     ),
                   ],
@@ -115,7 +118,10 @@ class _AppScaffoldState extends State<AppScaffold> {
                       : Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
-              Text(name),
+              Text(
+                name,
+                style: const TextStyle(fontSize: 12),
+              ),
             ],
           ),
         ),
