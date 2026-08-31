@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:itk_app/models/user.dart';
 import 'package:itk_app/services/auth_service.dart';
+import 'package:itk_app/widgets/section_card.dart';
 import 'package:m3e_core/m3e_core.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:itk_app/models/user_site.dart';
@@ -164,35 +165,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
     }
   }
 
-  Widget _buildSectionCard(BuildContext context,
-      {required String title, required Widget child}) {
-    final scheme = Theme.of(context).colorScheme;
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: scheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(24),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w700,
-              color: scheme.onSurfaceVariant,
-              letterSpacing: 0.3,
-            ),
-          ),
-          const SizedBox(height: 14),
-          child,
-        ],
-      ),
-    );
-  }
-
   Widget _buildForm(BuildContext context) {
     return Form(
       key: _formKey,
@@ -201,8 +173,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _buildSectionCard(
-              context,
+            SectionCard(
               title: 'Adatok',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -263,7 +234,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
               ),
             ),
             const SizedBox(height: 14),
-            _buildSectionCard(context,
+            SectionCard(
                 title: 'Szín',
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
@@ -317,8 +288,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
                   ),
                 )),
             const SizedBox(height: 14),
-            _buildSectionCard(
-              context,
+            SectionCard(
               title: 'Címkék',
               child: Wrap(
                 spacing: 8,

@@ -1,3 +1,4 @@
+import 'package:itk_app/models/user.dart';
 import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/screens/my_site_screen.dart';
 import 'package:itk_app/services/auth_service.dart';
@@ -23,31 +24,31 @@ class _WikiScreenState extends State<WikiScreen> {
 
   final _searchController = TextEditingController();
   List<UserSite> _sites = SitesService.instance.cachedSites;
+  UserSite? _mySite;
   int? _currentUserId = AuthService.instance.cachedUser?.id;
 
   bool _loading = !SitesService.instance.hasCachedSites;
 
-  Future<void> _loadCurrentUser() async {
-    final user = await _authService.getSessionUser();
-    if (!mounted) return;
-    setState(() => _currentUserId = user?.id);
-  }
+  Future<void> _loadAll() async {
+    setState(() => _loading = true);
 
-  Future<void> _loadSites() async {
     try {
-      final sites = await _sitesService.getAllSites();
+      final results = await Future.wait([
+        _authService.getSessionUser(),
+        _sitesService.getMySite(),
+        _sitesService.getAllSites(),
+      ]);
 
       if (!mounted) return;
-
       setState(() {
-        _sites = sites;
+        _currentUserId = (results[0] as LdapUser?)?.id;
+        _mySite = results[1] as UserSite?;
+        _sites = results[2] as List<UserSite>;
         _loading = false;
       });
     } catch (e) {
       if (!mounted) return;
-      setState(() {
-        _loading = false;
-      });
+      setState(() => _loading = false);
     }
   }
 
@@ -68,17 +69,13 @@ class _WikiScreenState extends State<WikiScreen> {
     await Navigator.push(
         context, MaterialPageRoute(builder: (context) => const MySiteScreen()));
 
-    setState(() {
-      _loading = true;
-    });
-    _loadSites();
+    _loadAll();
   }
 
   @override
   void initState() {
     super.initState();
-    _loadSites();
-    _loadCurrentUser();
+    _loadAll();
   }
 
   @override
@@ -91,16 +88,8 @@ class _WikiScreenState extends State<WikiScreen> {
     final scheme = Theme.of(context).colorScheme;
     final schemeExtension = Theme.of(context).extension<AppThemeColors>()!;
 
-    UserSite? site;
-    for (final s in _sites) {
-      if (s.userId == _currentUserId && _currentUserId != null) {
-        site = s;
-        break;
-      }
-    }
-
     // No own site yet
-    if (site == null) {
+    if (_mySite == null) {
       return SizedBox(
         height: 80,
         child: Material(
@@ -142,7 +131,7 @@ class _WikiScreenState extends State<WikiScreen> {
             radius: 22,
             backgroundColor: Colors.white.withValues(alpha: 0.25),
             child: Text(
-              site.name.isNotEmpty ? site.name[0].toUpperCase() : '?',
+              _mySite!.name.isNotEmpty ? _mySite!.name[0].toUpperCase() : '?',
               style: TextStyle(
                 fontWeight: FontWeight.w800,
                 color: Theme.of(context).extension<AppThemeColors>()!.textDark,
@@ -176,7 +165,7 @@ class _WikiScreenState extends State<WikiScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  site.name,
+                  _mySite!.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(

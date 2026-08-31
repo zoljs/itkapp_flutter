@@ -1,6 +1,9 @@
+import 'package:itk_app/models/user.dart';
 import 'package:itk_app/services/auth_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
 import 'package:itk_app/utils/auth_actions.dart';
+import 'package:itk_app/widgets/field_label.dart';
+import 'package:itk_app/widgets/section_card.dart';
 import 'package:material_ui/material_ui.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -12,15 +15,9 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final _authService = AuthService.instance;
+  LdapUser? _currentUser;
 
   final _searchController = TextEditingController();
-  int? _currentUserId = AuthService.instance.cachedUser?.id;
-
-  Future<void> _loadCurrentUser() async {
-    final user = await _authService.getSessionUser();
-    if (!mounted) return;
-    setState(() => _currentUserId = user?.id);
-  }
 
   @override
   void initState() {
@@ -32,6 +29,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final user = await _authService.getSessionUser();
+    if (!mounted) return;
+    setState(() => _currentUser = user);
   }
 
   @override
@@ -110,7 +113,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               backgroundColor:
                                   Theme.of(context).colorScheme.primary,
                               radius: 45,
-                              child: Text('$_currentUserId'),
+                              child: Text(
+                                '${_currentUser?.login[0].toUpperCase()}',
+                                style: const TextStyle(
+                                    fontSize: 28, fontWeight: FontWeight.w900),
+                              ),
                             ),
                           ),
                         ),
@@ -121,17 +128,123 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               SliverPadding(
                 padding: const EdgeInsets.fromLTRB(16, 20, 16, 140),
-                sliver: SliverList.separated(
-                  itemCount: 20,
-                  itemBuilder: (context, index) => const SizedBox(
-                    height: 150,
-                    child: Card(
-                      color: Colors.white,
-                      child: Text('test'),
-                    ),
+                sliver: SliverFillRemaining(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SectionCard(
+                        title: 'Profil',
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const FieldLabel('Név'),
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHigh,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.warning_amber_rounded,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${_currentUser?.login}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Ez a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+                      SectionCard(
+                        title: 'WIKI Oldal',
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const FieldLabel('Név'),
+                            Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHigh,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.warning_amber_rounded,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .primary),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '${_currentUser?.login}',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                            fontSize: 14,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurface,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Ez a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 10),
                 ),
               ),
             ],
