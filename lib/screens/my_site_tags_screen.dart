@@ -82,7 +82,7 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         foregroundColor: Theme.of(context).colorScheme.onSurface,
-        title: const Text('Oldalak'),
+        title: const Text('Címkék'),
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: SafeArea(

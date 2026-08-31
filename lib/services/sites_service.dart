@@ -62,12 +62,13 @@ class SitesService {
     final responseData = response.data;
     final userSite = UserSite.fromJson(responseData as Map<String, dynamic>);
 
-    final index = _cachedSites.indexWhere((s) => s.userId == userSite.userId);
-    if (index != -1) {
-      _cachedSites[index] = userSite;
-    } else {
-      _cachedSites.insert(0, userSite);
-    }
+    // final index = _cachedSites.indexWhere((s) => s.userId == userSite.userId);
+    // if (index != -1) {
+    //   _cachedSites[index] = userSite;
+    // } else {
+    //   _cachedSites.insert(0, userSite);
+    // }
+    _cachedSites.clear();
 
     return userSite;
   }

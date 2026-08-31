@@ -64,6 +64,16 @@ class _WikiScreenState extends State<WikiScreen> {
     }).toList();
   }
 
+  Future<void> _openMySite() async {
+    await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const MySiteScreen()));
+
+    setState(() {
+      _loading = true;
+    });
+    _loadSites();
+  }
+
   @override
   void initState() {
     super.initState();
@@ -98,12 +108,9 @@ class _WikiScreenState extends State<WikiScreen> {
           borderRadius: BorderRadius.circular(24.5),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
-            onTap: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MySiteScreen()),
-            ),
+            onTap: _openMySite,
             child: Padding(
-              padding: const EdgeInsets.all(18),
+              padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
                   Icon(Icons.add_circle_outline_rounded, color: scheme.primary),
@@ -128,10 +135,7 @@ class _WikiScreenState extends State<WikiScreen> {
     return UserSiteCard(
       color: schemeExtension.itkPrimary,
       height: 80,
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const MySiteScreen()),
-      ),
+      onTap: _openMySite,
       child: Row(
         children: [
           CircleAvatar(
@@ -187,10 +191,7 @@ class _WikiScreenState extends State<WikiScreen> {
           ),
           const SizedBox(width: 8),
           IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const MySiteScreen()),
-            ),
+            onPressed: _openMySite,
             iconSize: 22,
             padding: EdgeInsets.zero,
             icon: Icon(Icons.edit_rounded,

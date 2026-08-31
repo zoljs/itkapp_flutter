@@ -1,4 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:itk_app/models/user.dart';
+import 'package:itk_app/services/auth_service.dart';
 import 'package:m3e_core/m3e_core.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:itk_app/models/user_site.dart';
@@ -15,10 +17,11 @@ class MySiteScreen extends StatefulWidget {
 
 class _MySiteScreenState extends State<MySiteScreen> {
   final _sitesService = SitesService.instance;
+  final _authService = AuthService.instance;
+  LdapUser? _currentUser;
 
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _urlController = TextEditingController();
   List<String> tags = [];
 
   final String _category = 'current';
@@ -27,23 +30,33 @@ class _MySiteScreenState extends State<MySiteScreen> {
   bool _saving = false;
   bool _hasExistingSite = false;
 
-  static const _categories = [
-    ('og', 'OG', Colors.blue),
-    ('current', 'Mostani', Colors.blue),
-    ('wip', 'WIP', Colors.blue),
+  static const List<Color> _colors = [
+    Color(0xFF00A6E7),
+    Color(0xFF7E57C2),
+    Color(0xFFEF5350),
+    Color(0xFFFF9800),
+    Color(0xFFFFCA28),
+    Color(0xFF66BB6A),
   ];
+  int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
     _loadExistingSite();
   }
 
   @override
   void dispose() {
     _nameController.dispose();
-    _urlController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final user = await _authService.getSessionUser();
+    if (!mounted) return;
+    setState(() => _currentUser = user);
   }
 
   Future<void> _loadExistingSite() async {
@@ -53,8 +66,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
     setState(() {
       if (response != null) {
         _nameController.text = response.name;
-        _urlController.text = response.url
-            .replaceFirst(RegExp(r'^https://users.itk.ppke.hu/~'), '');
         tags = response.tags;
         _hasExistingSite = true;
       } else {
@@ -73,7 +84,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
       await _sitesService.saveMySite(
         UserSite(
           name: _nameController.text.trim(),
-          url: 'https://users.itk.ppke.hu/~${_urlController.text.trim()}',
+          url: 'https://users.itk.ppke.hu/~${_currentUser?.login}',
           tags: tags,
           category: _category,
         ),
@@ -158,9 +169,9 @@ class _MySiteScreenState extends State<MySiteScreen> {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: scheme.surfaceContainerHigh,
+        color: scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(24),
       ),
       child: Column(
@@ -192,11 +203,11 @@ class _MySiteScreenState extends State<MySiteScreen> {
           children: [
             _buildSectionCard(
               context,
-              title: 'ALAPADATOK',
+              title: 'Adatok',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const FieldLabel('Név'),
+                  const FieldLabel('Oldal név'),
                   TextFormField(
                     controller: _nameController,
                     style: TextStyle(
@@ -208,34 +219,107 @@ class _MySiteScreenState extends State<MySiteScreen> {
                   ),
                   const SizedBox(height: 18),
                   const FieldLabel('URL'),
-                  TextFormField(
-                    controller: _urlController,
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface),
-                    keyboardType: TextInputType.url,
-                    textInputAction: TextInputAction.next,
-                    decoration: const InputDecoration(
-                      prefixText: 'https://users.itk.ppke.hu/~',
-                      hintText: 'naszy',
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) {
-                        return 'Kötelező mező';
-                      }
-                      final uri = Uri.tryParse('https://${v.trim()}');
-                      if (uri == null || !uri.isAbsolute) {
-                        return 'Érvénytelen URL';
-                      }
-                      return null;
-                    },
+                    child: Row(
+                      children: [
+                        Icon(Icons.warning_amber_rounded,
+                            color: Theme.of(context).colorScheme.primary),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'https://users.itk.ppke.hu/~${_currentUser?.login}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 14,
+                                  color:
+                                      Theme.of(context).colorScheme.onSurface,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'Ez a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
             const SizedBox(height: 14),
+            _buildSectionCard(context,
+                title: 'Szín',
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      ..._colors.indexed.map((record) {
+                        final (index, color) = record;
+
+                        final isSelected = index == _selectedIndex;
+                        final double borderRadius = isSelected ? 12.0 : 28.0;
+                        final double innerBorderRadius =
+                            isSelected ? 6.0 : 20.0;
+
+                        return AnimatedContainer(
+                          curve: Curves.easeInOutCubic,
+                          duration: const Duration(milliseconds: 300),
+                          height: 56,
+                          width: 56,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(borderRadius),
+                              border: Border.all(
+                                color: isSelected ? color : Colors.transparent,
+                                width: 4,
+                              )),
+                          child: AnimatedContainer(
+                            curve: Curves.easeInOutCubic,
+                            duration: const Duration(milliseconds: 300),
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  color,
+                                  Color.lerp(color, Colors.black, 0.4)!,
+                                ],
+                              ),
+                              borderRadius:
+                                  BorderRadius.circular(innerBorderRadius),
+                            ),
+                            child: GestureDetector(
+                              onTap: () =>
+                                  setState(() => _selectedIndex = index),
+                            ),
+                          ),
+                        );
+                      })
+                    ],
+                  ),
+                )),
+            const SizedBox(height: 14),
             _buildSectionCard(
               context,
-              title: 'CÍMKÉK',
+              title: 'Címkék',
               child: Wrap(
                 spacing: 8,
                 runSpacing: 8,

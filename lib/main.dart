@@ -70,12 +70,11 @@ class ITKApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
-    final lightScheme = ColorScheme.fromSeed(seedColor: _seedColor)
-        .copyWith(onPrimary: const Color(0xFF00A6E7));
+    final lightScheme = ColorScheme.fromSeed(seedColor: _seedColor);
     final darkScheme = ColorScheme.fromSeed(
       seedColor: _seedColor,
       brightness: Brightness.dark,
-    ).copyWith(onPrimary: const Color(0xFF00A6E7));
+    );
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
