@@ -1,3 +1,4 @@
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:material_ui/material_ui.dart';
 
 class SectionCard extends StatelessWidget {
@@ -11,7 +12,7 @@ class SectionCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
       decoration: BoxDecoration(
         color: scheme.surfaceContainer,
         borderRadius: BorderRadius.circular(24),

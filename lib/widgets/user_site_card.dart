@@ -1,3 +1,4 @@
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:material_ui/material_ui.dart';
 
 class UserSiteCard extends StatelessWidget {
@@ -17,7 +18,7 @@ class UserSiteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: height,
-      padding: const EdgeInsets.all(3),
+      padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
@@ -47,9 +48,9 @@ class UserSiteCard extends StatelessWidget {
           ),
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(24.5),
+            borderRadius: BorderRadius.circular(18),
             child: Padding(
-              padding: const EdgeInsets.all(14),
+              padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
               child: child,
             ),
           ),

@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:itk_app/models/user.dart';
 import 'package:itk_app/services/auth_service.dart';
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/widgets/section_card.dart';
-import 'package:m3e_core/m3e_core.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/screens/my_site_tags_screen.dart';
@@ -169,7 +169,8 @@ class _MySiteScreenState extends State<MySiteScreen> {
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xxxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -191,7 +192,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
                   const SizedBox(height: 18),
                   const FieldLabel('URL'),
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.lg),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(20),
@@ -361,7 +362,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
       ),
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: _loading
-          ? const Center(child: M3ELoadingIndicator())
+          ? const Center(child: RefreshProgressIndicator())
           : _buildForm(context),
     );
   }

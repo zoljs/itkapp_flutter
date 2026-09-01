@@ -1,13 +1,13 @@
-import 'package:itk_app/models/user.dart';
 import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/screens/my_site_screen.dart';
 import 'package:itk_app/services/auth_service.dart';
 import 'package:itk_app/services/sites_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_theme_colors.dart';
 import 'package:itk_app/utils/auth_actions.dart';
+import 'package:itk_app/widgets/my_site_card.dart';
 import 'package:itk_app/widgets/user_site_card.dart';
-import 'package:m3e_core/m3e_core.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -19,34 +19,51 @@ class WikiScreen extends StatefulWidget {
 }
 
 class _WikiScreenState extends State<WikiScreen> {
-  final _sitesService = SitesService.instance;
-  final _authService = AuthService.instance;
-
   final _searchController = TextEditingController();
+
+  final int? _currentUserId = AuthService.instance.cachedUser?.id;
   List<UserSite> _sites = SitesService.instance.cachedSites;
-  UserSite? _mySite;
-  int? _currentUserId = AuthService.instance.cachedUser?.id;
+  UserSite? get _mySite {
+    if (_currentUserId == null) return null;
+    for (final s in _sites) {
+      if (s.userId == _currentUserId) return s;
+    }
+    return null;
+  }
 
   bool _loading = !SitesService.instance.hasCachedSites;
 
-  Future<void> _loadAll() async {
-    setState(() => _loading = true);
+  @override
+  void initState() {
+    super.initState();
+    print(
+        '[initState] hasCachedSites=${SitesService.instance.hasCachedSites} _sites.length=${_sites.length} _currentUserId=$_currentUserId');
+    if (!SitesService.instance.hasCachedSites) {
+      _loadAll();
+    }
+  }
+
+  Future<void> _loadAll({bool forceReload = false}) async {
+    print(
+        '[_loadAll START] forceReload=$forceReload hasCachedSites=${SitesService.instance.hasCachedSites}');
+
+    if (!SitesService.instance.hasCachedSites || forceReload) {
+      setState(() => _loading = true);
+    }
 
     try {
-      final results = await Future.wait([
-        _authService.getSessionUser(),
-        _sitesService.getMySite(),
-        _sitesService.getAllSites(),
-      ]);
+      final sites =
+          await SitesService.instance.getAllSites(forceReload: forceReload);
+
+      print('[_loadAll RESULTS] sites.length=${(sites as List).length}');
 
       if (!mounted) return;
       setState(() {
-        _currentUserId = (results[0] as LdapUser?)?.id;
-        _mySite = results[1] as UserSite?;
-        _sites = results[2] as List<UserSite>;
+        _sites = sites;
         _loading = false;
       });
     } catch (e) {
+      print('[_loadAll ERROR] $e');
       if (!mounted) return;
       setState(() => _loading = false);
     }
@@ -73,122 +90,9 @@ class _WikiScreenState extends State<WikiScreen> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    _loadAll();
-  }
-
-  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  Widget _buildMySiteCard() {
-    final scheme = Theme.of(context).colorScheme;
-    final schemeExtension = Theme.of(context).extension<AppThemeColors>()!;
-
-    // No own site yet
-    if (_mySite == null) {
-      return SizedBox(
-        height: 80,
-        child: Material(
-          color: scheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(24.5),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: _openMySite,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Icon(Icons.add_circle_outline_rounded, color: scheme.primary),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'Még nincs saját wiki-oldalad, hozz létre egyet!',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Icon(Icons.chevron_right_rounded,
-                      color: scheme.onSurfaceVariant),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Own site
-    return UserSiteCard(
-      color: schemeExtension.itkPrimary,
-      height: 80,
-      onTap: _openMySite,
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: Colors.white.withValues(alpha: 0.25),
-            child: Text(
-              _mySite!.name.isNotEmpty ? _mySite!.name[0].toUpperCase() : '?',
-              style: TextStyle(
-                fontWeight: FontWeight.w800,
-                color: Theme.of(context).extension<AppThemeColors>()!.textDark,
-              ),
-            ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'SAJÁT OLDALAM',
-                    style: TextStyle(
-                      fontSize: 9,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.4,
-                      color: Theme.of(context)
-                          .extension<AppThemeColors>()!
-                          .textDark,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  _mySite!.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 17,
-                    fontWeight: FontWeight.bold,
-                    color:
-                        Theme.of(context).extension<AppThemeColors>()!.textDark,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: _openMySite,
-            iconSize: 22,
-            padding: EdgeInsets.zero,
-            icon: Icon(Icons.edit_rounded,
-                color: Theme.of(context).extension<AppThemeColors>()!.textDark),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildSiteCard(UserSite site, int index) {
@@ -228,8 +132,8 @@ class _WikiScreenState extends State<WikiScreen> {
             runSpacing: 6,
             children: site.tags.take(4).map((tag) {
               return Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(20),
@@ -337,15 +241,7 @@ class _WikiScreenState extends State<WikiScreen> {
       body: Stack(
         children: [
           RefreshIndicator(
-            onRefresh: () async {
-              setState(() => _loading = true);
-              final sites = await _sitesService.getAllSites(forceReload: true);
-              if (!mounted) return;
-              setState(() {
-                _sites = sites;
-                _loading = false;
-              });
-            },
+            onRefresh: () => _loadAll(forceReload: true),
             child: CustomScrollView(
               slivers: [
                 SliverAppBar(
@@ -363,7 +259,8 @@ class _WikiScreenState extends State<WikiScreen> {
                   scrolledUnderElevation: 0,
                   // backgroundColor: Colors.amber, //test
                   backgroundColor: Theme.of(context).colorScheme.surface,
-                  actionsPadding: const EdgeInsets.symmetric(horizontal: 16),
+                  actionsPadding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.screenHorizontal),
                   actions: [
                     SizedBox(
                       width: 40,
@@ -385,7 +282,11 @@ class _WikiScreenState extends State<WikiScreen> {
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(preferredSizeHeight),
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                      padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.screenHorizontal,
+                          0,
+                          AppSpacing.screenHorizontal,
+                          AppSpacing.screenHorizontal),
                       child: TextField(
                         controller: _searchController,
                         onChanged: (_) => setState(() {}),
@@ -412,22 +313,25 @@ class _WikiScreenState extends State<WikiScreen> {
                           // Push by 20px
                           alignment: const Alignment(0, cardAlignY),
                           child: Padding(
-                            padding: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(
+                                AppSpacing.screenHorizontal),
                             child: _loading
                                 ? Container(
                                     width: double.infinity,
                                     height: 80,
-                                    padding: const EdgeInsets.all(16),
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.all(
+                                        AppSpacing.screenHorizontal),
                                     decoration: BoxDecoration(
                                       color: Theme.of(context)
                                           .colorScheme
                                           .surfaceContainerHigh,
                                       borderRadius: BorderRadius.circular(24.5),
                                     ),
-                                    child:
-                                        const M3ECircularWavyProgressIndicator(),
+                                    child: const CircularProgressIndicator(),
                                   )
-                                : _buildMySiteCard(),
+                                : MySiteCard(
+                                    mySite: _mySite, openMySite: _openMySite),
                           ),
                         ),
                       ],
@@ -435,7 +339,11 @@ class _WikiScreenState extends State<WikiScreen> {
                   ),
                 ),
                 SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(16, 20, 16, 140),
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.screenHorizontal,
+                      AppSpacing.screenHorizontal,
+                      AppSpacing.screenHorizontal,
+                      AppSpacing.bottomNavClearance),
                   sliver: Skeletonizer.sliver(
                     enabled: _loading,
                     child: SliverList.separated(

@@ -24,6 +24,7 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
+        await getSessionUser();
         return const AuthResult(success: true);
       }
 

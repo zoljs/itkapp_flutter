@@ -1,4 +1,5 @@
-import 'package:dio/dio.dart';
+import 'package:itk_app/services/api_client.dart';
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:itk_app/models/subject.dart';
 
@@ -54,8 +55,8 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
 
   Future<void> _loadSubjects() async {
     try {
-      final response =
-          await Dio().get('https://space.itk.ppke.hu/api/subjects');
+      final response = await ApiClient.instance.dio
+          .get('https://space.itk.ppke.hu/api/subjects');
       final data = response.data as List;
       final subjects = data
           .map((json) => Subject.fromJson(json as Map<String, dynamic>))
@@ -101,7 +102,8 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
                           value: selected,
                           onChanged: (_) => (_toggleTag(subject.name)),
                           contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 0),
+                              horizontal: AppSpacing.screenHorizontal,
+                              vertical: 0),
                           title: Text(
                             subject.name,
                             style: TextStyle(
@@ -116,7 +118,7 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
                     ),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
               child: Row(
                 children: [
                   Expanded(

@@ -1,4 +1,5 @@
 // lib/widgets/field_label.dart
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:material_ui/material_ui.dart';
 
 class FieldLabel extends StatelessWidget {
@@ -8,7 +9,8 @@ class FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8, left: 4),
+      padding:
+          const EdgeInsets.only(bottom: AppSpacing.sm, left: AppSpacing.sm),
       child: Text(text,
           style: TextStyle(
             fontSize: 14,

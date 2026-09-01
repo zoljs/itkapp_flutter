@@ -1,5 +1,7 @@
 import 'package:itk_app/screens/app_scaffold.dart';
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_theme_colors.dart';
+import 'package:itk_app/widgets/field_label.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle, TextInput;
 import '../services/auth_service.dart';
@@ -57,23 +59,9 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  Widget _fieldLabel(String text, [Color? textColor]) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8, left: 4),
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          color: textColor ?? Theme.of(context).colorScheme.onSurface,
-        ),
-      ),
-    );
-  }
-
   Widget _buildDualCardHeader() {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(40),
@@ -109,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Container(
               width: 148,
               height: 100,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.lg),
               decoration: BoxDecoration(
                 color: const Color(0xFFF7D9E4),
                 borderRadius: BorderRadius.circular(20),
@@ -146,7 +134,8 @@ class _LoginScreenState extends State<LoginScreen> {
         borderRadius: BorderRadius.circular(40),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg, vertical: AppSpacing.xxxl),
         child: Form(
           key: _formKey,
           child: Column(
@@ -174,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    _fieldLabel('Felhasználónév', Colors.black),
+                    const FieldLabel('Felhasználónév'),
                     TextFormField(
                       controller: _usernameController,
                       decoration: const InputDecoration(hintText: 'pl. naszy'),
@@ -186,7 +175,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       autofillHints: const [AutofillHints.username],
                     ),
                     const SizedBox(height: 18),
-                    _fieldLabel('Jelszó', Colors.black),
+                    const FieldLabel('Jelszó'),
                     TextFormField(
                       controller: _passwordController,
                       decoration: InputDecoration(
@@ -300,7 +289,7 @@ class _LoginScreenState extends State<LoginScreen> {
           backgroundColor: Colors.black,
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

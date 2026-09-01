@@ -1,10 +1,17 @@
 import 'package:itk_app/models/user.dart';
+import 'package:itk_app/models/user_site.dart';
+import 'package:itk_app/screens/my_site_screen.dart';
 import 'package:itk_app/services/auth_service.dart';
+import 'package:itk_app/services/sites_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/utils/auth_actions.dart';
 import 'package:itk_app/widgets/field_label.dart';
+import 'package:itk_app/widgets/my_site_card.dart';
 import 'package:itk_app/widgets/section_card.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -14,15 +21,20 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final _authService = AuthService.instance;
-  LdapUser? _currentUser;
+  final LdapUser? _currentUser = AuthService.instance.cachedUser;
+  late UserSite? _mySite;
+  bool _loading = true;
+
+  // Conversion to Futures for easier management
+  late final Future<PackageInfo> _packageInfoFuture;
 
   final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    _loadCurrentUser();
+    _packageInfoFuture = PackageInfo.fromPlatform();
+    _getMySite();
   }
 
   @override
@@ -31,10 +43,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
-  Future<void> _loadCurrentUser() async {
-    final user = await _authService.getSessionUser();
-    if (!mounted) return;
-    setState(() => _currentUser = user);
+  Future<void> _openMySite() async {
+    await Navigator.push(
+        context, MaterialPageRoute(builder: (context) => const MySiteScreen()));
+
+    _getMySite();
+  }
+
+  Future<void> _getMySite() async {
+    setState(() {
+      _loading = true;
+    });
+
+    try {
+      final mySite = await SitesService.instance.getMySite();
+      if (!mounted) return;
+
+      setState(() {
+        _mySite = mySite;
+        _loading = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _reportBug() async {
+    final uri = Uri.parse(
+      'https://github.com/BWW01/itkAPP_main/issues/new'
+      '?title=${Uri.encodeComponent('[App] ')}'
+      '&labels=${Uri.encodeComponent('bug,mobile-app')}',
+    );
+
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
+
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Nem sikerült megnyitni a linket.')),
+      );
+    }
   }
 
   @override
@@ -62,7 +110,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 scrolledUnderElevation: 0,
                 // backgroundColor: Colors.amber, //test
                 backgroundColor: Theme.of(context).colorScheme.surface,
-                actionsPadding: const EdgeInsets.symmetric(horizontal: 16),
+                actionsPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.screenHorizontal),
                 actions: [
                   SizedBox(
                     width: 40,
@@ -103,21 +152,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Align(
                         // Push by 20px
                         alignment: const Alignment(0, cardAlignY),
-                        child: Padding(
-                          padding: const EdgeInsets.all(16.0),
+                        child: CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.surface,
+                          radius: 55,
                           child: CircleAvatar(
                             backgroundColor:
-                                Theme.of(context).colorScheme.surface,
-                            radius: 55,
-                            child: CircleAvatar(
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.primary,
-                              radius: 45,
-                              child: Text(
-                                '${_currentUser?.login[0].toUpperCase()}',
-                                style: const TextStyle(
-                                    fontSize: 28, fontWeight: FontWeight.w900),
-                              ),
+                                Theme.of(context).colorScheme.primary,
+                            radius: 45,
+                            child: Text(
+                              '${_currentUser?.login[0].toUpperCase()}',
+                              style: const TextStyle(
+                                  fontSize: 28, fontWeight: FontWeight.w900),
                             ),
                           ),
                         ),
@@ -127,11 +173,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 20, 16, 140),
-                sliver: SliverFillRemaining(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.screenHorizontal,
+                    AppSpacing.screenHorizontal,
+                    AppSpacing.screenHorizontal,
+                    AppSpacing.bottomNavClearance),
+                sliver: SliverToBoxAdapter(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
+                      // Profile section
                       SectionCard(
                         title: 'Profil',
                         child: Column(
@@ -139,7 +190,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           children: [
                             const FieldLabel('Név'),
                             Container(
-                              padding: const EdgeInsets.all(16),
+                              padding: const EdgeInsets.all(
+                                  AppSpacing.screenHorizontal),
                               decoration: BoxDecoration(
                                 color: Theme.of(context)
                                     .colorScheme
@@ -188,58 +240,94 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       const SizedBox(height: 14),
+
+                      // WIKI Page section
                       SectionCard(
                         title: 'WIKI Oldal',
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const FieldLabel('Név'),
-                            Container(
-                              padding: const EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHigh,
-                                borderRadius: BorderRadius.circular(20),
+                            _loading
+                                ? Container(
+                                    width: double.infinity,
+                                    height: 80,
+                                    alignment: Alignment.center,
+                                    padding: const EdgeInsets.all(
+                                        AppSpacing.screenHorizontal),
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .surfaceContainerHigh,
+                                      borderRadius: BorderRadius.circular(24.5),
+                                    ),
+                                    child: const CircularProgressIndicator(),
+                                  )
+                                : MySiteCard(
+                                    mySite: _mySite,
+                                    openMySite: _openMySite,
+                                  )
+                          ],
+                        ),
+                      ),
+                      const SizedBox(height: 14),
+
+                      // App Info section
+                      SectionCard(
+                        title: 'App infó',
+                        child: Column(
+                          children: [
+                            Material(
+                              color: Colors.transparent,
+                              child: ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: Icon(Icons.bug_report_outlined,
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
+                                title: const Text(
+                                  'Hiba bejelentése',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14),
+                                ),
+                                subtitle: const Text(
+                                  'Megnyitja a GitHub issue oldalt',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                trailing: const Icon(Icons.open_in_new_rounded,
+                                    size: 18),
+                                onTap: _reportBug,
                               ),
-                              child: Row(
-                                children: [
-                                  Icon(Icons.warning_amber_rounded,
+                            ),
+                            const Divider(height: 1),
+                            FutureBuilder<PackageInfo>(
+                              future: _packageInfoFuture,
+                              builder: ((context, snapshot) {
+                                final String subtitle =
+                                    switch (snapshot.connectionState) {
+                                  ConnectionState.waiting => 'Betöltés...',
+                                  _ when snapshot.hasError =>
+                                    'Ismeretlen verzió',
+                                  _ =>
+                                    'v${snapshot.data!.version} (${snapshot.data!.buildNumber})',
+                                };
+
+                                return ListTile(
+                                  enabled: true,
+                                  enableFeedback: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  leading: Icon(Icons.info_outline_rounded,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .primary),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          '${_currentUser?.login}',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            fontSize: 14,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurface,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 4),
-                                        Text(
-                                          'Ez a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .onSurfaceVariant,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
+                                  title: const Text('Verzió',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 14)),
+                                  subtitle: Text(subtitle,
+                                      style: const TextStyle(fontSize: 12)),
+                                );
+                              }),
+                            )
                           ],
                         ),
                       ),

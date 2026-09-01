@@ -1,4 +1,5 @@
 import 'package:itk_app/theme/app_fonts.dart';
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_theme_colors.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
@@ -29,7 +30,8 @@ ThemeData _buildTheme(ColorScheme scheme) {
       hintStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),
       filled: true,
       fillColor: scheme.surfaceContainerHigh,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+      contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(20),
         borderSide: BorderSide.none,

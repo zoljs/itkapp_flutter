@@ -1,3 +1,4 @@
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_theme_colors.dart';
 import 'package:itk_app/utils/auth_actions.dart';
 import 'package:material_ui/material_ui.dart';
@@ -32,7 +33,7 @@ class _HomeScreenTestState extends State<HomeScreenTest>
     const collapsedHeight = 60.0;
     const expandedHeight = 150.0;
     const preferredSizeHeight = 56.0;
-    const fullHeight = expandedHeight + preferredSizeHeight;
+    // const fullHeight = expandedHeight + preferredSizeHeight;
 
     return Scaffold(
       body: NestedScrollView(
@@ -46,7 +47,8 @@ class _HomeScreenTestState extends State<HomeScreenTest>
                 collapsedHeight: collapsedHeight,
                 scrolledUnderElevation: 0,
                 backgroundColor: Theme.of(context).colorScheme.surface,
-                actionsPadding: const EdgeInsets.symmetric(horizontal: 16),
+                actionsPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.screenHorizontal),
                 actions: [
                   SizedBox(
                     width: 40,
@@ -137,7 +139,8 @@ class _HomeScreenTestState extends State<HomeScreenTest>
                 bottom: PreferredSize(
                   preferredSize: const Size.fromHeight(preferredSizeHeight + 8),
                   child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                    padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.sm, 0, AppSpacing.sm, AppSpacing.sm),
                     child: TabBar(
                       splashBorderRadius: BorderRadius.circular(50),
                       dividerColor: Colors.transparent,
@@ -148,10 +151,7 @@ class _HomeScreenTestState extends State<HomeScreenTest>
                       indicator: BoxDecoration(
                         border: Border.all(color: Colors.transparent, width: 8),
                         borderRadius: BorderRadius.circular(50.0),
-                        color: Theme.of(context)
-                            .colorScheme
-                            .onPrimary
-                            .withValues(alpha: 0.25),
+                        color: Colors.white.withValues(alpha: 0.1),
                       ),
                     ),
                   ),
@@ -162,62 +162,13 @@ class _HomeScreenTestState extends State<HomeScreenTest>
         },
         body: TabBarView(
           controller: _tabController,
-          children: [
-            const Placeholder(),
-            _buildNewsTab(),
-            const Placeholder(),
+          children: const [
+            Placeholder(),
+            Placeholder(),
+            Placeholder(),
           ],
         ),
       ),
     );
-  }
-
-  Widget _buildNewsTab() {
-    return Builder(builder: (context) {
-      return CustomScrollView(
-        key: const PageStorageKey('Hírek tab'),
-        slivers: [
-          SliverOverlapInjector(
-              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context)),
-          SliverPadding(
-            padding: const EdgeInsets.all(16),
-            sliver: SliverList.separated(
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return _buildNewsCard();
-              },
-              separatorBuilder: (context, index) => const Divider(
-                height: 16,
-              ),
-            ),
-          ),
-        ],
-      );
-    });
-  }
-
-  Widget _buildNewsCard() {
-    return Builder(builder: (context) {
-      return SizedBox(
-        height: 150,
-        child: Material(
-          color: Colors.blue,
-          borderRadius: BorderRadius.circular(20),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: () {},
-            borderRadius: BorderRadius.circular(20),
-            splashColor: Theme.of(context)
-                .extension<AppThemeColors>()!
-                .textDark
-                .withValues(alpha: 0.12),
-            highlightColor: Theme.of(context)
-                .extension<AppThemeColors>()!
-                .textDark
-                .withValues(alpha: 0.06),
-          ),
-        ),
-      );
-    });
   }
 }

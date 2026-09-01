@@ -1,6 +1,7 @@
 import 'package:itk_app/screens/home_screen_test.dart';
 import 'package:itk_app/screens/settings_screen.dart';
 import 'package:itk_app/screens/wiki_screen.dart';
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:material_ui/material_ui.dart';
 
 class AppScaffold extends StatefulWidget {
@@ -39,7 +40,7 @@ class _AppScaffoldState extends State<AppScaffold> {
         color: Colors.transparent,
         height: 100,
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
           child: Material(
             color: Theme.of(context).colorScheme.surfaceContainer,
             borderRadius: BorderRadius.circular(50),
@@ -57,7 +58,7 @@ class _AppScaffoldState extends State<AppScaffold> {
                       child: Container(
                         width: itemWidth,
                         height: 100,
-                        padding: const EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(AppSpacing.sm),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Theme.of(context)
@@ -97,7 +98,7 @@ class _AppScaffoldState extends State<AppScaffold> {
 
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(AppSpacing.sm),
         child: InkWell(
           onTap: () => setState(() => _selectedIndex = index),
           borderRadius: BorderRadius.circular(50),
