@@ -36,17 +36,12 @@ class _WikiScreenState extends State<WikiScreen> {
   @override
   void initState() {
     super.initState();
-    print(
-        '[initState] hasCachedSites=${SitesService.instance.hasCachedSites} _sites.length=${_sites.length} _currentUserId=$_currentUserId');
     if (!SitesService.instance.hasCachedSites) {
       _loadAll();
     }
   }
 
   Future<void> _loadAll({bool forceReload = false}) async {
-    print(
-        '[_loadAll START] forceReload=$forceReload hasCachedSites=${SitesService.instance.hasCachedSites}');
-
     if (!SitesService.instance.hasCachedSites || forceReload) {
       setState(() => _loading = true);
     }
@@ -55,15 +50,12 @@ class _WikiScreenState extends State<WikiScreen> {
       final sites =
           await SitesService.instance.getAllSites(forceReload: forceReload);
 
-      print('[_loadAll RESULTS] sites.length=${(sites as List).length}');
-
       if (!mounted) return;
       setState(() {
         _sites = sites;
         _loading = false;
       });
     } catch (e) {
-      print('[_loadAll ERROR] $e');
       if (!mounted) return;
       setState(() => _loading = false);
     }

@@ -17,8 +17,6 @@ class MySiteScreen extends StatefulWidget {
 }
 
 class _MySiteScreenState extends State<MySiteScreen> {
-  final _sitesService = SitesService.instance;
-  final _authService = AuthService.instance;
   LdapUser? _currentUser;
 
   final _formKey = GlobalKey<FormState>();
@@ -55,13 +53,13 @@ class _MySiteScreenState extends State<MySiteScreen> {
   }
 
   Future<void> _loadCurrentUser() async {
-    final user = await _authService.getSessionUser();
+    final user = await AuthService.instance.getSessionUser();
     if (!mounted) return;
     setState(() => _currentUser = user);
   }
 
   Future<void> _loadExistingSite() async {
-    final response = await _sitesService.getMySite();
+    final response = await SitesService.instance.getMySite();
     if (!mounted) return;
 
     setState(() {
@@ -82,7 +80,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
     setState(() => _saving = true);
 
     try {
-      await _sitesService.saveMySite(
+      await SitesService.instance.saveMySite(
         UserSite(
           name: _nameController.text.trim(),
           url: 'https://users.itk.ppke.hu/~${_currentUser?.login}',
@@ -141,7 +139,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
     if (confirmed != true) return;
 
     try {
-      await _sitesService.deleteMySite();
+      await SitesService.instance.deleteMySite();
       if (!mounted) return;
       Navigator.pop(context);
     } on DioException {

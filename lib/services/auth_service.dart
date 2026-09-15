@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:itk_app/models/user.dart';
 import 'api_client.dart';
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthResult {
   final bool success;
@@ -15,6 +19,31 @@ class AuthService {
   final Dio _dio = ApiClient.instance.dio;
 
   LdapUser? _cachedUser;
+
+  Future<void> _cacheUserToDisk(LdapUser user) async {
+    final prefs = await SharedPreferences.getInstance();
+    final encodedJson = jsonEncode(user.toJson());
+    await prefs.setString('cached_user', encodedJson);
+  }
+
+  Future<void> _clearUserFromDisk() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('cached_user');
+  }
+
+  Future<LdapUser?> _loadUserFromDisk() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('cached_user');
+
+    if (jsonString == null) {
+      return null;
+    }
+
+    final decodedJson = jsonDecode(jsonString);
+    final user = LdapUser.fromJson(decodedJson as Map<String, dynamic>);
+
+    return user;
+  }
 
   Future<AuthResult> login(String username, String password) async {
     try {
@@ -38,11 +67,7 @@ class AuthService {
     }
   }
 
-  Future<LdapUser?> getSessionUser() async {
-    if (_cachedUser != null) {
-      return _cachedUser;
-    }
-
+  Future<LdapUser?> _fetchUserFromNetwork() async {
     try {
       final response = await _dio.get('/api/auth/me');
 
@@ -50,6 +75,8 @@ class AuthService {
         _cachedUser = LdapUser.fromJson(
           Map<String, dynamic>.from(response.data as Map),
         );
+        await _cacheUserToDisk(_cachedUser!);
+
         return _cachedUser;
       }
 
@@ -62,6 +89,21 @@ class AuthService {
     }
   }
 
+  Future<LdapUser?> getSessionUser() async {
+    // Load from disk
+    final cachedUser = await _loadUserFromDisk();
+
+    // If disk has not null user, set cache
+    if (cachedUser != null) {
+      _cachedUser = cachedUser;
+      unawaited(_fetchUserFromNetwork());
+      return _cachedUser;
+    }
+
+    // Else wait for network and return that
+    return await _fetchUserFromNetwork();
+  }
+
   Future<void> logout() async {
     try {
       await _dio.post('/api/auth/logout');
@@ -70,6 +112,7 @@ class AuthService {
     } finally {
       await ApiClient.instance.clearCookies();
       _cachedUser = null;
+      await _clearUserFromDisk();
     }
   }
 

@@ -1,6 +1,7 @@
 import 'package:itk_app/theme/app_fonts.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_theme_colors.dart';
+import 'package:itk_app/theme/app_themes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'services/api_client.dart';
@@ -11,6 +12,8 @@ Future<void> main() async {
   await ApiClient.instance.init();
   runApp(const ITKApp());
 }
+
+final navigatorKey = GlobalKey<NavigatorState>();
 
 const _seedColor = Color.fromARGB(255, 142, 136, 230);
 //const _seedColor = Color(0xFF00A6E7);
@@ -26,33 +29,7 @@ ThemeData _buildTheme(ColorScheme scheme) {
     useMaterial3: true,
     extensions: [isDark ? AppThemeColors.dark : AppThemeColors.light],
     textTheme: buildITKAppTextTheme(base),
-    inputDecorationTheme: InputDecorationThemeData(
-      hintStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),
-      filled: true,
-      fillColor: scheme.surfaceContainerHigh,
-      contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide.none,
-      ),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide.none,
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: scheme.primary, width: 2.0),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: scheme.error, width: 2.0),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(20),
-        borderSide: BorderSide(color: scheme.error, width: 1.5),
-      ),
-    ),
+    inputDecorationTheme: buildITKAppInputDecorationTheme(scheme),
     snackBarTheme: const SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(
@@ -83,6 +60,7 @@ class ITKApp extends StatelessWidget {
       theme: _buildTheme(lightScheme),
       darkTheme: _buildTheme(darkScheme),
       home: const AuthGate(),
+      navigatorKey: navigatorKey,
     );
   }
 }

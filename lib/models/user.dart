@@ -19,4 +19,13 @@ class LdapUser {
       name: json['name'] as String,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'login': login,
+      'email': email,
+      'name': name,
+    };
+  }
 }

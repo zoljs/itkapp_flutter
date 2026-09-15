@@ -1,5 +1,4 @@
 import 'package:itk_app/models/user.dart';
-import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/screens/my_site_screen.dart';
 import 'package:itk_app/services/auth_service.dart';
 import 'package:itk_app/services/sites_service.dart';
@@ -22,8 +21,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   final LdapUser? _currentUser = AuthService.instance.cachedUser;
-  late UserSite? _mySite;
-  bool _loading = true;
 
   // Conversion to Futures for easier management
   late final Future<PackageInfo> _packageInfoFuture;
@@ -34,7 +31,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void initState() {
     super.initState();
     _packageInfoFuture = PackageInfo.fromPlatform();
-    _getMySite();
   }
 
   @override
@@ -46,27 +42,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Future<void> _openMySite() async {
     await Navigator.push(
         context, MaterialPageRoute(builder: (context) => const MySiteScreen()));
-
-    _getMySite();
-  }
-
-  Future<void> _getMySite() async {
-    setState(() {
-      _loading = true;
-    });
-
-    try {
-      final mySite = await SitesService.instance.getMySite();
-      if (!mounted) return;
-
-      setState(() {
-        _mySite = mySite;
-        _loading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _loading = false);
-    }
   }
 
   Future<void> _reportBug() async {
@@ -188,7 +163,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            const FieldLabel('Név'),
                             Container(
                               padding: const EdgeInsets.all(
                                   AppSpacing.screenHorizontal),
@@ -247,25 +221,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            _loading
-                                ? Container(
-                                    width: double.infinity,
-                                    height: 80,
-                                    alignment: Alignment.center,
-                                    padding: const EdgeInsets.all(
-                                        AppSpacing.screenHorizontal),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainerHigh,
-                                      borderRadius: BorderRadius.circular(24.5),
-                                    ),
-                                    child: const CircularProgressIndicator(),
-                                  )
-                                : MySiteCard(
-                                    mySite: _mySite,
-                                    openMySite: _openMySite,
-                                  )
+                            ValueListenableBuilder(
+                              valueListenable:
+                                  SitesService.instance.mySiteNotifier,
+                              builder: (context, mySite, _) {
+                                return MySiteCard(
+                                  mySite: mySite,
+                                  openMySite: _openMySite,
+                                );
+                              },
+                            )
                           ],
                         ),
                       ),
