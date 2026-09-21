@@ -1,6 +1,7 @@
 import 'package:itk_app/screens/home_screen_test.dart';
 import 'package:itk_app/screens/settings_screen.dart';
 import 'package:itk_app/screens/wiki_screen.dart';
+import 'package:itk_app/services/calendar_service.dart';
 import 'package:itk_app/services/sites_service.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -18,6 +19,8 @@ class _AppScaffoldState extends State<AppScaffold> {
 
     // Lowest point in hierarchy where it is needed, should cover all other screens as the initial load
     SitesService.instance.getMySite();
+
+    CalendarService.instance.getCalendar('perpa4');
   }
 
   int _selectedIndex = 0;
@@ -34,7 +37,6 @@ class _AppScaffoldState extends State<AppScaffold> {
       body: navItems[_selectedIndex],
       //bottomNavigationBar: _buildBottomNavigationBar(),
       bottomNavigationBar: NavigationBar(
-        labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         onDestinationSelected: (value) {
           setState(() {
             _selectedIndex = value;
@@ -45,6 +47,11 @@ class _AppScaffoldState extends State<AppScaffold> {
           const NavigationDestination(
             selectedIcon: Icon(Icons.home),
             icon: Icon(Icons.home_outlined),
+            label: 'Főoldal',
+          ),
+          const NavigationDestination(
+            selectedIcon: Icon(Icons.calendar_month),
+            icon: Icon(Icons.calendar_month_outlined),
             label: 'Főoldal',
           ),
           NavigationDestination(
