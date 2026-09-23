@@ -8,7 +8,7 @@ class CalendarService {
   static final CalendarService instance = CalendarService.internal();
   final Dio _dio = ApiClient.instance.dio;
 
-  Future<void> getCalendar(String username) async {
+  Future<List<CalendarEvent>> getCalendar(String username) async {
     final response = await _dio.get('/api/calendar/$username');
     final icsText = response.data as String;
     final calendar = ICalendar.fromString(icsText);
@@ -17,5 +17,7 @@ class CalendarService {
         .where((item) => item['type'] == 'VEVENT')
         .map((item) => CalendarEvent.fromJson(item))
         .toList();
+
+    return events;
   }
 }

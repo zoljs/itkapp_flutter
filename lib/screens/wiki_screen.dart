@@ -258,13 +258,14 @@ class _WikiScreenState extends State<WikiScreen> {
                       width: 40,
                       height: 40,
                       child: IconButton(
-                        onPressed: () => performLogout(context),
-                        icon: Icon(Icons.logout_rounded,
-                            color: Theme.of(context).colorScheme.onSurface,
-                            size: 20),
+                        onPressed: () {},
+                        icon:
+                            const Icon(Icons.report_problem_rounded, size: 20),
                         style: IconButton.styleFrom(
                           backgroundColor:
                               Theme.of(context).colorScheme.surfaceContainer,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.onSurface,
                           shape: const CircleBorder(),
                           padding: EdgeInsets.zero,
                         ),

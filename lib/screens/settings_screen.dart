@@ -72,6 +72,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
     const cardAlignY = (separatorOffset + 0) / 100.0;
     const separatorHeight = halfHeight + separatorOffset;
 
+    bool isAmoled = false;
+
     return Scaffold(
       body: Stack(
         children: [
@@ -93,12 +95,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     height: 40,
                     child: IconButton(
                       onPressed: () => performLogout(context),
-                      icon: Icon(Icons.logout_rounded,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          size: 20),
+                      icon: const Icon(Icons.logout_rounded, size: 20),
                       style: IconButton.styleFrom(
                         backgroundColor:
                             Theme.of(context).colorScheme.surfaceContainer,
+                        foregroundColor:
+                            Theme.of(context).colorScheme.onSurface,
                         shape: const CircleBorder(),
                         padding: EdgeInsets.zero,
                       ),
@@ -235,6 +237,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                       ),
                       const SizedBox(height: 14),
+
+                      // App Info section
+                      SectionCard(
+                        title: 'Megjelenés',
+                        child: Column(
+                          children: [
+                            Material(
+                              color: Colors.transparent,
+                              child: ListTile(
+                                contentPadding: EdgeInsets.zero,
+                                leading: Icon(Icons.dark_mode,
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
+                                title: const Text(
+                                  'AMOLED mód',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 14),
+                                ),
+                                subtitle: const Text(
+                                  'Magától értetődő, nem?',
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                                trailing: Switch(
+                                  value: isAmoled,
+                                  onChanged: (bool value) {},
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(
+                        height: 14,
+                      ),
 
                       // App Info section
                       SectionCard(

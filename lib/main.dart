@@ -1,16 +1,20 @@
+import 'package:calendar_view/calendar_view.dart';
+import 'package:itk_app/models/calendar_event.dart';
 import 'package:itk_app/theme/app_fonts.dart';
-import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_theme_colors.dart';
 import 'package:itk_app/theme/app_themes.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart';
 import 'services/api_client.dart';
 import 'screens/auth_gate.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ApiClient.instance.init();
-  runApp(const ITKApp());
+  //runApp(const ITKApp());
+
+  initializeDateFormatting().then((_) => runApp(const ITKApp()));
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -27,7 +31,9 @@ ThemeData _buildTheme(ColorScheme scheme) {
   return ThemeData(
     colorScheme: scheme,
     useMaterial3: true,
-    extensions: [isDark ? AppThemeColors.dark : AppThemeColors.light],
+    extensions: [
+      isDark ? AppThemeColors.dark : AppThemeColors.light,
+    ],
     textTheme: buildITKAppTextTheme(base),
     inputDecorationTheme: buildITKAppInputDecorationTheme(scheme),
     snackBarTheme: const SnackBarThemeData(
@@ -55,12 +61,15 @@ class ITKApp extends StatelessWidget {
       brightness: Brightness.dark,
     );
 
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: _buildTheme(lightScheme),
-      darkTheme: _buildTheme(darkScheme),
-      home: const AuthGate(),
-      navigatorKey: navigatorKey,
+    return CalendarControllerProvider(
+      controller: EventController<CalendarEvent>(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: _buildTheme(lightScheme),
+        darkTheme: _buildTheme(darkScheme),
+        home: const AuthGate(),
+        navigatorKey: navigatorKey,
+      ),
     );
   }
 }

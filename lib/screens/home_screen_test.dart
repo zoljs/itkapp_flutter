@@ -48,24 +48,6 @@ class _HomeScreenTestState extends State<HomeScreenTest>
                 backgroundColor: Theme.of(context).colorScheme.surface,
                 actionsPadding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenHorizontal),
-                actions: [
-                  SizedBox(
-                    width: 40,
-                    height: 40,
-                    child: IconButton(
-                      onPressed: () => performLogout(context),
-                      icon: Icon(Icons.logout_rounded,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          size: 20),
-                      style: IconButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainer,
-                        shape: const CircleBorder(),
-                        padding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ),
-                ],
                 title: Builder(builder: (context) {
                   final settings = context.dependOnInheritedWidgetOfExactType<
                       FlexibleSpaceBarSettings>();
