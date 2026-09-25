@@ -228,112 +228,109 @@ class _WikiScreenState extends State<WikiScreen> {
           )
         : _filteredSites;
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          RefreshIndicator(
-            onRefresh: () => _loadAll(forceReload: true),
-            child: CustomScrollView(
-              slivers: [
-                SliverAppBar(
-                  centerTitle: false,
-                  title: Text(
-                    'ITK Wiki 3 Beta',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.merge(topBarTitleStyle),
-                  ),
-                  expandedHeight: expandedHeight,
-                  collapsedHeight: collapsedHeight,
-                  floating: true,
-                  pinned: true,
-                  scrolledUnderElevation: 0,
-                  // backgroundColor: Colors.amber, //test
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  actionsPadding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.screenHorizontal),
-                  bottom: PreferredSize(
-                    preferredSize: const Size.fromHeight(preferredSizeHeight),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.screenHorizontal,
-                          0,
-                          AppSpacing.screenHorizontal,
-                          AppSpacing.screenHorizontal),
-                      child: TextField(
-                        controller: _searchController,
-                        onChanged: (_) => setState(() {}),
-                        decoration: const InputDecoration(
-                          hintText: 'Oldal, tantárgy neve...',
-                          prefixIcon: Icon(Icons.search_rounded),
-                        ),
+    return Stack(
+      children: [
+        RefreshIndicator(
+          onRefresh: () => _loadAll(forceReload: true),
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                centerTitle: false,
+                title: Text(
+                  'ITK Wiki 3 Beta',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.merge(topBarTitleStyle),
+                ),
+                expandedHeight: expandedHeight,
+                collapsedHeight: collapsedHeight,
+                floating: true,
+                pinned: true,
+                scrolledUnderElevation: 0,
+                // backgroundColor: Colors.amber, //test
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                actionsPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.screenHorizontal),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(preferredSizeHeight),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                        AppSpacing.screenHorizontal,
+                        0,
+                        AppSpacing.screenHorizontal,
+                        AppSpacing.screenHorizontal),
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (_) => setState(() {}),
+                      decoration: const InputDecoration(
+                        hintText: 'Oldal, tantárgy neve...',
+                        prefixIcon: Icon(Icons.search_rounded),
                       ),
                     ),
                   ),
-                  flexibleSpace: FlexibleSpaceBar(
-                    collapseMode: CollapseMode.pin,
-                    background: Stack(
-                      children: [
-                        Align(
-                          alignment: Alignment.topCenter,
-                          child: Container(
-                            height: separatorHeight,
-                            color:
-                                Theme.of(context).colorScheme.primaryContainer,
-                          ),
+                ),
+                flexibleSpace: FlexibleSpaceBar(
+                  collapseMode: CollapseMode.pin,
+                  background: Stack(
+                    children: [
+                      Align(
+                        alignment: Alignment.topCenter,
+                        child: Container(
+                          height: separatorHeight,
+                          color: Theme.of(context).colorScheme.primaryContainer,
                         ),
-                        Align(
-                          // Push by 20px
-                          alignment: const Alignment(0, cardAlignY),
-                          child: Padding(
-                            padding: const EdgeInsets.all(
-                                AppSpacing.screenHorizontal),
-                            child: _loading
-                                ? Container(
-                                    width: double.infinity,
-                                    height: 80,
-                                    alignment: Alignment.center,
-                                    padding: const EdgeInsets.all(
-                                        AppSpacing.screenHorizontal),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .surfaceContainerHigh,
-                                      borderRadius: BorderRadius.circular(24.5),
-                                    ),
-                                    child: const CircularProgressIndicator(),
-                                  )
-                                : MySiteCard(
-                                    mySite: _mySite, openMySite: _openMySite),
-                          ),
+                      ),
+                      Align(
+                        // Push by 20px
+                        alignment: const Alignment(0, cardAlignY),
+                        child: Padding(
+                          padding:
+                              const EdgeInsets.all(AppSpacing.screenHorizontal),
+                          child: _loading
+                              ? Container(
+                                  width: double.infinity,
+                                  height: 80,
+                                  alignment: Alignment.center,
+                                  padding: const EdgeInsets.all(
+                                      AppSpacing.screenHorizontal),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceContainerHigh,
+                                    borderRadius: BorderRadius.circular(24.5),
+                                  ),
+                                  child: const CircularProgressIndicator(),
+                                )
+                              : MySiteCard(
+                                  mySite: _mySite, openMySite: _openMySite),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
-                SliverPadding(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.screenHorizontal,
-                      AppSpacing.screenHorizontal,
-                      AppSpacing.screenHorizontal,
-                      AppSpacing.bottomNavClearance),
-                  sliver: Skeletonizer.sliver(
-                    enabled: _loading,
-                    child: SliverList.separated(
-                      itemCount: displaySites.length,
-                      itemBuilder: (context, index) =>
-                          _buildSiteCard(displaySites[index], index),
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 10),
-                    ),
+              ),
+              SliverPadding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.screenHorizontal,
+                    AppSpacing.screenHorizontal,
+                    AppSpacing.screenHorizontal,
+                    AppSpacing.bottomNavClearance),
+                sliver: Skeletonizer.sliver(
+                  enabled: _loading,
+                  child: SliverList.separated(
+                    itemCount: displaySites.length,
+                    itemBuilder: (context, index) =>
+                        _buildSiteCard(displaySites[index], index),
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 10),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

@@ -28,6 +28,8 @@ dependencies:
   calendar_view: ^2.0.0
   liquid_glass_widgets: ^1.7.2
   cupertino_ui: ^1.1.1
+  flutter_localizations:
+    sdk: flutter
 dev_dependencies:
   flutter_test:
     sdk: flutter

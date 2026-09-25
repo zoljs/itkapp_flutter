@@ -2,9 +2,11 @@ import 'package:itk_app/models/user.dart';
 import 'package:itk_app/screens/my_site_screen.dart';
 import 'package:itk_app/services/auth_service.dart';
 import 'package:itk_app/services/sites_service.dart';
+import 'package:itk_app/services/theme_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/utils/auth_actions.dart';
+import 'package:itk_app/widgets/adaptive_icon_button.dart';
 import 'package:itk_app/widgets/my_site_card.dart';
 import 'package:itk_app/widgets/section_card.dart';
 import 'package:material_ui/material_ui.dart';
@@ -89,20 +91,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 actionsPadding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenHorizontal),
                 actions: [
-                  SizedBox.square(
-                    dimension: 40,
-                    child: IconButton(
-                      onPressed: () => performLogout(context),
-                      icon: const Icon(Icons.logout_rounded, size: 20),
-                      style: IconButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.surfaceContainer,
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onSurface,
-                        shape: const CircleBorder(),
-                        padding: EdgeInsets.zero,
-                      ),
-                    ),
+                  AdaptiveIconButton(
+                    icon: Icons.logout_rounded,
+                    onPressed: () => performLogout(context),
                   ),
                 ],
                 flexibleSpace: FlexibleSpaceBar(
@@ -258,9 +249,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   'Magától értetődő, nem?',
                                   style: TextStyle(fontSize: 12),
                                 ),
-                                trailing: Switch.adaptive(
-                                  value: isAmoled,
-                                  onChanged: (bool value) {},
+                                trailing: Switch(
+                                  value: ThemeService.instance.amoledMode.value,
+                                  onChanged: (bool value) {
+                                    ThemeService.instance
+                                        .toggleAmoledMode(value);
+                                  },
                                 ),
                               ),
                             ),

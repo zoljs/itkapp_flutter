@@ -3,6 +3,7 @@ import 'package:itk_app/models/calendar_event.dart';
 import 'package:itk_app/services/calendar_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
 import 'package:itk_app/theme/app_spacing.dart';
+import 'package:itk_app/widgets/adaptive_icon_button.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/material.dart' as legacy;
 
@@ -90,17 +91,25 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
     return Scaffold(
       backgroundColor: scheme.primaryContainer,
       body: SafeArea(
+        bottom: false,
         // ignore: deprecated_member_use
         child: MaterialUiCompatibilityBridge(
           child: legacy.Material(
             child: DayView<CalendarEvent>(
+              safeAreaOption: const SafeAreaOption(bottom: false),
               key: _dayViewKey,
-              heightPerMinute: 1.8,
+              heightPerMinute: 2,
               backgroundColor: scheme.surface,
+              showHalfHours: true,
               startHour: 8,
+              endHour: 24,
               hourIndicatorSettings: HourIndicatorSettings(
                 color: scheme.outlineVariant,
                 height: 0.8,
+              ),
+              halfHourIndicatorSettings: HourIndicatorSettings(
+                color: scheme.outlineVariant,
+                height: 0.4,
               ),
               dayTitleBuilder: (date) {
                 final isToday = date.compareWithoutTime(DateTime.now());
@@ -164,39 +173,18 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
                       //     ),
                       //   ),
                       // ),
-                      SizedBox.square(
-                        dimension: 40,
-                        child: IconButton(
-                          onPressed: () => _loadEvents(forceReload: true),
-                          icon: const Icon(Icons.refresh_rounded, size: 20),
-                          style: IconButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainer,
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onSurface,
-                            shape: const CircleBorder(),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ),
+
+                      AdaptiveIconButton(
+                        onPressed: () => _loadEvents(forceReload: true),
+                        icon: Icons.refresh_rounded,
                       ),
                       const SizedBox(
-                        width: 8,
+                        width: 4,
                       ),
-                      SizedBox.square(
-                        dimension: 40,
-                        child: IconButton(
-                          onPressed: () => _dayViewKey.currentState
-                              ?.animateToDate(DateTime.now()),
-                          icon: const Icon(Icons.today_rounded, size: 20),
-                          style: IconButton.styleFrom(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.surfaceContainer,
-                            foregroundColor:
-                                Theme.of(context).colorScheme.onSurface,
-                            shape: const CircleBorder(),
-                            padding: EdgeInsets.zero,
-                          ),
-                        ),
+                      AdaptiveIconButton(
+                        onPressed: () => _dayViewKey.currentState
+                            ?.animateToDate(DateTime.now()),
+                        icon: Icons.today_rounded,
                       ),
                     ],
                   ),
@@ -206,7 +194,7 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
                 return Padding(
                   padding: const EdgeInsets.only(right: 4, left: 4),
                   child: Text(
-                    '${date.hour.toString().padLeft(2, '0')}:00',
+                    '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}',
                     style: TextStyle(
                       fontSize: 14,
                       color: scheme.onSurfaceVariant,
