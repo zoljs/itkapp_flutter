@@ -1,40 +1,19 @@
 import 'package:icalendar_parser/icalendar_parser.dart';
-import 'package:kalender/kalender.dart';
 
-class CalendarEvent extends KalenderEvent {
+class CalendarEvent {
   final String title;
   final String? location;
   final String? subject;
+  final DateTime start;
+  final DateTime end;
 
-  CalendarEvent({
-    super.id,
-    required super.start,
-    required super.end,
+  const CalendarEvent({
     required this.title,
+    required this.start,
+    required this.end,
     this.location,
     this.subject,
   });
-
-  @override
-  CalendarEvent copyWithData({required DateTime start, required DateTime end}) {
-    return CalendarEvent(
-      start: start,
-      end: end,
-      title: title,
-      location: location,
-      subject: subject,
-    );
-  }
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return super == other &&
-        other is CalendarEvent &&
-        other.title == title &&
-        other.location == location &&
-        other.subject == subject;
-  }
 
   factory CalendarEvent.fromJson(Map<String, dynamic> json) {
     return CalendarEvent(
@@ -45,7 +24,4 @@ class CalendarEvent extends KalenderEvent {
       subject: (json['categories'] as List?)?.cast<String>().firstOrNull,
     );
   }
-
-  @override
-  int get hashCode => Object.hash(super.hashCode, title, location, subject);
 }

@@ -5,7 +5,6 @@ import 'package:itk_app/services/sites_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/utils/auth_actions.dart';
-import 'package:itk_app/widgets/field_label.dart';
 import 'package:itk_app/widgets/my_site_card.dart';
 import 'package:itk_app/widgets/section_card.dart';
 import 'package:material_ui/material_ui.dart';
@@ -90,9 +89,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 actionsPadding: const EdgeInsets.symmetric(
                     horizontal: AppSpacing.screenHorizontal),
                 actions: [
-                  SizedBox(
-                    width: 40,
-                    height: 40,
+                  SizedBox.square(
+                    dimension: 40,
                     child: IconButton(
                       onPressed: () => performLogout(context),
                       icon: const Icon(Icons.logout_rounded, size: 20),
@@ -260,7 +258,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   'Magától értetődő, nem?',
                                   style: TextStyle(fontSize: 12),
                                 ),
-                                trailing: Switch(
+                                trailing: Switch.adaptive(
                                   value: isAmoled,
                                   onChanged: (bool value) {},
                                 ),

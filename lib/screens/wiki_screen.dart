@@ -5,7 +5,6 @@ import 'package:itk_app/services/sites_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_theme_colors.dart';
-import 'package:itk_app/utils/auth_actions.dart';
 import 'package:itk_app/widgets/my_site_card.dart';
 import 'package:itk_app/widgets/user_site_card.dart';
 import 'package:material_ui/material_ui.dart';
@@ -237,8 +236,9 @@ class _WikiScreenState extends State<WikiScreen> {
             child: CustomScrollView(
               slivers: [
                 SliverAppBar(
+                  centerTitle: false,
                   title: Text(
-                    'ITK Wiki 3.0 Beta',
+                    'ITK Wiki 3 Beta',
                     style: Theme.of(context)
                         .textTheme
                         .headlineSmall
@@ -253,25 +253,6 @@ class _WikiScreenState extends State<WikiScreen> {
                   backgroundColor: Theme.of(context).colorScheme.surface,
                   actionsPadding: const EdgeInsets.symmetric(
                       horizontal: AppSpacing.screenHorizontal),
-                  actions: [
-                    SizedBox(
-                      width: 40,
-                      height: 40,
-                      child: IconButton(
-                        onPressed: () {},
-                        icon:
-                            const Icon(Icons.report_problem_rounded, size: 20),
-                        style: IconButton.styleFrom(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surfaceContainer,
-                          foregroundColor:
-                              Theme.of(context).colorScheme.onSurface,
-                          shape: const CircleBorder(),
-                          padding: EdgeInsets.zero,
-                        ),
-                      ),
-                    ),
-                  ],
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(preferredSizeHeight),
                     child: Padding(

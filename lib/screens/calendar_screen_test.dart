@@ -1,6 +1,8 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:itk_app/models/calendar_event.dart';
 import 'package:itk_app/services/calendar_service.dart';
+import 'package:itk_app/theme/app_fonts.dart';
+import 'package:itk_app/theme/app_spacing.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/material.dart' as legacy;
 
@@ -13,6 +15,7 @@ class CalendarScreenTest extends StatefulWidget {
 
 class _CalendarScreenTestState extends State<CalendarScreenTest> {
   final _dayViewKey = GlobalKey<DayViewState<CalendarEvent>>();
+  List<CalendarEventData<CalendarEvent>> _lastLoadedEventData = [];
 
   @override
   void initState() {
@@ -20,22 +23,33 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
     _loadEvents();
   }
 
-  Future<void> _loadEvents() async {
-    final events = await CalendarService.instance.getCalendar('perpa4');
-    final eventData = events
-        .map((e) => CalendarEventData<CalendarEvent>(
-              date: e.start,
-              startTime: e.start,
-              endTime: e.end,
-              title: e.title,
-              event: e,
-            ))
-        .toList();
+  Future<void> _loadEvents({bool forceReload = false}) async {
+    final events =
+        await CalendarService.instance.getCalendar(forceReload: forceReload);
+    final eventData = events.map((e) {
+      final isInstant = e.end.isAtSameMomentAs(e.start);
+      final displayEnd =
+          isInstant ? e.start.add(const Duration(minutes: 15)) : e.end;
+
+      return CalendarEventData<CalendarEvent>(
+        date: e.start,
+        startTime: e.start,
+        endTime: displayEnd,
+        title: e.title,
+        event: e,
+      );
+    }).toList();
 
     if (!mounted) return;
-    CalendarControllerProvider.of<CalendarEvent>(context)
-        .controller
-        .addAll(eventData);
+    final controller =
+        CalendarControllerProvider.of<CalendarEvent>(context).controller;
+
+    if (forceReload) {
+      controller.removeAll(_lastLoadedEventData);
+    }
+
+    controller.addAll(eventData);
+    _lastLoadedEventData = eventData;
   }
 
   String _monthName(int month) {
@@ -75,8 +89,8 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
 
     return Scaffold(
       backgroundColor: scheme.primaryContainer,
-      // ignore: deprecated_member_use
       body: SafeArea(
+        // ignore: deprecated_member_use
         child: MaterialUiCompatibilityBridge(
           child: legacy.Material(
             child: DayView<CalendarEvent>(
@@ -90,86 +104,97 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
               ),
               dayTitleBuilder: (date) {
                 final isToday = date.compareWithoutTime(DateTime.now());
-                return legacy.Container(
-                  padding: const legacy.EdgeInsets.fromLTRB(20, 16, 16, 20),
-                  decoration: legacy.BoxDecoration(
+                return Container(
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.screenHorizontal,
+                      1,
+                      AppSpacing.screenHorizontal,
+                      18),
+                  decoration: BoxDecoration(
                     color: scheme.primaryContainer,
                   ),
-                  child: legacy.Row(
+                  child: Row(
                     children: [
-                      legacy.Expanded(
-                        child: legacy.Column(
-                          crossAxisAlignment: legacy.CrossAxisAlignment.start,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            legacy.Text(
+                            Text(
                               _weekdayName(date.weekday) +
                                   (isToday ? ' · Ma' : ''),
-                              style: legacy.TextStyle(
+                              style: TextStyle(
                                 fontSize: 13,
-                                fontWeight: legacy.FontWeight.w600,
+                                fontWeight: FontWeight.w600,
                                 color: scheme.onPrimaryContainer
                                     .withValues(alpha: 0.7),
                                 letterSpacing: 0.5,
                               ),
                             ),
-                            const legacy.SizedBox(height: 2),
-                            legacy.Text(
+                            const SizedBox(height: 2),
+                            Text(
                               '${date.day}. ${_monthName(date.month)}',
-                              style: legacy.TextStyle(
-                                fontSize: 26,
-                                fontWeight: legacy.FontWeight.w800,
-                                color: scheme.onPrimaryContainer,
-                                height: 1.0,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.merge(topBarTitleStyle),
                             ),
                           ],
                         ),
                       ),
-                      legacy.Container(
-                        padding: const legacy.EdgeInsets.all(4),
-                        decoration: legacy.BoxDecoration(
-                          color: scheme.surface.withValues(alpha: 0.5),
-                          borderRadius: legacy.BorderRadius.circular(24),
-                        ),
-                        child: legacy.Row(
-                          mainAxisSize: legacy.MainAxisSize.min,
-                          children: [
-                            legacy.IconButton(
-                              onPressed: () =>
-                                  _dayViewKey.currentState?.previousPage(),
-                              icon: const legacy.Icon(
-                                  legacy.Icons.chevron_left_rounded),
-                              style: legacy.IconButton.styleFrom(
-                                foregroundColor: scheme.onPrimaryContainer,
-                                minimumSize: const legacy.Size(40, 40),
-                              ),
-                            ),
-                            legacy.IconButton(
-                              onPressed: () =>
-                                  _dayViewKey.currentState?.nextPage(),
-                              icon: const legacy.Icon(
-                                  legacy.Icons.chevron_right_rounded),
-                              style: legacy.IconButton.styleFrom(
-                                foregroundColor: scheme.onPrimaryContainer,
-                                minimumSize: const legacy.Size(40, 40),
-                              ),
-                            ),
-                          ],
+                      // SizedBox.square(
+                      //   dimension: 40,
+                      //   child: IconButton(
+                      //     onPressed: () {
+                      //       Navigator.push(
+                      //         context,
+                      //         MaterialPageRoute(
+                      //             builder: (context) =>
+                      //                 const CalendarScreenMonth()),
+                      //       );
+                      //     },
+                      //     icon: const Icon(Icons.calendar_view_month_rounded,
+                      //         size: 20),
+                      //     style: IconButton.styleFrom(
+                      //       backgroundColor:
+                      //           Theme.of(context).colorScheme.surfaceContainer,
+                      //       foregroundColor:
+                      //           Theme.of(context).colorScheme.onSurface,
+                      //       shape: const CircleBorder(),
+                      //       padding: EdgeInsets.zero,
+                      //     ),
+                      //   ),
+                      // ),
+                      SizedBox.square(
+                        dimension: 40,
+                        child: IconButton(
+                          onPressed: () => _loadEvents(forceReload: true),
+                          icon: const Icon(Icons.refresh_rounded, size: 20),
+                          style: IconButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surfaceContainer,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onSurface,
+                            shape: const CircleBorder(),
+                            padding: EdgeInsets.zero,
+                          ),
                         ),
                       ),
-                      const legacy.SizedBox(width: 8),
-                      legacy.IconButton.filled(
-                        onPressed: () => _dayViewKey.currentState
-                            ?.animateToDate(DateTime.now()),
-                        icon: const legacy.Icon(legacy.Icons.today_rounded,
-                            size: 20),
-                        style: legacy.IconButton.styleFrom(
-                          backgroundColor: scheme.primary,
-                          foregroundColor: scheme.onPrimary,
-                          minimumSize: const legacy.Size(44, 44),
-                          shape: const legacy.RoundedRectangleBorder(
-                            borderRadius: legacy.BorderRadius.all(
-                                legacy.Radius.circular(16)),
+                      const SizedBox(
+                        width: 8,
+                      ),
+                      SizedBox.square(
+                        dimension: 40,
+                        child: IconButton(
+                          onPressed: () => _dayViewKey.currentState
+                              ?.animateToDate(DateTime.now()),
+                          icon: const Icon(Icons.today_rounded, size: 20),
+                          style: IconButton.styleFrom(
+                            backgroundColor:
+                                Theme.of(context).colorScheme.surfaceContainer,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.onSurface,
+                            shape: const CircleBorder(),
+                            padding: EdgeInsets.zero,
                           ),
                         ),
                       ),
@@ -178,56 +203,97 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
                 );
               },
               timeLineBuilder: (date) {
-                return legacy.Padding(
-                  padding: const legacy.EdgeInsets.only(right: 8),
-                  child: legacy.Text(
+                return Padding(
+                  padding: const EdgeInsets.only(right: 4, left: 4),
+                  child: Text(
                     '${date.hour.toString().padLeft(2, '0')}:00',
-                    style: legacy.TextStyle(
-                      fontSize: 11,
+                    style: TextStyle(
+                      fontSize: 14,
                       color: scheme.onSurfaceVariant,
                     ),
                   ),
                 );
               },
               eventTileBuilder: (date, events, boundary, start, end) {
-                if (events.isEmpty) return const legacy.SizedBox.shrink();
+                if (events.isEmpty) return const SizedBox.shrink();
                 final myEvent = events.first.event as CalendarEvent;
 
-                return legacy.Container(
+                final effectiveHeight =
+                    boundary.height < 24 ? 24.0 : boundary.height;
+
+                return Container(
                   width: boundary.width,
-                  height: boundary.height,
-                  padding: const legacy.EdgeInsets.all(8),
-                  decoration: legacy.BoxDecoration(
+                  height: effectiveHeight,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
                     color: scheme.primaryContainer,
-                    borderRadius: legacy.BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(14),
                   ),
-                  child: legacy.Column(
-                    crossAxisAlignment: legacy.CrossAxisAlignment.start,
-                    mainAxisSize: legacy.MainAxisSize.min,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      legacy.Text(
+                      Text(
                         myEvent.title,
-                        style: legacy.TextStyle(
+                        style: TextStyle(
                           fontSize: 13,
-                          fontWeight: legacy.FontWeight.w700,
+                          fontWeight: FontWeight.w700,
                           color: scheme.onPrimaryContainer,
                         ),
                         maxLines: 1,
-                        overflow: legacy.TextOverflow.ellipsis,
+                        overflow: TextOverflow.ellipsis,
                       ),
                       if (myEvent.location != null &&
                           myEvent.location!.isNotEmpty)
-                        legacy.Text(
+                        Text(
                           myEvent.location!,
-                          style: legacy.TextStyle(
+                          style: TextStyle(
                             fontSize: 11,
                             color: scheme.onPrimaryContainer
                                 .withValues(alpha: 0.7),
                           ),
-                          overflow: legacy.TextOverflow.ellipsis,
+                          overflow: TextOverflow.ellipsis,
                         ),
                     ],
                   ),
+                );
+              },
+              fullDayEventBuilder: (events, date) {
+                if (events.isEmpty) return const SizedBox.shrink();
+
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: events.map((e) {
+                    final myEvent = e.event as CalendarEvent;
+                    return Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: scheme.secondaryContainer,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.event_rounded,
+                              size: 14, color: scheme.onSecondaryContainer),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              myEvent.title,
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: scheme.onSecondaryContainer,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }).toList(),
                 );
               },
             ),

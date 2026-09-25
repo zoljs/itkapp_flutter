@@ -1,4 +1,3 @@
-import 'package:itk_app/screens/calendar_screen.dart';
 import 'package:itk_app/screens/calendar_screen_test.dart';
 import 'package:itk_app/screens/home_screen_test.dart';
 import 'package:itk_app/screens/settings_screen.dart';
@@ -25,7 +24,7 @@ class _AppScaffoldState extends State<AppScaffold> {
   int _selectedIndex = 0;
   final List<Widget> navItems = [
     const HomeScreenTest(),
-    const CalendarScreen(),
+    const CalendarScreenTest(),
     const WikiScreen(),
     const SettingsScreen(),
   ];
@@ -52,7 +51,7 @@ class _AppScaffoldState extends State<AppScaffold> {
           const NavigationDestination(
             selectedIcon: Icon(Icons.calendar_month),
             icon: Icon(Icons.calendar_month_outlined),
-            label: 'Naptár',
+            label: 'Calendar',
           ),
           NavigationDestination(
             selectedIcon: ValueListenableBuilder(
