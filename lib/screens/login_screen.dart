@@ -1,8 +1,8 @@
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:itk_app/screens/app_scaffold.dart';
 import 'package:itk_app/theme/app_spacing.dart';
-import 'package:itk_app/widgets/adaptive_button.dart';
 import 'package:itk_app/widgets/field_label.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle, TextInput;
 import '../services/auth_service.dart';
 
@@ -203,7 +203,11 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 28),
               SizedBox(
                 height: 56,
-                child: AdaptiveButton(
+                child: AdaptiveButton.child(
+                  style: AdaptiveButtonStyle.filled,
+                  useSmoothRectangleBorder: false,
+                  minSize: const Size(double.infinity, 52),
+                  enabled: !_loading,
                   onPressed: _loading ? null : _submit,
                   child: _loading
                       ? const SizedBox(

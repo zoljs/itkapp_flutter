@@ -1,8 +1,8 @@
 import 'package:itk_app/theme/app_spacing.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
-class AdaptiveAppBar extends StatelessWidget {
-  const AdaptiveAppBar({
+class ShrinkingSliverAppBar extends StatelessWidget {
+  const ShrinkingSliverAppBar({
     super.key,
     this.preferredSizeChild,
     this.actions,

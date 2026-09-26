@@ -1,3 +1,7 @@
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart'
+    hide AdaptiveAppBar;
+import 'package:flutter/cupertino.dart';
+
 import 'package:itk_app/models/user.dart';
 import 'package:itk_app/screens/my_site_screen.dart';
 import 'package:itk_app/services/auth_service.dart';
@@ -5,15 +9,16 @@ import 'package:itk_app/services/sites_service.dart';
 import 'package:itk_app/services/theme_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
 import 'package:itk_app/theme/app_spacing.dart';
+import 'package:itk_app/theme/app_themes.dart';
 import 'package:itk_app/utils/auth_actions.dart';
-import 'package:itk_app/widgets/adaptive_appbar.dart';
-import 'package:itk_app/widgets/adaptive_icon_button.dart';
-import 'package:itk_app/widgets/adaptive_switch.dart';
+
 import 'package:itk_app/widgets/my_site_card.dart';
 import 'package:itk_app/widgets/section_card.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:itk_app/widgets/platform_appbar.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -65,12 +70,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
+    return AdaptiveScaffold(
       body: Stack(
         children: [
           CustomScrollView(
             slivers: [
-              AdaptiveAppBar(
+              ShrinkingSliverAppBar(
                 flexibleSpaceBarTitle: Text(
                   'Beállítások',
                   style: Theme.of(context)
@@ -79,10 +86,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ?.merge(topBarTitleStyle),
                 ),
                 actions: [
-                  AdaptiveIconButton(
-                    icon: Icons.logout_rounded,
+                  AdaptiveButton.icon(
+                    useNative: true,
+                    useSmoothRectangleBorder: false,
+                    minSize: const Size.square(44),
+                    style: AdaptiveButtonStyle.glass,
                     onPressed: () => performLogout(context),
-                  ),
+                    icon: isIOS
+                        ? CupertinoIcons.square_arrow_right
+                        : Icons.logout_rounded,
+                  )
                 ],
                 centeredWidget: CircleAvatar(
                   backgroundColor: Theme.of(context).colorScheme.surface,
@@ -210,6 +223,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 trailing: AdaptiveSwitch(
+                                  activeColor: itkPrimary,
                                   value: ThemeService.instance.oledMode.value,
                                   onChanged: (bool value) {
                                     ThemeService.instance.toggleOledMode(value);

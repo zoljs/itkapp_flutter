@@ -1,5 +1,5 @@
 import 'package:itk_app/theme/app_spacing.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
   return InputDecorationThemeData(

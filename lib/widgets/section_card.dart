@@ -1,5 +1,5 @@
 import 'package:itk_app/theme/app_spacing.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 class SectionCard extends StatelessWidget {
   const SectionCard({super.key, required this.title, required this.child});

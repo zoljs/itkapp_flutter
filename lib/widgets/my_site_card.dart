@@ -2,7 +2,7 @@ import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_themes.dart';
 import 'package:itk_app/widgets/user_site_card.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 class MySiteCard extends StatelessWidget {
   const MySiteCard({super.key, required this.mySite, required this.openMySite});

@@ -1,6 +1,6 @@
 // lib/widgets/field_label.dart
 import 'package:itk_app/theme/app_spacing.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 
 class FieldLabel extends StatelessWidget {
   final String text;

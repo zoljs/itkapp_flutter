@@ -1,5 +1,5 @@
 import 'package:itk_app/screens/app_scaffold.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import 'login_screen.dart';
 

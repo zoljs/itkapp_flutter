@@ -1,14 +1,23 @@
-import 'package:dio/dio.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
+import 'package:dio/dio.dart';
 import 'package:itk_app/models/user.dart';
 import 'package:itk_app/services/auth_service.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_themes.dart';
-import 'package:itk_app/widgets/adaptive_button.dart';
-import 'package:itk_app/widgets/adaptive_icon_button.dart';
 import 'package:itk_app/widgets/section_card.dart';
-import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart'
+    show
+        AdaptiveAlertDialog,
+        AdaptiveAppBar,
+        AdaptiveButton,
+        AdaptiveButtonStyle,
+        AdaptiveScaffold,
+        AlertAction,
+        AlertActionStyle,
+        AdaptiveAppBarAction,
+        SFSymbol;
+
 import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/screens/my_site_tags_screen.dart';
 import 'package:itk_app/services/sites_service.dart';
@@ -31,7 +40,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
   final String _category = 'current';
 
   bool _loading = true;
-  bool _saving = false;
   bool _hasExistingSite = false;
 
   static const List<Color> _colors = [
@@ -41,6 +49,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
     Color(0xFFFF9800),
     Color(0xFFFFCA28),
     Color(0xFF66BB6A),
+    Color.fromARGB(255, 202, 225, 203),
   ];
   int _selectedIndex = 0;
 
@@ -82,8 +91,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => _saving = true);
-
     try {
       await SitesService.instance.saveMySite(
         UserSite(
@@ -96,7 +103,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
 
       if (!mounted) return;
       setState(() {
-        _saving = false;
         _hasExistingSite = true;
       });
 
@@ -105,7 +111,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
       );
     } on DioException catch (e) {
       if (!mounted) return;
-      setState(() => _saving = false);
 
       final data = e.response?.data;
       final message = (data is Map && data['message'] != null)
@@ -125,113 +130,30 @@ class _MySiteScreenState extends State<MySiteScreen> {
     required String confirmLabel,
     String cancelLabel = 'Mégse',
     bool isDestructive = false,
-  }) {
-    final isIOS = Theme.of(context).platform == TargetPlatform.android;
+  }) async {
+    bool? result;
 
-    if (isIOS) {
-      return showCupertinoDialog<bool>(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 270),
-            child: GlassCard(
-              useOwnLayer: true,
-              quality: GlassQuality.standard,
-              settings: const LiquidGlassSettings(
-                glassColor: Color.fromARGB(200, 26, 26, 26),
-                refractiveIndex: 0.5,
-                saturation: 1.5,
-              ),
-              padding: EdgeInsets.zero,
-              shape: const LiquidRoundedSuperellipse(borderRadius: 35),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // Title
-                        Padding(
-                          padding: const EdgeInsets.all(6.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                title,
-                                textAlign: TextAlign.start,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 17,
-                                  color: CupertinoColors.white,
-                                ),
-                              ),
-                              const SizedBox(height: 16),
-                              // Message
-                              Text(
-                                message,
-                                textAlign: TextAlign.left,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: CupertinoColors.white
-                                      .withValues(alpha: 0.7),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        CupertinoButton.filled(
-                          onPressed: () => Navigator.pop(context, true),
-                          borderRadius: BorderRadius.circular(25),
-                          minimumSize: const Size(double.infinity, 50),
-                          color: CupertinoColors.activeBlue,
-                          foregroundColor: CupertinoColors.white,
-                          child: Text(confirmLabel),
-                        ),
-                        const SizedBox(height: 16),
-                        CupertinoButton.filled(
-                          onPressed: () => Navigator.pop(context, false),
-                          borderRadius: BorderRadius.circular(25),
-                          minimumSize: const Size(double.infinity, 50),
-                          color: CupertinoColors.systemGrey5,
-                          foregroundColor: CupertinoColors.destructiveRed,
-                          child: Text(cancelLabel),
-                        )
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
-    }
-
-    final scheme = Theme.of(context).colorScheme;
-    return showDialog<bool>(
+    await AdaptiveAlertDialog.show(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(cancelLabel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: isDestructive
-                ? FilledButton.styleFrom(backgroundColor: scheme.error)
-                : null,
-            child: Text(confirmLabel),
-          ),
-        ],
-      ),
+      title: title,
+      message: message,
+      actions: [
+        AlertAction(
+          title: cancelLabel,
+          style: AlertActionStyle.cancel,
+          onPressed: () => result = false,
+        ),
+        AlertAction(
+          title: confirmLabel,
+          style: isDestructive
+              ? AlertActionStyle.destructive
+              : AlertActionStyle.primary,
+          onPressed: () => result = true,
+        ),
+      ],
     );
+
+    return result;
   }
 
   Future<void> _delete() async {
@@ -270,14 +192,16 @@ class _MySiteScreenState extends State<MySiteScreen> {
   }
 
   Widget _buildForm(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
     final scheme = Theme.of(context).colorScheme;
     final platform = Theme.of(context).platform;
 
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xxxl),
+        padding: EdgeInsets.fromLTRB(AppSpacing.lg, isIOS ? 120 : AppSpacing.lg,
+            AppSpacing.lg, AppSpacing.xxxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -412,45 +336,9 @@ class _MySiteScreenState extends State<MySiteScreen> {
                 ],
               ),
             ),
-            const SizedBox(height: 28),
-            AdaptiveButton(
-              onPressed: _saving ? null : _submit,
-              child: _saving
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator.adaptive(),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        if (platform != TargetPlatform.iOS) ...[
-                          Icon(_hasExistingSite
-                              ? Icons.save_rounded
-                              : Icons.add_circle_outline_rounded),
-                          const SizedBox(width: 8),
-                        ],
-                        Text(
-                            _hasExistingSite ? 'Mentés' : 'Profil létrehozása'),
-                      ],
-                    ),
-            ),
             if (_hasExistingSite) ...[
               const SizedBox(height: 12),
-              AdaptiveButton(
-                variant: AdaptiveButtonVariant.destructive,
-                onPressed: _delete,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (platform != TargetPlatform.iOS) ...[
-                      const Icon(Icons.delete_outline_rounded),
-                      const SizedBox(width: 8),
-                    ],
-                    const Text('Oldal törlése'),
-                  ],
-                ),
-              ),
+              buildDeleteButton(context, _delete),
             ],
           ],
         ),
@@ -460,29 +348,79 @@ class _MySiteScreenState extends State<MySiteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: scheme.surface,
-        elevation: 0,
-        foregroundColor: scheme.onSurface,
-        leading: Navigator.canPop(context)
-            ? Padding(
-                padding: const EdgeInsets.fromLTRB(AppSpacing.screenHorizontal,
-                    AppSpacing.xs, AppSpacing.xs, AppSpacing.xs),
-                child: AdaptiveIconButton(
-                  icon: Icons.arrow_back,
-                  onPressed: () => Navigator.pop(context),
+    return AdaptiveScaffold(
+      appBar: AdaptiveAppBar(
+        leading: isIOS
+            ? SizedBox(
+                height: 44,
+                width: 44,
+                child: AdaptiveButton.sfSymbol(
+                  onPressed: () => Navigator.of(context).pop(),
+                  sfSymbol: const SFSymbol('chevron.left', size: 20),
+                  useSmoothRectangleBorder: false,
                 ),
               )
             : null,
-        title: Text(_hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása'),
+        title: _hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása',
+        actions: [
+          AdaptiveAppBarAction(
+            onPressed: () {
+              _submit;
+              Navigator.pop(context);
+            },
+            iosSymbol: 'checkmark',
+            icon: Icons.save,
+          ),
+        ],
       ),
-      backgroundColor: scheme.surface,
       body: _loading
           ? const Center(child: RefreshProgressIndicator())
           : _buildForm(context),
     );
   }
+}
+
+Widget buildDeleteButton(BuildContext context, VoidCallback onPressed) {
+  final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+  final scheme = Theme.of(context).colorScheme;
+
+  if (isIOS) {
+    return AdaptiveButton.child(
+      style: AdaptiveButtonStyle.gray,
+      useSmoothRectangleBorder: false,
+      borderRadius: BorderRadius.circular(26),
+      minSize: const Size(double.infinity, 52),
+      onPressed: onPressed,
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Oldal törlése',
+            style: TextStyle(
+              color: CupertinoColors.destructiveRed,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  return AdaptiveButton.child(
+    style: AdaptiveButtonStyle
+        .filled, // az OutlinedButton VALÓBAN tiszteletben tartja a color-t
+    color: scheme.errorContainer,
+    borderRadius: BorderRadius.circular(26),
+    minSize: const Size(double.infinity, 52),
+    onPressed: onPressed,
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(Icons.delete_outline_rounded, color: scheme.error),
+        const SizedBox(width: 8),
+        Text('Oldal törlése', style: TextStyle(color: scheme.error)),
+      ],
+    ),
+  );
 }

@@ -1,6 +1,6 @@
 import 'package:itk_app/services/api_client.dart';
 import 'package:itk_app/theme/app_spacing.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:flutter/material.dart';
 import 'package:itk_app/models/subject.dart';
 
 class MySiteTagsScreen extends StatefulWidget {
