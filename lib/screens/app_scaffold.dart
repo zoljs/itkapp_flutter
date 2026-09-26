@@ -7,7 +7,7 @@ import 'package:itk_app/theme/glass_settings.dart';
 import 'package:material_ui/material_ui.dart';
 
 import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
-import 'package:flutter/cupertino.dart' show CupertinoIcons;
+import 'package:cupertino_ui/cupertino_ui.dart' show CupertinoIcons;
 
 class AppScaffold extends StatefulWidget {
   const AppScaffold({super.key});
@@ -26,6 +26,18 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 
   int _selectedIndex = 0;
+  final _searchBarController = SearchableBottomBarController();
+  final _searchController = TextEditingController();
+  final _searchFocusNode = FocusNode();
+
+  @override
+  void dispose() {
+    _searchBarController.dispose();
+    _searchController.dispose();
+    _searchFocusNode.dispose();
+    super.dispose();
+  }
+
   final List<Widget> navItems = [
     const HomeScreenTest(),
     const CalendarScreenTest(),
@@ -39,7 +51,7 @@ class _AppScaffoldState extends State<AppScaffold> {
 
     if (!isIOS) {
       return Scaffold(
-        extendBody: true,
+        extendBody: false,
         body: navItems[_selectedIndex],
         bottomNavigationBar: _buildNavigationBar(),
       );
@@ -54,11 +66,13 @@ class _AppScaffoldState extends State<AppScaffold> {
   }
 
   GlassTabBar _buildCupertinoTabBar(ColorScheme scheme) {
-    return GlassTabBar.minimizable(
+    return GlassTabBar.searchable(
       selectedIndex: _selectedIndex,
-      onTabSelected: (i) => setState(() => _selectedIndex = i),
-      selectedIconColor: scheme.primary, // a saját seed-color-od accent-je
-      indicatorColor: scheme.primary.withValues(alpha: 0.20),
+      onTabSelected: (i) => setState(() {
+        _selectedIndex = i;
+        if (i != 3) _searchBarController.closeSearch();
+      }),
+      selectedIconColor: scheme.primary,
       tabs: const [
         GlassTab(icon: Icon(CupertinoIcons.house), label: 'Főoldal'),
         GlassTab(icon: Icon(CupertinoIcons.calendar), label: 'Naptár'),
@@ -67,8 +81,55 @@ class _AppScaffoldState extends State<AppScaffold> {
       ],
       settings: kAppGlassSettings,
       quality: kAppGlassQuality,
+      controller: _searchBarController,
+      isSearchActive: _searchBarController.isSearchOpen,
+      searchConfig: GlassSearchBarConfig(
+        focusNode: _searchFocusNode,
+        controller: _searchController,
+        showPill: _selectedIndex == 2,
+        hintText: 'Oldal, tantárgy neve...',
+        autoFocusOnExpand: true,
+        onChanged: (query) => SitesService.instance.searchQuery.value = query,
+        onSearchToggle: (active) {
+          setState(() {
+            if (active) {
+              _searchBarController.openSearch();
+            } else {
+              _searchBarController.closeSearch();
+            }
+          });
+        },
+      ),
     );
   }
+
+  // GlassTabBar _buildCupertinoTabBar(ColorScheme scheme) {
+  //   return GlassTabBar.searchable(
+  //     selectedIndex: _selectedIndex == 3 ? 0 : _selectedIndex,
+  //     isSearchActive: _selectedIndex == 3,
+  //     onTabSelected: (i) => setState(() => _selectedIndex = i),
+  //     selectedIconColor: scheme.primary, // a saját seed-color-od accent-je
+  //     tabs: const [
+  //       GlassTab(icon: Icon(CupertinoIcons.house), label: 'Főoldal'),
+  //       GlassTab(icon: Icon(CupertinoIcons.calendar), label: 'Naptár'),
+  //       GlassTab(icon: Icon(CupertinoIcons.gear), label: 'Beállítások'),
+  //       //GlassTab(icon: Icon(CupertinoIcons.group), label: 'Wiki'),
+  //     ],
+  //     settings: kAppGlassSettings,
+  //     quality: kAppGlassQuality,
+
+  //     searchConfig: GlassSearchBarConfig(
+  //       showPill: true,
+  //       hintText: 'Oldal, tantárgy neve...',
+  //       showsCancelButton: true,
+  //       searchIcon: const Icon(CupertinoIcons.group),
+  //       autoFocusOnExpand: false,
+  //       onSearchToggle: (active) {
+  //         setState(() => _selectedIndex = active ? 3 : 0);
+  //       },
+  //     ),
+  //   );
+  // }
 
   NavigationBar _buildNavigationBar() {
     return NavigationBar(

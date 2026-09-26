@@ -1,6 +1,6 @@
 import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/theme/app_spacing.dart';
-import 'package:itk_app/theme/app_theme_colors.dart';
+import 'package:itk_app/theme/app_themes.dart';
 import 'package:itk_app/widgets/user_site_card.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -13,7 +13,6 @@ class MySiteCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final schemeExtension = Theme.of(context).extension<AppThemeColors>()!;
 
     // No own site yet
     if (mySite == null) {
@@ -49,7 +48,7 @@ class MySiteCard extends StatelessWidget {
 
     // Own site
     return UserSiteCard(
-      color: schemeExtension.itkPrimary,
+      color: itkPrimary,
       height: 80,
       onTap: openMySite,
       child: Row(
@@ -59,46 +58,26 @@ class MySiteCard extends StatelessWidget {
             backgroundColor: Colors.white.withValues(alpha: 0.25),
             child: Text(
               mySite!.name.isNotEmpty ? mySite!.name[0].toUpperCase() : '?',
-              style: TextStyle(
+              style: const TextStyle(
                 fontWeight: FontWeight.w800,
-                color: Theme.of(context).extension<AppThemeColors>()!.textDark,
+                color: Colors.black87,
               ),
             ),
           ),
           const SizedBox(width: 14),
-          Expanded(
+          const Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.xs, vertical: AppSpacing.xxs),
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.35),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    'Saját oldalam',
-                    style: TextStyle(
-                      fontSize: 8,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: 0.4,
-                      color: Theme.of(context)
-                          .extension<AppThemeColors>()!
-                          .textDark,
-                    ),
-                  ),
-                ),
                 Text(
-                  mySite!.name,
+                  "Saját oldalam",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 17,
                     fontWeight: FontWeight.bold,
-                    color:
-                        Theme.of(context).extension<AppThemeColors>()!.textDark,
+                    color: Colors.black87,
                   ),
                 ),
               ],
@@ -109,8 +88,7 @@ class MySiteCard extends StatelessWidget {
             onPressed: openMySite,
             iconSize: 22,
             padding: EdgeInsets.zero,
-            icon: Icon(Icons.edit_rounded,
-                color: Theme.of(context).extension<AppThemeColors>()!.textDark),
+            icon: const Icon(Icons.edit_rounded, color: Colors.black87),
           ),
         ],
       ),

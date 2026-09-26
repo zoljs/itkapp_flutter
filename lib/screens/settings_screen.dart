@@ -6,7 +6,9 @@ import 'package:itk_app/services/theme_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/utils/auth_actions.dart';
+import 'package:itk_app/widgets/adaptive_appbar.dart';
 import 'package:itk_app/widgets/adaptive_icon_button.dart';
+import 'package:itk_app/widgets/adaptive_switch.dart';
 import 'package:itk_app/widgets/my_site_card.dart';
 import 'package:itk_app/widgets/section_card.dart';
 import 'package:material_ui/material_ui.dart';
@@ -63,78 +65,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Full size is 320: 260 + 60 preferredSize height
-    const collapsedHeight = 60.0;
-    const expandedHeight = 260.0;
-    const preferredSizeHeight = 60.0;
-    const fullHeight = expandedHeight + preferredSizeHeight;
-    const halfHeight = fullHeight / 2;
-    const separatorOffset = 20.0;
-    const cardAlignY = (separatorOffset + 0) / 100.0;
-    const separatorHeight = halfHeight + separatorOffset;
-
-    bool isAmoled = false;
-
     return Scaffold(
       body: Stack(
         children: [
           CustomScrollView(
             slivers: [
-              SliverAppBar(
-                expandedHeight: expandedHeight,
-                collapsedHeight: collapsedHeight,
-                floating: true,
-                pinned: true,
-                scrolledUnderElevation: 0,
-                // backgroundColor: Colors.amber, //test
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                actionsPadding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.screenHorizontal),
+              AdaptiveAppBar(
+                flexibleSpaceBarTitle: Text(
+                  'Beállítások',
+                  style: Theme.of(context)
+                      .textTheme
+                      .headlineSmall
+                      ?.merge(topBarTitleStyle),
+                ),
                 actions: [
                   AdaptiveIconButton(
                     icon: Icons.logout_rounded,
                     onPressed: () => performLogout(context),
                   ),
                 ],
-                flexibleSpace: FlexibleSpaceBar(
-                  collapseMode: CollapseMode.pin,
-                  title: Text(
-                    'Beállítások',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.merge(topBarTitleStyle),
-                  ),
-                  centerTitle: true,
-                  background: Stack(
-                    children: [
-                      Align(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                          height: separatorHeight,
-                          color: Theme.of(context).colorScheme.primaryContainer,
-                        ),
-                      ),
-                      Align(
-                        // Push by 20px
-                        alignment: const Alignment(0, cardAlignY),
-                        child: CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.surface,
-                          radius: 55,
-                          child: CircleAvatar(
-                            backgroundColor:
-                                Theme.of(context).colorScheme.primary,
-                            radius: 45,
-                            child: Text(
-                              '${_currentUser?.login[0].toUpperCase()}',
-                              style: const TextStyle(
-                                  fontSize: 28, fontWeight: FontWeight.w900),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                centeredWidget: CircleAvatar(
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  radius: 55,
+                  child: CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    radius: 45,
+                    child: Text(
+                      '${_currentUser?.login[0].toUpperCase()}',
+                      style: const TextStyle(
+                          fontSize: 28, fontWeight: FontWeight.w900),
+                    ),
                   ),
                 ),
               ),
@@ -240,7 +200,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     color:
                                         Theme.of(context).colorScheme.primary),
                                 title: const Text(
-                                  'AMOLED mód',
+                                  'OLED mód',
                                   style: TextStyle(
                                       fontWeight: FontWeight.w600,
                                       fontSize: 14),
@@ -249,11 +209,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   'Magától értetődő, nem?',
                                   style: TextStyle(fontSize: 12),
                                 ),
-                                trailing: Switch(
-                                  value: ThemeService.instance.amoledMode.value,
+                                trailing: AdaptiveSwitch(
+                                  value: ThemeService.instance.oledMode.value,
                                   onChanged: (bool value) {
-                                    ThemeService.instance
-                                        .toggleAmoledMode(value);
+                                    ThemeService.instance.toggleOledMode(value);
                                   },
                                 ),
                               ),

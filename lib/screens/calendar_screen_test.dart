@@ -150,30 +150,6 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
                           ],
                         ),
                       ),
-                      // SizedBox.square(
-                      //   dimension: 40,
-                      //   child: IconButton(
-                      //     onPressed: () {
-                      //       Navigator.push(
-                      //         context,
-                      //         MaterialPageRoute(
-                      //             builder: (context) =>
-                      //                 const CalendarScreenMonth()),
-                      //       );
-                      //     },
-                      //     icon: const Icon(Icons.calendar_view_month_rounded,
-                      //         size: 20),
-                      //     style: IconButton.styleFrom(
-                      //       backgroundColor:
-                      //           Theme.of(context).colorScheme.surfaceContainer,
-                      //       foregroundColor:
-                      //           Theme.of(context).colorScheme.onSurface,
-                      //       shape: const CircleBorder(),
-                      //       padding: EdgeInsets.zero,
-                      //     ),
-                      //   ),
-                      // ),
-
                       AdaptiveIconButton(
                         onPressed: () => _loadEvents(forceReload: true),
                         icon: Icons.refresh_rounded,

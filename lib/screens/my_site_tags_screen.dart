@@ -91,7 +91,7 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
           children: [
             Expanded(
               child: _loading
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator.adaptive())
                   : ListView.separated(
                       itemCount: _filteredSubjects.length,
                       itemBuilder: (context, index) {

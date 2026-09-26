@@ -1,8 +1,13 @@
 import 'package:dio/dio.dart';
+import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:itk_app/models/user.dart';
 import 'package:itk_app/services/auth_service.dart';
 import 'package:itk_app/theme/app_spacing.dart';
+import 'package:itk_app/theme/app_themes.dart';
+import 'package:itk_app/widgets/adaptive_button.dart';
+import 'package:itk_app/widgets/adaptive_icon_button.dart';
 import 'package:itk_app/widgets/section_card.dart';
+import 'package:liquid_glass_widgets/liquid_glass_widgets.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/screens/my_site_tags_screen.dart';
@@ -30,7 +35,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
   bool _hasExistingSite = false;
 
   static const List<Color> _colors = [
-    Color(0xFF00A6E7),
+    itkPrimary,
     Color(0xFF7E57C2),
     Color(0xFFEF5350),
     Color(0xFFFF9800),
@@ -113,28 +118,129 @@ class _MySiteScreenState extends State<MySiteScreen> {
     }
   }
 
-  Future<void> _delete() async {
-    final confirmed = await showDialog<bool>(
+  Future<bool?> showAdaptiveConfirmDialog(
+    BuildContext context, {
+    required String title,
+    required String message,
+    required String confirmLabel,
+    String cancelLabel = 'Mégse',
+    bool isDestructive = false,
+  }) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.android;
+
+    if (isIOS) {
+      return showCupertinoDialog<bool>(
+        context: context,
+        barrierDismissible: false,
+        builder: (context) => Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 270),
+            child: GlassCard(
+              useOwnLayer: true,
+              quality: GlassQuality.standard,
+              settings: const LiquidGlassSettings(
+                glassColor: Color.fromARGB(200, 26, 26, 26),
+                refractiveIndex: 0.5,
+                saturation: 1.5,
+              ),
+              padding: EdgeInsets.zero,
+              shape: const LiquidRoundedSuperellipse(borderRadius: 35),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        // Title
+                        Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                title,
+                                textAlign: TextAlign.start,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 17,
+                                  color: CupertinoColors.white,
+                                ),
+                              ),
+                              const SizedBox(height: 16),
+                              // Message
+                              Text(
+                                message,
+                                textAlign: TextAlign.left,
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: CupertinoColors.white
+                                      .withValues(alpha: 0.7),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        CupertinoButton.filled(
+                          onPressed: () => Navigator.pop(context, true),
+                          borderRadius: BorderRadius.circular(25),
+                          minimumSize: const Size(double.infinity, 50),
+                          color: CupertinoColors.activeBlue,
+                          foregroundColor: CupertinoColors.white,
+                          child: Text(confirmLabel),
+                        ),
+                        const SizedBox(height: 16),
+                        CupertinoButton.filled(
+                          onPressed: () => Navigator.pop(context, false),
+                          borderRadius: BorderRadius.circular(25),
+                          minimumSize: const Size(double.infinity, 50),
+                          color: CupertinoColors.systemGrey5,
+                          foregroundColor: CupertinoColors.destructiveRed,
+                          child: Text(cancelLabel),
+                        )
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final scheme = Theme.of(context).colorScheme;
+    return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Profil törlése'),
-        content: const Text(
-          'Biztosan törlöd a saját oldaladat? Ez nem vonható vissza.',
-        ),
+        title: Text(title),
+        content: Text(message),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Mégse'),
+            child: Text(cancelLabel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('Törlés'),
+            style: isDestructive
+                ? FilledButton.styleFrom(backgroundColor: scheme.error)
+                : null,
+            child: Text(confirmLabel),
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _delete() async {
+    final confirmed = await showAdaptiveConfirmDialog(
+      context,
+      title: 'Profil törlése',
+      message: 'Biztosan törlöd a saját oldaladat? Ez nem vonható vissza.',
+      confirmLabel: 'Törlés',
+      isDestructive: true,
     );
     if (confirmed != true) return;
 
@@ -164,6 +270,9 @@ class _MySiteScreenState extends State<MySiteScreen> {
   }
 
   Widget _buildForm(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final platform = Theme.of(context).platform;
+
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
@@ -180,8 +289,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
                   const FieldLabel('Oldal név'),
                   TextFormField(
                     controller: _nameController,
-                    style: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface),
+                    style: TextStyle(color: scheme.onSurface),
                     textInputAction: TextInputAction.next,
                     validator: (v) => (v == null || v.trim().isEmpty)
                         ? 'Kötelező mező'
@@ -192,13 +300,13 @@ class _MySiteScreenState extends State<MySiteScreen> {
                   Container(
                     padding: const EdgeInsets.all(AppSpacing.lg),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                      color: scheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Row(
                       children: [
                         Icon(Icons.warning_amber_rounded,
-                            color: Theme.of(context).colorScheme.primary),
+                            color: scheme.primary),
                         const SizedBox(width: 12),
                         Expanded(
                           child: Column(
@@ -209,8 +317,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.w700,
                                   fontSize: 14,
-                                  color:
-                                      Theme.of(context).colorScheme.onSurface,
+                                  color: scheme.onSurface,
                                 ),
                               ),
                               const SizedBox(height: 4),
@@ -306,40 +413,42 @@ class _MySiteScreenState extends State<MySiteScreen> {
               ),
             ),
             const SizedBox(height: 28),
-            SizedBox(
-              height: 52,
-              child: FilledButton.icon(
-                onPressed: _saving ? null : _submit,
-                icon: _saving
-                    ? null
-                    : Icon(_hasExistingSite
-                        ? Icons.save_rounded
-                        : Icons.add_circle_outline_rounded),
-                label: _saving
-                    ? SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2.2,
-                          color: Theme.of(context).colorScheme.surface,
-                        ),
-                      )
-                    : Text(_hasExistingSite ? 'Mentés' : 'Profil létrehozása'),
-              ),
+            AdaptiveButton(
+              onPressed: _saving ? null : _submit,
+              child: _saving
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator.adaptive(),
+                    )
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (platform != TargetPlatform.iOS) ...[
+                          Icon(_hasExistingSite
+                              ? Icons.save_rounded
+                              : Icons.add_circle_outline_rounded),
+                          const SizedBox(width: 8),
+                        ],
+                        Text(
+                            _hasExistingSite ? 'Mentés' : 'Profil létrehozása'),
+                      ],
+                    ),
             ),
             if (_hasExistingSite) ...[
               const SizedBox(height: 12),
-              SizedBox(
-                height: 52,
-                child: OutlinedButton.icon(
-                  onPressed: _delete,
-                  icon: const Icon(Icons.delete_outline_rounded),
-                  label: const Text('Oldal törlése'),
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Theme.of(context).colorScheme.error,
-                    side:
-                        BorderSide(color: Theme.of(context).colorScheme.error),
-                  ),
+              AdaptiveButton(
+                variant: AdaptiveButtonVariant.destructive,
+                onPressed: _delete,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    if (platform != TargetPlatform.iOS) ...[
+                      const Icon(Icons.delete_outline_rounded),
+                      const SizedBox(width: 8),
+                    ],
+                    const Text('Oldal törlése'),
+                  ],
                 ),
               ),
             ],
@@ -351,14 +460,26 @@ class _MySiteScreenState extends State<MySiteScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: scheme.surface,
         elevation: 0,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
+        foregroundColor: scheme.onSurface,
+        leading: Navigator.canPop(context)
+            ? Padding(
+                padding: const EdgeInsets.fromLTRB(AppSpacing.screenHorizontal,
+                    AppSpacing.xs, AppSpacing.xs, AppSpacing.xs),
+                child: AdaptiveIconButton(
+                  icon: Icons.arrow_back,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              )
+            : null,
         title: Text(_hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása'),
       ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: scheme.surface,
       body: _loading
           ? const Center(child: RefreshProgressIndicator())
           : _buildForm(context),

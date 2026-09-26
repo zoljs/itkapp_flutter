@@ -1,21 +1,22 @@
-import 'dart:ffi';
-
 import 'package:calendar_view/calendar_view.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:itk_app/models/calendar_event.dart';
 import 'package:itk_app/services/theme_service.dart';
-import 'package:itk_app/theme/app_fonts.dart';
-import 'package:itk_app/theme/app_theme_colors.dart';
 import 'package:itk_app/theme/app_themes.dart';
 import 'package:liquid_glass_widgets/liquid_glass_setup.dart';
-import 'package:material_ui/material_ui.dart';
+import 'package:material_ui/material_ui.dart' hide GlobalMaterialLocalizations;
 import 'package:flutter/services.dart';
 import 'services/api_client.dart';
 import 'screens/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter/foundation.dart';
+import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //debugDefaultTargetPlatformOverride = TargetPlatform.android;
   await ApiClient.instance.init();
+
   await LiquidGlassWidgets.initialize();
   await ThemeService.instance.loadFromDisk();
   //runApp(const ITKApp());
@@ -35,20 +36,10 @@ final navigatorKey = GlobalKey<NavigatorState>();
 
 const _seedColor = Color.fromARGB(255, 142, 136, 230);
 //const _seedColor = Color(0xFF00A6E7);
-
 ThemeData _buildTheme(ColorScheme scheme) {
-  final TextTheme base =
-      ThemeData(colorScheme: scheme, useMaterial3: true).textTheme;
-
-  final isDark = scheme.brightness == Brightness.dark;
-
   return ThemeData(
     colorScheme: scheme,
     useMaterial3: true,
-    extensions: [
-      isDark ? AppThemeColors.dark : AppThemeColors.light,
-    ],
-    textTheme: buildITKAppTextTheme(base),
     inputDecorationTheme: buildITKAppInputDecorationTheme(scheme),
     snackBarTheme: const SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
@@ -76,9 +67,9 @@ class ITKApp extends StatelessWidget {
     );
 
     return ValueListenableBuilder<bool>(
-      valueListenable: ThemeService.instance.amoledMode,
-      builder: (context, isAmoled, child) {
-        final darkScheme = isAmoled
+      valueListenable: ThemeService.instance.oledMode,
+      builder: (context, isOled, child) {
+        final darkScheme = isOled
             ? baseDarkScheme.copyWith(
                 surface: Colors.black,
                 surfaceContainerLowest: Colors.black,
@@ -92,6 +83,12 @@ class ITKApp extends StatelessWidget {
         return CalendarControllerProvider(
           controller: EventController<CalendarEvent>(),
           child: MaterialApp(
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            //builder: (context, child) => AdaptiveToolbarHost(child: child!),
             builder: (context, child) => Material(
               type: MaterialType.transparency,
               child: child!,

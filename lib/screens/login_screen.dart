@@ -1,6 +1,6 @@
 import 'package:itk_app/screens/app_scaffold.dart';
 import 'package:itk_app/theme/app_spacing.dart';
-import 'package:itk_app/theme/app_theme_colors.dart';
+import 'package:itk_app/widgets/adaptive_button.dart';
 import 'package:itk_app/widgets/field_label.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter/services.dart' show SystemUiOverlayStyle, TextInput;
@@ -167,10 +167,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     TextFormField(
                       controller: _usernameController,
                       decoration: const InputDecoration(hintText: 'pl. naszy'),
-                      style: TextStyle(
-                          color: Theme.of(context)
-                              .extension<AppThemeColors>()!
-                              .textDark),
+                      style: const TextStyle(color: Colors.black87),
                       textInputAction: TextInputAction.next,
                       autofillHints: const [AutofillHints.username],
                     ),
@@ -185,9 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             _obscurePassword
                                 ? Icons.visibility_off_outlined
                                 : Icons.visibility_outlined,
-                            color: Theme.of(context)
-                                .extension<AppThemeColors>()!
-                                .textDark,
+                            color: Colors.black87,
                             size: 20,
                           ),
                           onPressed: () {
@@ -196,10 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           },
                         ),
                       ),
-                      style: TextStyle(
-                          color: Theme.of(context)
-                              .extension<AppThemeColors>()!
-                              .textDark),
+                      style: const TextStyle(color: Colors.black87),
                       obscureText: _obscurePassword,
                       textInputAction: TextInputAction.done,
                       autofillHints: const [AutofillHints.password],
@@ -211,22 +203,13 @@ class _LoginScreenState extends State<LoginScreen> {
               const SizedBox(height: 28),
               SizedBox(
                 height: 56,
-                child: FilledButton(
+                child: AdaptiveButton(
                   onPressed: _loading ? null : _submit,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    foregroundColor: Colors.white,
-                    elevation: 0,
-                    shape: const StadiumBorder(),
-                  ),
                   child: _loading
                       ? const SizedBox(
                           height: 22,
                           width: 22,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 4,
-                            color: Colors.white,
-                          ),
+                          child: CircularProgressIndicator.adaptive(),
                         )
                       : const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -236,8 +219,6 @@ class _LoginScreenState extends State<LoginScreen> {
                               style: TextStyle(
                                   fontSize: 16, fontWeight: FontWeight.w700),
                             ),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward_rounded, size: 20),
                           ],
                         ),
                 ),

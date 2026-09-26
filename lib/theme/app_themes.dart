@@ -30,3 +30,5 @@ InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
     ),
   );
 }
+
+const itkPrimary = Color(0xFF00A6E7);
