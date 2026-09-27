@@ -24,18 +24,23 @@ class ShrinkingSliverAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    //final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    const isIOS = false;
 
     const collapsedHeight = 60.0;
-    final idk = isIOS && hasSearchBar ? 0.0 : 70.0;
+    final idk = isIOS && hasSearchBar ? 0.0 : 70.0; // ignore: dead_code
     final expandedHeight = 190.0 + idk;
-    final preferredSizeHeight = isIOS && hasSearchBar ? 0.0 : 60.0;
+    final preferredSizeHeight =
+        isIOS && hasSearchBar ? 0.0 : 60.0; // ignore: dead_code
     final fullHeight = expandedHeight + preferredSizeHeight;
     final halfHeight = fullHeight / 2;
-    final separatorOffset = isIOS && hasSearchBar ? 85 : 20.0;
+    final separatorOffset =
+        isIOS && hasSearchBar ? 85 : 20.0; // ignore: dead_code
     final separatorHeight = halfHeight + separatorOffset;
 
     return SliverAppBar(
+      stretch: true,
+      stretchTriggerOffset: 100.0,
       centerTitle: centerTitle,
       title: title,
       expandedHeight: expandedHeight,
@@ -57,28 +62,38 @@ class ShrinkingSliverAppBar extends StatelessWidget {
             )
           : null,
       flexibleSpace: FlexibleSpaceBar(
+        stretchModes: const [
+          StretchMode.zoomBackground,
+        ],
         collapseMode: CollapseMode.pin,
         title: flexibleSpaceBarTitle,
         centerTitle: true,
-        background: Stack(
-          children: [
-            Align(
-              alignment: Alignment.topCenter,
-              child: Container(
-                height: separatorHeight,
-                color: Theme.of(context).colorScheme.primaryContainer,
-              ),
-            ),
-            Positioned(
-              top: separatorHeight,
-              left: 0,
-              right: 0,
-              child: FractionalTranslation(
-                translation: const Offset(0.0, -0.5),
-                child: centeredWidget,
-              ),
-            ),
-          ],
+        background: LayoutBuilder(
+          builder: (context, constraints) {
+            // constraints.maxHeight grows dynamically as the user pulls down
+            final currentHeight = constraints.maxHeight;
+            final dynamicSeparatorHeight =
+                (currentHeight / 2) + separatorOffset;
+
+            return Stack(
+              children: [
+                Container(
+                  height: dynamicSeparatorHeight,
+                  width: double.infinity,
+                  color: Theme.of(context).colorScheme.primaryContainer,
+                ),
+                Positioned(
+                  top: dynamicSeparatorHeight,
+                  left: 0,
+                  right: 0,
+                  child: FractionalTranslation(
+                    translation: const Offset(0.0, -0.5),
+                    child: centeredWidget,
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

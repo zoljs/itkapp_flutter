@@ -1,3 +1,4 @@
+import 'package:itk_app/theme/app_radius.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ class SectionCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
       decoration: BoxDecoration(
         color: scheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(AppRadius.xxl),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

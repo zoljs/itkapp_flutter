@@ -1,7 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:itk_app/services/api_client.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/models/subject.dart';
+import 'package:itk_app/widgets/adaptive_pressable.dart';
 
 class MySiteTagsScreen extends StatefulWidget {
   final List<String> currentTags;
@@ -78,47 +80,98 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
-        foregroundColor: Theme.of(context).colorScheme.onSurface,
-        title: const Text('Címkék'),
-      ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: _loading
-                  ? const Center(child: CircularProgressIndicator.adaptive())
-                  : ListView.separated(
-                      itemCount: _filteredSubjects.length,
-                      itemBuilder: (context, index) {
-                        final subject = _filteredSubjects[index];
-                        final selected = _selectedTags.contains(subject.name);
+    final scheme = Theme.of(context).colorScheme;
 
-                        return CheckboxListTile(
-                          value: selected,
-                          onChanged: (_) => (_toggleTag(subject.name)),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.screenHorizontal,
-                              vertical: 0),
-                          title: Text(
-                            subject.name,
-                            style: TextStyle(
-                                fontSize: 14,
-                                color: Theme.of(context).colorScheme.onSurface),
-                          ),
-                        );
-                      },
-                      separatorBuilder: (context, index) => const Divider(
-                        height: 1,
-                      ),
-                    ),
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: const Text('Címkék'),
+        backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                scheme.surface,
+                scheme.surface,
+                scheme.surface.withValues(alpha: 0.0),
+              ],
+              stops: const [0.0, 0.55, 1.0],
             ),
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
+          ),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: SizedBox.square(
+              dimension: 48,
+              child: IconButton(
+                style: IconButton.styleFrom(
+                    backgroundColor: Colors.black87.withValues(alpha: .3)),
+                constraints: BoxConstraints.tight(
+                  const Size.square(AppSpacing.minimumAndroid),
+                ),
+                onPressed: () => Navigator.pop(context, _selectedTags.toList()),
+                icon: const Icon(
+                  Icons.check,
+                  color: Colors.white70,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Stack(
+        children: [
+          _loading
+              ? const Center(
+                  child: CircularProgressIndicator.adaptive(),
+                )
+              : ListView.separated(
+                  padding: EdgeInsets.only(
+                    bottom: MediaQuery.paddingOf(context).bottom + 80,
+                    top: kToolbarHeight + MediaQuery.paddingOf(context).top,
+                  ),
+                  itemCount: _filteredSubjects.length,
+                  itemBuilder: (context, index) {
+                    final subject = _filteredSubjects[index];
+                    final selected = _selectedTags.contains(subject.name);
+
+                    return _buildSubjectrow(
+                      context,
+                      subject,
+                      selected,
+                    );
+                  },
+                  separatorBuilder: (context, index) => const Divider(
+                    height: 1,
+                  ),
+                ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.screenHorizontal,
+                AppSpacing.screenHorizontal,
+                AppSpacing.screenHorizontal,
+                MediaQuery.paddingOf(context).bottom +
+                    AppSpacing.screenHorizontal,
+              ),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    scheme.surface.withValues(alpha: 0.0),
+                    scheme.surface,
+                  ],
+                  stops: const [0.0, 0.4],
+                ),
+              ),
               child: Row(
                 children: [
                   Expanded(
@@ -129,15 +182,57 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
                           const InputDecoration(hint: Text("Tantárgy neve...")),
                     ),
                   ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                      onPressed: () =>
-                          Navigator.pop(context, _selectedTags.toList()),
-                      icon: const Icon(Icons.save_rounded))
                 ],
               ),
             ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSubjectrow(
+      BuildContext context, Subject subject, bool selected) {
+    final scheme = Theme.of(context).colorScheme;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
+    return AdaptivePressable(
+      borderRadius: 0,
+      onTap: () => _toggleTag(subject.name),
+      child: Padding(
+        padding: const EdgeInsetsGeometry.symmetric(
+          horizontal: AppSpacing.screenHorizontal,
+          vertical: 0,
+        ),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 64.0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  subject.name,
+                  style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurface),
+                ),
+              ),
+              if (isIOS)
+                Icon(
+                  selected
+                      ? CupertinoIcons.checkmark_circle_fill
+                      : CupertinoIcons.circle,
+                  color: selected ? scheme.primary : scheme.outline,
+                  size: 24,
+                )
+              else
+                Checkbox(
+                  value: selected,
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                  onChanged: (_) => _toggleTag(subject.name),
+                ),
+            ],
+          ),
         ),
       ),
     );

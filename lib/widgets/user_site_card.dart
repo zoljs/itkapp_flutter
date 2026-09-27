@@ -1,3 +1,4 @@
+import 'package:itk_app/theme/app_radius.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
@@ -20,7 +21,7 @@ class UserSiteCard extends StatelessWidget {
       height: height,
       padding: const EdgeInsets.all(AppSpacing.xs),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppRadius.xl),
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -32,11 +33,11 @@ class UserSiteCard extends StatelessWidget {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
         clipBehavior: Clip.antiAlias,
         child: Ink(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -48,7 +49,7 @@ class UserSiteCard extends StatelessWidget {
           ),
           child: InkWell(
             onTap: onTap,
-            borderRadius: BorderRadius.circular(18),
+            borderRadius: BorderRadius.circular(AppRadius.lg),
             child: Padding(
               padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
               child: child,

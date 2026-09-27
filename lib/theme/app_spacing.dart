@@ -11,6 +11,10 @@ class AppSpacing {
   static const double xxl = 24;
   static const double xxxl = 32;
 
+  // Platform specifics
+  static const double minimumAndroid = 44;
+  static const double minimumIOS = 48;
+
   // Named for specific stuff
   static const double bottomNavClearance = 140;
   static const double screenHorizontal = 16;

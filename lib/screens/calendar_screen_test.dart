@@ -1,14 +1,13 @@
-import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:calendar_view/calendar_view.dart';
 
 import 'package:itk_app/models/calendar_event.dart';
 import 'package:itk_app/services/calendar_service.dart';
 
 import 'package:itk_app/theme/app_fonts.dart';
+import 'package:itk_app/theme/app_radius.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 
 class CalendarScreenTest extends StatefulWidget {
   const CalendarScreenTest({super.key});
@@ -90,7 +89,6 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
     return Scaffold(
       backgroundColor: scheme.primaryContainer,
@@ -150,29 +148,34 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
                         ],
                       ),
                     ),
-                    AdaptiveButton.icon(
-                      useSmoothRectangleBorder: false,
-                      minSize: const Size.square(44),
-                      style: AdaptiveButtonStyle.glass,
-                      size: AdaptiveButtonSize.large,
+                    IconButton(
+                      style: IconButton.styleFrom(
+                          backgroundColor:
+                              Colors.black87.withValues(alpha: .3)),
+                      constraints: BoxConstraints.tight(
+                        const Size.square(AppSpacing.minimumAndroid),
+                      ),
                       onPressed: () => _loadEvents(forceReload: true),
-                      icon: isIOS
-                          ? CupertinoIcons.refresh
-                          : Icons.refresh_rounded,
+                      icon: const Icon(
+                        Icons.refresh_rounded,
+                        color: Colors.white70,
+                      ),
                     ),
                     const SizedBox(
-                      width: 4,
+                      width: 8,
                     ),
-                    AdaptiveButton.icon(
-                      useSmoothRectangleBorder: false,
-                      minSize: const Size.square(44),
-                      style: AdaptiveButtonStyle.glass,
-                      size: AdaptiveButtonSize.large,
-                      onPressed: () => _loadEvents(forceReload: true),
-                      icon: isIOS
-                          ? CupertinoIcons.calendar_today
-                          : Icons.today_rounded,
-                    ),
+                    FilledButton(
+                      style: IconButton.styleFrom(
+                          backgroundColor:
+                              Colors.black87.withValues(alpha: .3)),
+                      onPressed: () {},
+                      child: const Text(
+                        'Ma',
+                        style: TextStyle(
+                          color: Colors.white70,
+                        ),
+                      ),
+                    )
                   ],
                 ),
               );
@@ -202,7 +205,7 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: scheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

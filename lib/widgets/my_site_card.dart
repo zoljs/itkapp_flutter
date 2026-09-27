@@ -1,4 +1,5 @@
 import 'package:itk_app/models/user_site.dart';
+import 'package:itk_app/theme/app_radius.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_themes.dart';
 import 'package:itk_app/widgets/user_site_card.dart';
@@ -20,7 +21,7 @@ class MySiteCard extends StatelessWidget {
         height: 80,
         child: Material(
           color: scheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(24.5),
+          borderRadius: BorderRadius.circular(AppRadius.xxl),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: openMySite,

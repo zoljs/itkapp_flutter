@@ -1,9 +1,9 @@
-import 'package:adaptive_platform_ui/adaptive_platform_ui.dart';
 import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/screens/my_site_screen.dart';
 import 'package:itk_app/services/auth_service.dart';
 import 'package:itk_app/services/sites_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
+import 'package:itk_app/theme/app_radius.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_themes.dart';
 import 'package:itk_app/widgets/platform_appbar.dart';
@@ -63,8 +63,7 @@ class _WikiScreenState extends State<WikiScreen> {
   }
 
   List<UserSite> get _filteredSites {
-    //final query = _searchController.text.trim().toLowerCase();
-    final query = SitesService.instance.searchQuery.value.trim().toLowerCase();
+    final query = _searchController.text.trim().toLowerCase();
 
     return _sites.where((s) {
       final matchesSearch = query.isEmpty ||
@@ -128,7 +127,7 @@ class _WikiScreenState extends State<WikiScreen> {
                     horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Skeleton.ignore(
                   child: Text(
@@ -194,7 +193,7 @@ class _WikiScreenState extends State<WikiScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return AdaptiveScaffold(
+    return Scaffold(
       body: Stack(
         children: [
           RefreshIndicator(
@@ -218,9 +217,7 @@ class _WikiScreenState extends State<WikiScreen> {
                         AppSpacing.screenHorizontal),
                     child: TextField(
                       controller: _searchController,
-                      onChanged: (query) {
-                        SitesService.instance.searchQuery.value = query;
-                      },
+                      onChanged: (_) => setState(() {}),
                       decoration: const InputDecoration(
                         hintText: 'Oldal, tantárgy neve...',
                         prefixIcon: Icon(Icons.search_rounded),
@@ -240,7 +237,8 @@ class _WikiScreenState extends State<WikiScreen> {
                               color: Theme.of(context)
                                   .colorScheme
                                   .surfaceContainerHigh,
-                              borderRadius: BorderRadius.circular(24.5),
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.xxl),
                             ),
                             child: const CircularProgressIndicator.adaptive(),
                           )
@@ -248,9 +246,8 @@ class _WikiScreenState extends State<WikiScreen> {
                   ),
                   hasSearchBar: true,
                 ),
-                ValueListenableBuilder<String>(
-                  valueListenable: SitesService.instance.searchQuery,
-                  builder: (context, _, __) {
+                Builder(
+                  builder: (context) {
                     final displaySites = _loading
                         ? List.filled(
                             4,

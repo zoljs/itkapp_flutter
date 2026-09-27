@@ -1,22 +1,13 @@
-import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:itk_app/models/user.dart';
 import 'package:itk_app/services/auth_service.dart';
+import 'package:itk_app/theme/app_radius.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_themes.dart';
+import 'package:itk_app/widgets/adaptive_helpers.dart';
 import 'package:itk_app/widgets/section_card.dart';
 import 'package:flutter/material.dart';
-import 'package:adaptive_platform_ui/adaptive_platform_ui.dart'
-    show
-        AdaptiveAlertDialog,
-        AdaptiveAppBar,
-        AdaptiveButton,
-        AdaptiveButtonStyle,
-        AdaptiveScaffold,
-        AlertAction,
-        AlertActionStyle,
-        AdaptiveAppBarAction,
-        SFSymbol;
 
 import 'package:itk_app/models/user_site.dart';
 import 'package:itk_app/screens/my_site_tags_screen.dart';
@@ -106,9 +97,8 @@ class _MySiteScreenState extends State<MySiteScreen> {
         _hasExistingSite = true;
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Elmentve!')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Elmentve!')));
     } on DioException catch (e) {
       if (!mounted) return;
 
@@ -117,47 +107,64 @@ class _MySiteScreenState extends State<MySiteScreen> {
           ? data['message'].toString()
           : 'Nem sikerült menteni.';
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
-  Future<bool?> showAdaptiveConfirmDialog(
+  Future<bool?> showConfirmDialog(
     BuildContext context, {
     required String title,
     required String message,
     required String confirmLabel,
     String cancelLabel = 'Mégse',
     bool isDestructive = false,
-  }) async {
-    bool? result;
+  }) {
+    final scheme = Theme.of(context).colorScheme;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
-    await AdaptiveAlertDialog.show(
+    return showDialog<bool>(
       context: context,
-      title: title,
-      message: message,
-      actions: [
-        AlertAction(
-          title: cancelLabel,
-          style: AlertActionStyle.cancel,
-          onPressed: () => result = false,
-        ),
-        AlertAction(
-          title: confirmLabel,
-          style: isDestructive
-              ? AlertActionStyle.destructive
-              : AlertActionStyle.primary,
-          onPressed: () => result = true,
-        ),
-      ],
+      builder: (context) => AlertDialog.adaptive(
+        title: Text(title),
+        content: Text(message),
+        actions: isIOS
+            ? [
+                CupertinoDialogAction(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text(cancelLabel),
+                ),
+                CupertinoDialogAction(
+                  isDestructiveAction: isDestructive,
+                  isDefaultAction: !isDestructive,
+                  onPressed: () => Navigator.pop(context, true),
+                  child: Text(confirmLabel),
+                ),
+              ]
+            : [
+                TextButton(
+                  onPressed: () => Navigator.pop(context, false),
+                  child: Text(cancelLabel),
+                ),
+                FilledButton(
+                  onPressed: () => Navigator.pop(context, true),
+                  style: isDestructive
+                      ? FilledButton.styleFrom(
+                          backgroundColor: scheme.errorContainer,
+                        )
+                      : null,
+                  child: Text(
+                    confirmLabel,
+                    style: TextStyle(color: scheme.error),
+                  ),
+                ),
+              ],
+      ),
     );
-
-    return result;
   }
 
   Future<void> _delete() async {
-    final confirmed = await showAdaptiveConfirmDialog(
+    final confirmed = await showConfirmDialog(
       context,
       title: 'Profil törlése',
       message: 'Biztosan törlöd a saját oldaladat? Ez nem vonható vissza.',
@@ -172,9 +179,9 @@ class _MySiteScreenState extends State<MySiteScreen> {
       Navigator.pop(context);
     } on DioException {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nem sikerült törölni.')),
-      );
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Nem sikerült törölni.')));
     }
   }
 
@@ -192,16 +199,16 @@ class _MySiteScreenState extends State<MySiteScreen> {
   }
 
   Widget _buildForm(BuildContext context) {
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-
     final scheme = Theme.of(context).colorScheme;
-    final platform = Theme.of(context).platform;
 
     return Form(
       key: _formKey,
       child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(AppSpacing.lg, isIOS ? 120 : AppSpacing.lg,
-            AppSpacing.lg, AppSpacing.xxxl),
+        padding: EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg + MediaQuery.paddingOf(context).top + kToolbarHeight,
+            AppSpacing.lg,
+            AppSpacing.xxxl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -225,7 +232,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
                     padding: const EdgeInsets.all(AppSpacing.lg),
                     decoration: BoxDecoration(
                       color: scheme.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(AppRadius.xl),
                     ),
                     child: Row(
                       children: [
@@ -337,8 +344,13 @@ class _MySiteScreenState extends State<MySiteScreen> {
               ),
             ),
             if (_hasExistingSite) ...[
-              const SizedBox(height: 12),
-              buildDeleteButton(context, _delete),
+              const SizedBox(height: 24),
+              buildDestructiveButton(
+                context,
+                Icons.delete_outline_rounded,
+                label: 'Törlés',
+                onPressed: _delete,
+              ),
             ],
           ],
         ),
@@ -348,30 +360,51 @@ class _MySiteScreenState extends State<MySiteScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    final scheme = Theme.of(context).colorScheme;
 
-    return AdaptiveScaffold(
-      appBar: AdaptiveAppBar(
-        leading: isIOS
-            ? SizedBox(
-                height: 44,
-                width: 44,
-                child: AdaptiveButton.sfSymbol(
-                  onPressed: () => Navigator.of(context).pop(),
-                  sfSymbol: const SFSymbol('chevron.left', size: 20),
-                  useSmoothRectangleBorder: false,
-                ),
-              )
-            : null,
-        title: _hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása',
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        scrolledUnderElevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                scheme.surface,
+                scheme.surface,
+                scheme.surface.withValues(alpha: 0.0),
+              ],
+              stops: const [0.0, 0.55, 1.0],
+            ),
+          ),
+        ),
+        title: Text(_hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása'),
         actions: [
-          AdaptiveAppBarAction(
-            onPressed: () {
-              _submit;
-              Navigator.pop(context);
-            },
-            iosSymbol: 'checkmark',
-            icon: Icons.save,
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: SizedBox.square(
+              dimension: 48,
+              child: IconButton(
+                iconSize: 28,
+                style:
+                    IconButton.styleFrom(backgroundColor: Colors.transparent),
+                constraints: BoxConstraints.tight(
+                  const Size.square(AppSpacing.minimumAndroid),
+                ),
+                onPressed: () async {
+                  await _submit();
+                  if (!context.mounted) return;
+                  Navigator.pop(context);
+                },
+                icon: const Icon(
+                  Icons.check,
+                  color: Colors.white70,
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -380,47 +413,4 @@ class _MySiteScreenState extends State<MySiteScreen> {
           : _buildForm(context),
     );
   }
-}
-
-Widget buildDeleteButton(BuildContext context, VoidCallback onPressed) {
-  final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-  final scheme = Theme.of(context).colorScheme;
-
-  if (isIOS) {
-    return AdaptiveButton.child(
-      style: AdaptiveButtonStyle.gray,
-      useSmoothRectangleBorder: false,
-      borderRadius: BorderRadius.circular(26),
-      minSize: const Size(double.infinity, 52),
-      onPressed: onPressed,
-      child: const Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Oldal törlése',
-            style: TextStyle(
-              color: CupertinoColors.destructiveRed,
-            ),
-          )
-        ],
-      ),
-    );
-  }
-
-  return AdaptiveButton.child(
-    style: AdaptiveButtonStyle
-        .filled, // az OutlinedButton VALÓBAN tiszteletben tartja a color-t
-    color: scheme.errorContainer,
-    borderRadius: BorderRadius.circular(26),
-    minSize: const Size(double.infinity, 52),
-    onPressed: onPressed,
-    child: Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(Icons.delete_outline_rounded, color: scheme.error),
-        const SizedBox(width: 8),
-        Text('Oldal törlése', style: TextStyle(color: scheme.error)),
-      ],
-    ),
-  );
 }

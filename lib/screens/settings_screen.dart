@@ -1,16 +1,14 @@
-import 'package:adaptive_platform_ui/adaptive_platform_ui.dart'
-    hide AdaptiveAppBar;
-import 'package:flutter/cupertino.dart';
-
 import 'package:itk_app/models/user.dart';
 import 'package:itk_app/screens/my_site_screen.dart';
 import 'package:itk_app/services/auth_service.dart';
 import 'package:itk_app/services/sites_service.dart';
 import 'package:itk_app/services/theme_service.dart';
 import 'package:itk_app/theme/app_fonts.dart';
+import 'package:itk_app/theme/app_radius.dart';
 import 'package:itk_app/theme/app_spacing.dart';
 import 'package:itk_app/theme/app_themes.dart';
 import 'package:itk_app/utils/auth_actions.dart';
+import 'package:itk_app/widgets/adaptive_pressable.dart';
 
 import 'package:itk_app/widgets/my_site_card.dart';
 import 'package:itk_app/widgets/section_card.dart';
@@ -59,20 +57,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
       '&labels=${Uri.encodeComponent('bug,mobile-app')}',
     );
 
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-
-    if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nem sikerült megnyitni a linket.')),
-      );
-    }
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
-    return AdaptiveScaffold(
+    return Scaffold(
       body: Stack(
         children: [
           CustomScrollView(
@@ -85,23 +78,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       .headlineSmall
                       ?.merge(topBarTitleStyle),
                 ),
-                actions: [
-                  AdaptiveButton.icon(
-                    useNative: true,
-                    useSmoothRectangleBorder: false,
-                    minSize: const Size.square(44),
-                    style: AdaptiveButtonStyle.glass,
-                    onPressed: () => performLogout(context),
-                    icon: isIOS
-                        ? CupertinoIcons.square_arrow_right
-                        : Icons.logout_rounded,
-                  )
-                ],
                 centeredWidget: CircleAvatar(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  backgroundColor: scheme.surface,
                   radius: 55,
                   child: CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    backgroundColor: scheme.primary,
                     radius: 45,
                     child: Text(
                       '${_currentUser?.login[0].toUpperCase()}',
@@ -134,7 +115,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 color: Theme.of(context)
                                     .colorScheme
                                     .surfaceContainerHigh,
-                                borderRadius: BorderRadius.circular(20),
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.xl),
                               ),
                               child: Row(
                                 children: [
@@ -200,7 +182,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                       const SizedBox(height: 14),
 
-                      // App Info section
+                      // App Display section
                       SectionCard(
                         title: 'Megjelenés',
                         child: Column(
@@ -209,9 +191,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               color: Colors.transparent,
                               child: ListTile(
                                 contentPadding: EdgeInsets.zero,
-                                leading: Icon(Icons.dark_mode,
-                                    color:
-                                        Theme.of(context).colorScheme.primary),
+                                leading: Icon(
+                                  Icons.dark_mode,
+                                  color: scheme.primary,
+                                ),
                                 title: const Text(
                                   'OLED mód',
                                   style: TextStyle(
@@ -222,8 +205,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   'Magától értetődő, nem?',
                                   style: TextStyle(fontSize: 12),
                                 ),
-                                trailing: AdaptiveSwitch(
-                                  activeColor: itkPrimary,
+                                trailing: Switch.adaptive(
+                                  activeTrackColor: itkPrimary,
                                   value: ThemeService.instance.oledMode.value,
                                   onChanged: (bool value) {
                                     ThemeService.instance.toggleOledMode(value);
@@ -248,9 +231,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               color: Colors.transparent,
                               child: ListTile(
                                 contentPadding: EdgeInsets.zero,
-                                leading: Icon(Icons.bug_report_outlined,
-                                    color:
-                                        Theme.of(context).colorScheme.primary),
+                                leading: Icon(
+                                  Icons.bug_report_outlined,
+                                  color: scheme.primary,
+                                ),
                                 title: const Text(
                                   'Hiba bejelentése',
                                   style: TextStyle(
@@ -297,6 +281,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               }),
                             )
                           ],
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: AdaptivePressable(
+                          onTap: () => performLogout(context),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              if (!isIOS) ...[
+                                Icon(Icons.logout_rounded,
+                                    size: 18, color: scheme.errorContainer),
+                                const SizedBox(width: 6),
+                              ],
+                              Text('Kijelentkezés',
+                                  style:
+                                      TextStyle(color: scheme.errorContainer)),
+                            ],
+                          ),
                         ),
                       ),
                     ],
