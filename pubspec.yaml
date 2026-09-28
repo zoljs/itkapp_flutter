@@ -25,7 +25,6 @@ dependencies:
   calendar_view: ^2.0.0
   flutter_localizations:
     sdk: flutter
-  adaptive_platform_ui: ^1.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

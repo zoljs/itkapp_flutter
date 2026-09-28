@@ -44,6 +44,7 @@ class _AppScaffoldState extends State<AppScaffold> {
               NavBarItem(icon: Icons.home_rounded, label: 'Főoldal'),
               NavBarItem(icon: Icons.calendar_month_rounded, label: 'Naptár'),
               NavBarItem(icon: Icons.groups_rounded, label: 'Wiki'),
+              //NavBarItem(icon: Icons.note_rounded, label: 'ZHk'),
               NavBarItem(icon: Icons.settings_rounded, label: 'Beállítások'),
             ],
           ),
