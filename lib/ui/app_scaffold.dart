@@ -1,10 +1,10 @@
-import 'package:itk_app/screens/calendar_screen_test.dart';
-import 'package:itk_app/screens/home_screen_test.dart';
-import 'package:itk_app/screens/settings_screen.dart';
-import 'package:itk_app/screens/wiki_screen.dart';
-import 'package:itk_app/services/sites_service.dart';
+import 'package:itk_app/ui/calendar/calendar_screen_test.dart';
+import 'package:itk_app/ui/home/home_screen_test.dart';
+import 'package:itk_app/ui/settings/settings_screen.dart';
+import 'package:itk_app/ui/wiki/wiki_screen.dart';
+import 'package:itk_app/data/services/sites_service.dart';
 import 'package:flutter/material.dart';
-import 'package:itk_app/widgets/navbar.dart';
+import 'package:itk_app/ui/core/widgets/navbar.dart';
 
 class AppScaffold extends StatefulWidget {
   const AppScaffold({super.key});

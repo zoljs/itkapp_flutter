@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
-import 'package:itk_app/screens/app_scaffold.dart';
-import 'package:itk_app/theme/app_spacing.dart';
-import 'package:itk_app/widgets/field_label.dart';
+import 'package:itk_app/ui/app_scaffold.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/widgets/field_label.dart';
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import '../../data/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});

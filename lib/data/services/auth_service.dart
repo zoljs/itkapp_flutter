@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:itk_app/models/user.dart';
+import 'package:itk_app/domain/models/user.dart';
 import 'api_client.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';

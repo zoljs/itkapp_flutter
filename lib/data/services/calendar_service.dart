@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
-import 'package:itk_app/models/calendar_event.dart';
-import 'package:itk_app/services/api_client.dart';
-import 'package:itk_app/services/auth_service.dart';
+import 'package:itk_app/domain/models/calendar_event.dart';
+import 'package:itk_app/data/services/api_client.dart';
+import 'package:itk_app/data/services/auth_service.dart';
 
 class CalendarService {
   CalendarService.internal();

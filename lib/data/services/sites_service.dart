@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import '../models/user_site.dart';
+import '../../domain/models/user_site.dart';
 import 'api_client.dart';
 
 class SitesService {

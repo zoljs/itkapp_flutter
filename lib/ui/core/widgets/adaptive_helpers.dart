@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:itk_app/theme/app_radius.dart';
+import 'package:itk_app/ui/core/theme/app_radius.dart';
 
 Widget buildDestructiveButton(
   BuildContext context,

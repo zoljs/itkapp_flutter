@@ -1,8 +1,8 @@
-import 'package:itk_app/models/user_site.dart';
-import 'package:itk_app/theme/app_radius.dart';
-import 'package:itk_app/theme/app_spacing.dart';
-import 'package:itk_app/theme/app_themes.dart';
-import 'package:itk_app/widgets/user_site_card.dart';
+import 'package:itk_app/domain/models/user_site.dart';
+import 'package:itk_app/ui/core/theme/app_radius.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
 
 class MySiteCard extends StatelessWidget {

@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:itk_app/services/api_client.dart';
-import 'package:itk_app/theme/app_spacing.dart';
+import 'package:itk_app/data/services/api_client.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
-import 'package:itk_app/models/subject.dart';
-import 'package:itk_app/widgets/adaptive_pressable.dart';
+import 'package:itk_app/domain/models/subject.dart';
+import 'package:itk_app/ui/core/widgets/adaptive_pressable.dart';
 
 class MySiteTagsScreen extends StatefulWidget {
   final List<String> currentTags;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/screens/login_screen.dart';
-import 'package:itk_app/services/auth_service.dart';
-import 'package:itk_app/services/sites_service.dart';
+import 'package:itk_app/ui/auth/login_screen.dart';
+import 'package:itk_app/data/services/auth_service.dart';
+import 'package:itk_app/data/services/sites_service.dart';
 
 Future<void> performLogout(BuildContext context) async {
   await AuthService.instance.logout();

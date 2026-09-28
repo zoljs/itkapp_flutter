@@ -1,18 +1,18 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:itk_app/models/user.dart';
-import 'package:itk_app/services/auth_service.dart';
-import 'package:itk_app/theme/app_radius.dart';
-import 'package:itk_app/theme/app_spacing.dart';
-import 'package:itk_app/theme/app_themes.dart';
-import 'package:itk_app/widgets/adaptive_helpers.dart';
-import 'package:itk_app/widgets/section_card.dart';
+import 'package:itk_app/domain/models/user.dart';
+import 'package:itk_app/data/services/auth_service.dart';
+import 'package:itk_app/ui/core/theme/app_radius.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/core/widgets/adaptive_helpers.dart';
+import 'package:itk_app/ui/core/widgets/section_card.dart';
 import 'package:flutter/material.dart';
 
-import 'package:itk_app/models/user_site.dart';
-import 'package:itk_app/screens/my_site_tags_screen.dart';
-import 'package:itk_app/services/sites_service.dart';
-import 'package:itk_app/widgets/field_label.dart';
+import 'package:itk_app/domain/models/user_site.dart';
+import 'package:itk_app/ui/wiki/my_site_tags_screen.dart';
+import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/ui/core/widgets/field_label.dart';
 
 class MySiteScreen extends StatefulWidget {
   const MySiteScreen({super.key});

@@ -1,6 +1,6 @@
-import 'package:itk_app/screens/app_scaffold.dart';
+import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import '../../data/services/auth_service.dart';
 import 'login_screen.dart';
 
 /// Shown on app start. Calls GET /api/auth/me to see if a valid session

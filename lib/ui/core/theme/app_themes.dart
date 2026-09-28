@@ -1,5 +1,5 @@
-import 'package:itk_app/theme/app_radius.dart';
-import 'package:itk_app/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_radius.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
@@ -33,3 +33,4 @@ InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
 }
 
 const itkPrimary = Color(0xFF00A6E7);
+const itkDark = Color(0xFF0b3468);

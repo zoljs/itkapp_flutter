@@ -1,4 +1,4 @@
-import 'package:itk_app/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 
 class ShrinkingSliverAppBar extends StatelessWidget {
@@ -32,11 +32,8 @@ class ShrinkingSliverAppBar extends StatelessWidget {
     final expandedHeight = 190.0 + idk;
     final preferredSizeHeight =
         isIOS && hasSearchBar ? 0.0 : 60.0; // ignore: dead_code
-    final fullHeight = expandedHeight + preferredSizeHeight;
-    final halfHeight = fullHeight / 2;
     final separatorOffset =
         isIOS && hasSearchBar ? 85 : 20.0; // ignore: dead_code
-    final separatorHeight = halfHeight + separatorOffset;
 
     return SliverAppBar(
       stretch: true,

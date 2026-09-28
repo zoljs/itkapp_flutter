@@ -1,13 +1,13 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
-import 'package:itk_app/models/calendar_event.dart';
-import 'package:itk_app/services/theme_service.dart';
-import 'package:itk_app/theme/app_fonts.dart';
-import 'package:itk_app/theme/app_radius.dart';
-import 'package:itk_app/theme/app_themes.dart';
+import 'package:itk_app/domain/models/calendar_event.dart';
+import 'package:itk_app/data/services/theme_service.dart';
+import 'package:itk_app/ui/core/theme/app_fonts.dart';
+import 'package:itk_app/ui/core/theme/app_radius.dart';
+import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:flutter/services.dart';
-import 'services/api_client.dart';
-import 'screens/auth_gate.dart';
+import 'data/services/api_client.dart';
+import 'ui/auth/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
@@ -25,7 +25,7 @@ Future<void> main() async {
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
-const _seedColor = Color.fromARGB(255, 142, 136, 230);
+const _seedColor = itkDark;
 
 ColorScheme _darkSchemeFor(ColorScheme base, {required bool isOled}) {
   if (!isOled) return base;

@@ -1,22 +1,22 @@
-import 'package:itk_app/models/user.dart';
-import 'package:itk_app/screens/my_site_screen.dart';
-import 'package:itk_app/services/auth_service.dart';
-import 'package:itk_app/services/sites_service.dart';
-import 'package:itk_app/services/theme_service.dart';
-import 'package:itk_app/theme/app_fonts.dart';
-import 'package:itk_app/theme/app_radius.dart';
-import 'package:itk_app/theme/app_spacing.dart';
-import 'package:itk_app/theme/app_themes.dart';
+import 'package:itk_app/domain/models/user.dart';
+import 'package:itk_app/ui/wiki/my_site_screen.dart';
+import 'package:itk_app/data/services/auth_service.dart';
+import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/data/services/theme_service.dart';
+import 'package:itk_app/ui/core/theme/app_fonts.dart';
+import 'package:itk_app/ui/core/theme/app_radius.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/utils/auth_actions.dart';
-import 'package:itk_app/widgets/adaptive_pressable.dart';
+import 'package:itk_app/ui/core/widgets/adaptive_pressable.dart';
 
-import 'package:itk_app/widgets/my_site_card.dart';
-import 'package:itk_app/widgets/section_card.dart';
+import 'package:itk_app/ui/core/widgets/my_site_card.dart';
+import 'package:itk_app/ui/core/widgets/section_card.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:itk_app/widgets/platform_appbar.dart';
+import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

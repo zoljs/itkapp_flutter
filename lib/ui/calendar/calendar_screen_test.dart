@@ -1,11 +1,11 @@
 import 'package:calendar_view/calendar_view.dart';
 
-import 'package:itk_app/models/calendar_event.dart';
-import 'package:itk_app/services/calendar_service.dart';
+import 'package:itk_app/domain/models/calendar_event.dart';
+import 'package:itk_app/data/services/calendar_service.dart';
 
-import 'package:itk_app/theme/app_fonts.dart';
-import 'package:itk_app/theme/app_radius.dart';
-import 'package:itk_app/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_fonts.dart';
+import 'package:itk_app/ui/core/theme/app_radius.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
 import 'package:flutter/material.dart';
 
