@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
-import 'package:itk_app/data/services/api_client.dart';
+import 'package:itk_app/data/services/subjects_service.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/domain/models/subject.dart';
-import 'package:itk_app/ui/core/widgets/adaptive_pressable.dart';
+import 'package:itk_app/ui/core/widgets/ack_appbar.dart';
 
 class MySiteTagsScreen extends StatefulWidget {
   final List<String> currentTags;
@@ -57,12 +57,13 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
 
   Future<void> _loadSubjects() async {
     try {
-      final response = await ApiClient.instance.dio
-          .get('https://space.itk.ppke.hu/api/subjects');
-      final data = response.data as List;
-      final subjects = data
-          .map((json) => Subject.fromJson(json as Map<String, dynamic>))
-          .toList();
+      // final response = await ApiClient.instance.dio
+      //     .get('https://space.itk.ppke.hu/api/subjects');
+      // final data = response.data as List;
+      // final subjects = data
+      //     .map((json) => Subject.fromJson(json as Map<String, dynamic>))
+      //     .toList();
+      final subjects = await SubjectsService.instance.getSubjects();
 
       if (!mounted) return;
 
@@ -84,44 +85,11 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
+      appBar: buildAckAppBar(
+        context: context,
+        scheme: scheme,
         title: const Text('Címkék'),
-        backgroundColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                scheme.surface,
-                scheme.surface,
-                scheme.surface.withValues(alpha: 0.0),
-              ],
-              stops: const [0.0, 0.55, 1.0],
-            ),
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: SizedBox.square(
-              dimension: 48,
-              child: IconButton(
-                style: IconButton.styleFrom(
-                    backgroundColor: Colors.black87.withValues(alpha: .3)),
-                constraints: BoxConstraints.tight(
-                  const Size.square(AppSpacing.minimumAndroid),
-                ),
-                onPressed: () => Navigator.pop(context, _selectedTags.toList()),
-                icon: const Icon(
-                  Icons.check,
-                  color: Colors.white70,
-                ),
-              ),
-            ),
-          ),
-        ],
+        onPressed: () => Navigator.pop(context, _selectedTags.toList()),
       ),
       body: Stack(
         children: [
@@ -196,13 +164,11 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
     final scheme = Theme.of(context).colorScheme;
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
-    return AdaptivePressable(
-      borderRadius: 0,
+    return InkWell(
       onTap: () => _toggleTag(subject.name),
       child: Padding(
         padding: const EdgeInsetsGeometry.symmetric(
           horizontal: AppSpacing.screenHorizontal,
-          vertical: 0,
         ),
         child: ConstrainedBox(
           constraints: const BoxConstraints(minHeight: 64.0),
@@ -212,8 +178,9 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
                 child: Text(
                   subject.name,
                   style: TextStyle(
-                      fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurface),
+                    fontSize: 14,
+                    color: scheme.onSurface,
+                  ),
                 ),
               ),
               if (isIOS)

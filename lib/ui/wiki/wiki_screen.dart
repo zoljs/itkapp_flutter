@@ -11,6 +11,7 @@ import 'package:itk_app/ui/core/widgets/my_site_card.dart';
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
 import 'package:skeletonizer/skeletonizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class WikiScreen extends StatefulWidget {
   const WikiScreen({super.key});
@@ -82,6 +83,18 @@ class _WikiScreenState extends State<WikiScreen> {
     _loadAll();
   }
 
+  Future<void> _openSite(String url) async {
+    final uri = Uri.tryParse(url);
+    final ok = uri != null &&
+        uri.hasScheme &&
+        await launchUrl(uri, mode: LaunchMode.inAppWebView);
+
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Nem sikerült megnyitni az oldalt.')));
+    }
+  }
+
   @override
   void dispose() {
     _searchController.dispose();
@@ -89,11 +102,9 @@ class _WikiScreenState extends State<WikiScreen> {
   }
 
   Widget _buildSiteCard(UserSite site, int index) {
-    final own = site.userId == _currentUserId;
-
     return UserSiteCard(
       color: itkPrimary,
-      onTap: () {},
+      onTap: () => _openSite(site.url),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -117,10 +128,10 @@ class _WikiScreenState extends State<WikiScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.lg),
           Wrap(
-            spacing: 6,
-            runSpacing: 6,
+            spacing: AppSpacing.sm,
+            runSpacing: AppSpacing.sm,
             children: site.tags.take(4).map((tag) {
               return Container(
                 padding: const EdgeInsets.symmetric(
@@ -142,7 +153,7 @@ class _WikiScreenState extends State<WikiScreen> {
               );
             }).toList(),
           ),
-          const SizedBox(height: 18),
+          const SizedBox(height: AppSpacing.lg),
           Row(
             children: [
               Expanded(
@@ -153,22 +164,6 @@ class _WikiScreenState extends State<WikiScreen> {
                   style: const TextStyle(fontSize: 12, color: Colors.black87),
                 ),
               ),
-              own
-                  ? IconButton(
-                      highlightColor: Colors.white.withValues(alpha: 0.25),
-                      onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MySiteScreen())),
-                      iconSize: 24,
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(
-                        Icons.edit_rounded,
-                        color: Colors.black87,
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-              const SizedBox(width: 8),
               Container(
                 width: 40,
                 height: 40,
@@ -194,99 +189,98 @@ class _WikiScreenState extends State<WikiScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          RefreshIndicator(
-            onRefresh: () => _loadAll(forceReload: true),
-            child: CustomScrollView(
-              slivers: [
-                ShrinkingSliverAppBar(
-                  centerTitle: false,
-                  title: Text(
-                    'ITK Wiki 3 Beta',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headlineSmall
-                        ?.merge(topBarTitleStyle),
+      body: RefreshIndicator(
+        onRefresh: () => _loadAll(forceReload: true),
+        child: CustomScrollView(
+          // ios bounce physics even if the list does NOT overflow
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          slivers: [
+            ShrinkingSliverAppBar(
+              centerTitle: false,
+              title: Text(
+                'ITK Wiki 3 Beta',
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineSmall
+                    ?.merge(topBarTitleStyle),
+              ),
+              preferredSizeChild: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.screenHorizontal,
+                    0,
+                    AppSpacing.screenHorizontal,
+                    AppSpacing.screenHorizontal),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (_) => setState(() {}),
+                  decoration: const InputDecoration(
+                    hintText: 'Oldal, tantárgy neve...',
+                    prefixIcon: Icon(Icons.search_rounded),
                   ),
-                  preferredSizeChild: Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                        AppSpacing.screenHorizontal,
-                        0,
-                        AppSpacing.screenHorizontal,
-                        AppSpacing.screenHorizontal),
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: (_) => setState(() {}),
-                      decoration: const InputDecoration(
-                        hintText: 'Oldal, tantárgy neve...',
-                        prefixIcon: Icon(Icons.search_rounded),
-                      ),
+                ),
+              ),
+              centeredWidget: Padding(
+                padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
+                child: _loading
+                    ? Container(
+                        width: double.infinity,
+                        height: 80,
+                        alignment: Alignment.center,
+                        padding:
+                            const EdgeInsets.all(AppSpacing.screenHorizontal),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(AppRadius.xxl),
+                        ),
+                        child: const CircularProgressIndicator.adaptive(),
+                      )
+                    : MySiteCard(mySite: _mySite, openMySite: _openMySite),
+              ),
+              hasSearchBar: true,
+            ),
+            Builder(
+              builder: (context) {
+                final displaySites = _loading
+                    ? List.filled(
+                        4,
+                        UserSite(
+                          userId: -1,
+                          name: BoneMock.name,
+                          url: 'https://example.com/${BoneMock.words(1)}',
+                          tags: [
+                            BoneMock.words(1),
+                            BoneMock.words(1),
+                          ],
+                          category: 'wip',
+                        ),
+                      )
+                    : _filteredSites;
+
+                return SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.screenHorizontal,
+                      0,
+                      AppSpacing.screenHorizontal,
+                      AppSpacing.bottomNavClearance),
+                  sliver: Skeletonizer.sliver(
+                    enabled: _loading,
+                    child: SliverList.separated(
+                      itemCount: displaySites.length,
+                      itemBuilder: (context, index) =>
+                          _buildSiteCard(displaySites[index], index),
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: AppSpacing.lg),
                     ),
                   ),
-                  centeredWidget: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-                    child: _loading
-                        ? Container(
-                            width: double.infinity,
-                            height: 80,
-                            alignment: Alignment.center,
-                            padding: const EdgeInsets.all(
-                                AppSpacing.screenHorizontal),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceContainerHigh,
-                              borderRadius:
-                                  BorderRadius.circular(AppRadius.xxl),
-                            ),
-                            child: const CircularProgressIndicator.adaptive(),
-                          )
-                        : MySiteCard(mySite: _mySite, openMySite: _openMySite),
-                  ),
-                  hasSearchBar: true,
-                ),
-                Builder(
-                  builder: (context) {
-                    final displaySites = _loading
-                        ? List.filled(
-                            4,
-                            UserSite(
-                              userId: -1,
-                              name: BoneMock.name,
-                              url: 'https://example.com/${BoneMock.words(1)}',
-                              tags: [
-                                BoneMock.words(1),
-                                BoneMock.words(1),
-                              ],
-                              category: 'wip',
-                            ),
-                          )
-                        : _filteredSites;
-
-                    return SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.screenHorizontal,
-                          0,
-                          AppSpacing.screenHorizontal,
-                          AppSpacing.bottomNavClearance),
-                      sliver: Skeletonizer.sliver(
-                        enabled: _loading,
-                        child: SliverList.separated(
-                          itemCount: displaySites.length,
-                          itemBuilder: (context, index) =>
-                              _buildSiteCard(displaySites[index], index),
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: 10),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                );
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

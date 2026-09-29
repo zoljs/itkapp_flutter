@@ -2,17 +2,15 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/data/services/auth_service.dart';
-import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
-import 'package:itk_app/ui/core/widgets/adaptive_helpers.dart';
-import 'package:itk_app/ui/core/widgets/section_card.dart';
+import 'package:itk_app/ui/core/widgets/ack_appbar.dart';
+import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:flutter/material.dart';
 
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/wiki/my_site_tags_screen.dart';
 import 'package:itk_app/data/services/sites_service.dart';
-import 'package:itk_app/ui/core/widgets/field_label.dart';
 
 class MySiteScreen extends StatefulWidget {
   const MySiteScreen({super.key});
@@ -80,12 +78,12 @@ class _MySiteScreenState extends State<MySiteScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate() && _currentUser != null) return;
 
     try {
       await SitesService.instance.saveMySite(
         UserSite(
-          name: _nameController.text.trim(),
+          name: _currentUser!.login,
           url: 'https://users.itk.ppke.hu/~${_currentUser?.login}',
           tags: tags,
           category: _category,
@@ -212,146 +210,129 @@ class _MySiteScreenState extends State<MySiteScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SectionCard(
-              title: 'Adatok',
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const FieldLabel('Oldal név'),
-                  TextFormField(
-                    controller: _nameController,
-                    style: TextStyle(color: scheme.onSurface),
-                    textInputAction: TextInputAction.next,
-                    validator: (v) => (v == null || v.trim().isEmpty)
-                        ? 'Kötelező mező'
-                        : null,
-                  ),
-                  const SizedBox(height: 18),
-                  const FieldLabel('URL'),
-                  Container(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
-                    decoration: BoxDecoration(
-                      color: scheme.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(AppRadius.xl),
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(Icons.warning_amber_rounded,
-                            color: scheme.primary),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'https://users.itk.ppke.hu/~${_currentUser?.login}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w700,
-                                  fontSize: 14,
-                                  color: scheme.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                'Ez a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            SettingsGroup(
+              header: 'Adatok',
+              footer:
+                  'Az oldal neve és az URL a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
+              children: [
+                SettingsTile(
+                  title: 'Név és URL',
+                  value: _currentUser?.login ?? "",
+                ),
+              ],
             ),
-            const SizedBox(height: 14),
-            SectionCard(
-                title: 'Szín',
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      ..._colors.indexed.map((record) {
-                        final (index, color) = record;
 
+            // Szín
+            SettingsGroup(
+              header: 'Megjelenés',
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                    child: Row(
+                      children: _colors.indexed.map((record) {
+                        final (index, color) = record;
                         final isSelected = index == _selectedIndex;
                         final double borderRadius = isSelected ? 12.0 : 28.0;
                         final double innerBorderRadius =
                             isSelected ? 6.0 : 20.0;
 
-                        return AnimatedContainer(
-                          curve: Curves.easeInOutCubic,
-                          duration: const Duration(milliseconds: 300),
-                          height: 56,
-                          width: 56,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(borderRadius),
-                              border: Border.all(
-                                color: isSelected ? color : Colors.transparent,
-                                width: 4,
-                              )),
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
                           child: AnimatedContainer(
                             curve: Curves.easeInOutCubic,
                             duration: const Duration(milliseconds: 300),
-                            height: 40,
-                            width: 40,
+                            height: 56,
+                            width: 56,
+                            alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  color,
-                                  Color.lerp(color, Colors.black, 0.4)!,
-                                ],
+                                borderRadius:
+                                    BorderRadius.circular(borderRadius),
+                                border: Border.all(
+                                  color:
+                                      isSelected ? color : Colors.transparent,
+                                  width: 4,
+                                )),
+                            child: AnimatedContainer(
+                              curve: Curves.easeInOutCubic,
+                              duration: const Duration(milliseconds: 300),
+                              height: 40,
+                              width: 40,
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [
+                                    color,
+                                    Color.lerp(color, Colors.black, 0.4)!,
+                                  ],
+                                ),
+                                borderRadius:
+                                    BorderRadius.circular(innerBorderRadius),
                               ),
-                              borderRadius:
-                                  BorderRadius.circular(innerBorderRadius),
-                            ),
-                            child: GestureDetector(
-                              onTap: () =>
-                                  setState(() => _selectedIndex = index),
+                              child: GestureDetector(
+                                onTap: () =>
+                                    setState(() => _selectedIndex = index),
+                              ),
                             ),
                           ),
                         );
-                      })
-                    ],
+                      }).toList(),
+                    ),
                   ),
-                )),
-            const SizedBox(height: 14),
-            SectionCard(
-              title: 'Címkék',
-              child: Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                ),
+              ],
+            ),
+
+            // Címkék
+            SettingsGroup(
+              header: 'Címkék',
+              children: [
+                SettingsTile(
+                  title: 'Új címke hozzáadása',
+                  onTap: _openTagPicker,
+                ),
+                if (tags.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.lg,
+                        AppSpacing.xs, AppSpacing.lg, AppSpacing.lg),
+                    child: Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: tags.map((tag) {
+                        return Chip(
+                          padding: const EdgeInsets.all(AppSpacing.sm),
+                          label: Text(tag),
+                          labelStyle:
+                              TextStyle(color: scheme.onSecondaryContainer),
+                          backgroundColor: scheme.secondaryContainer,
+                          shape: const StadiumBorder(),
+                          side: BorderSide.none,
+                          deleteIcon: const Icon(Icons.close_rounded, size: 16),
+                          deleteIconColor: scheme.onSecondaryContainer,
+                          onDeleted: () =>
+                              setState(() => tags = [...tags]..remove(tag)),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ]
+              ],
+            ),
+
+            // Törlés
+            if (_hasExistingSite)
+              SettingsGroup(
                 children: [
-                  ActionChip(
-                    avatar: const Icon(Icons.add_rounded, size: 18),
-                    label: const Text('Új címke'),
-                    onPressed: _openTagPicker,
+                  DestructiveTile(
+                    title: 'Oldal törlése',
+                    onTap: _delete,
                   ),
-                  ...tags.map((tag) => Chip(
-                        label: Text(tag),
-                        onDeleted: () => setState(() => tags.remove(tag)),
-                      )),
                 ],
               ),
-            ),
-            if (_hasExistingSite) ...[
-              const SizedBox(height: 24),
-              buildDestructiveButton(
-                context,
-                Icons.delete_outline_rounded,
-                label: 'Törlés',
-                onPressed: _delete,
-              ),
-            ],
           ],
         ),
       ),
@@ -364,49 +345,15 @@ class _MySiteScreenState extends State<MySiteScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        scrolledUnderElevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                scheme.surface,
-                scheme.surface,
-                scheme.surface.withValues(alpha: 0.0),
-              ],
-              stops: const [0.0, 0.55, 1.0],
-            ),
-          ),
-        ),
+      appBar: buildAckAppBar(
+        context: context,
+        scheme: scheme,
         title: Text(_hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: SizedBox.square(
-              dimension: 48,
-              child: IconButton(
-                iconSize: 28,
-                style:
-                    IconButton.styleFrom(backgroundColor: Colors.transparent),
-                constraints: BoxConstraints.tight(
-                  const Size.square(AppSpacing.minimumAndroid),
-                ),
-                onPressed: () async {
-                  await _submit();
-                  if (!context.mounted) return;
-                  Navigator.pop(context);
-                },
-                icon: const Icon(
-                  Icons.check,
-                  color: Colors.white70,
-                ),
-              ),
-            ),
-          ),
-        ],
+        onPressed: () async {
+          await _submit();
+          if (!context.mounted) return;
+          Navigator.pop(context);
+        },
       ),
       body: _loading
           ? const Center(child: RefreshProgressIndicator())

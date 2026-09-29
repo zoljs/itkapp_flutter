@@ -6,54 +6,49 @@ class UserSiteCard extends StatelessWidget {
   final Color color;
   final Widget child;
   final double? height;
-  final void Function() onTap;
+  final VoidCallback? onTap;
 
-  const UserSiteCard(
-      {super.key,
-      required this.color,
-      required this.child,
-      this.height,
-      required this.onTap});
+  const UserSiteCard({
+    super.key,
+    required this.color,
+    required this.child,
+    this.height,
+    this.onTap,
+  });
 
+  // redesigned to somewhat follow HIG
   @override
   Widget build(BuildContext context) {
     return Container(
       height: height,
-      padding: const EdgeInsets.all(AppSpacing.xs),
+      // drop shadow provides depth
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color.lerp(color, Colors.white, 0.5)!,
-            color.withValues(alpha: 0.5),
-          ],
-        ),
+        color: color, // flat background color following HIG deference principle
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(
+                alpha: 0.25), // tinted shadow based on the card's primary color
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         clipBehavior: Clip.antiAlias,
-        child: Ink(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                color,
-                Color.lerp(color, Colors.black, 0.12)!,
-              ],
-            ),
-          ),
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: BorderRadius.circular(AppRadius.lg),
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-              child: child,
-            ),
+        child: InkWell(
+          highlightColor: Colors.white38,
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
+            child: child,
           ),
         ),
       ),

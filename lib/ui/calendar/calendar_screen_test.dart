@@ -1,5 +1,6 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/data/services/calendar_service.dart';
@@ -175,7 +176,7 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
                           ),
                         ),
                         const SizedBox(
-                          width: 8,
+                          width: AppSpacing.sm,
                         ),
                         IconButton(
                           style: IconButton.styleFrom(
@@ -300,23 +301,27 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
               child: Center(
                 child: IgnorePointer(
                   ignoring: isToday,
-                  child: AnimatedOpacity(
-                    opacity: isToday ? 0 : 1,
-                    duration: const Duration(milliseconds: 300),
-                    child: FilledButton(
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.black87.withValues(alpha: .3),
-                        foregroundColor: Colors.white70,
-                        disabledBackgroundColor:
-                            Colors.black87.withValues(alpha: .15),
-                        disabledForegroundColor: Colors.white38,
-                      ),
-                      onPressed: isToday ? null : _goToToday,
-                      child: const Text(
-                        'Ma',
-                      ),
+                  child: FilledButton(
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.black87.withValues(alpha: .3),
+                      foregroundColor: Colors.white70,
+                      disabledBackgroundColor:
+                          Colors.black87.withValues(alpha: .15),
+                      disabledForegroundColor: Colors.white38,
                     ),
-                  ),
+                    onPressed: isToday ? null : _goToToday,
+                    child: const Text(
+                      'Ma',
+                    ),
+                  )
+                      .animate(target: isToday ? 0 : 1)
+                      .fadeIn(duration: 100.ms)
+                      .slideY(
+                        begin: .5,
+                        end: 0,
+                        duration: 300.ms,
+                        curve: Curves.easeOut,
+                      ),
                 ),
               ),
             )

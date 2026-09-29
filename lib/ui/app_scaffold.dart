@@ -41,11 +41,23 @@ class _AppScaffoldState extends State<AppScaffold> {
             selectedIndex: _selectedIndex,
             onTap: (index) => setState(() => _selectedIndex = index),
             items: const [
-              NavBarItem(icon: Icons.home_rounded, label: 'Főoldal'),
-              NavBarItem(icon: Icons.calendar_month_rounded, label: 'Naptár'),
-              NavBarItem(icon: Icons.groups_rounded, label: 'Wiki'),
+              NavBarItem(
+                  icon: Icons.home_outlined,
+                  selectedIcon: Icons.home_rounded,
+                  label: 'Főoldal'),
+              NavBarItem(
+                  icon: Icons.calendar_month_outlined,
+                  selectedIcon: Icons.calendar_month_rounded,
+                  label: 'Naptár'),
+              NavBarItem(
+                  icon: Icons.groups_outlined,
+                  selectedIcon: Icons.groups_rounded,
+                  label: 'Wiki'),
               //NavBarItem(icon: Icons.note_rounded, label: 'ZHk'),
-              NavBarItem(icon: Icons.settings_rounded, label: 'Beállítások'),
+              NavBarItem(
+                  icon: Icons.settings_outlined,
+                  selectedIcon: Icons.settings_rounded,
+                  label: 'Beállítások'),
             ],
           ),
         );

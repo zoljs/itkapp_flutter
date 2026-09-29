@@ -1,4 +1,6 @@
 import 'package:calendar_view/calendar_view.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/data/services/theme_service.dart';
@@ -42,11 +44,27 @@ ColorScheme _darkSchemeFor(ColorScheme base, {required bool isOled}) {
 ThemeData _buildTheme(ColorScheme scheme) {
   final TextTheme base =
       ThemeData(colorScheme: scheme, useMaterial3: true).textTheme;
+  final cupertinoText = const CupertinoThemeData().textTheme;
 
   return ThemeData(
     colorScheme: scheme,
     useMaterial3: true,
+    splashFactory: defaultTargetPlatform == TargetPlatform.iOS
+        ? NoSplash.splashFactory
+        : null,
     textTheme: buildITKAppTextTheme(base),
+    cupertinoOverrideTheme: CupertinoThemeData(
+      textTheme: cupertinoText.copyWith(
+        textStyle: cupertinoText.textStyle.merge(flexRegular),
+        actionTextStyle: cupertinoText.actionTextStyle.merge(flexRegular),
+        navTitleTextStyle: cupertinoText.navTitleTextStyle.merge(flexRounded),
+        navLargeTitleTextStyle:
+            cupertinoText.navLargeTitleTextStyle.merge(flexRounded),
+        pickerTextStyle: cupertinoText.pickerTextStyle.merge(flexRegular),
+        dateTimePickerTextStyle:
+            cupertinoText.dateTimePickerTextStyle.merge(flexRegular),
+      ),
+    ),
     inputDecorationTheme: buildITKAppInputDecorationTheme(scheme),
     snackBarTheme: const SnackBarThemeData(
       behavior: SnackBarBehavior.floating,
@@ -67,7 +85,6 @@ class ITKApp extends StatelessWidget {
       DeviceOrientation.portraitDown,
     ]);
 
-    final lightScheme = ColorScheme.fromSeed(seedColor: _seedColor);
     final baseDarkScheme = ColorScheme.fromSeed(
       seedColor: _seedColor,
       brightness: Brightness.dark,
@@ -83,8 +100,7 @@ class ITKApp extends StatelessWidget {
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'ITK App',
-            themeMode: ThemeMode.system,
-            theme: _buildTheme(lightScheme),
+            themeMode: ThemeMode.dark,
             darkTheme: _buildTheme(darkScheme),
             home: const AuthGate(),
             navigatorKey: navigatorKey,
