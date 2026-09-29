@@ -26,7 +26,6 @@ class AppNavBar extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
 
     return Container(
-      height: 84,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
@@ -34,43 +33,45 @@ class AppNavBar extends StatelessWidget {
           colors: [
             scheme.surface.withValues(alpha: 0.0),
             scheme.surface.withValues(alpha: 0.7),
-            scheme.surface.withValues(alpha: 0.9),
+            scheme.surface,
             scheme.surface,
           ],
-          stops: const [0.0, 0.33, 0.66, 1.0],
+          stops: const [0.0, 0.3, 0.7, 1.0],
         ),
       ),
       child: SafeArea(
-        top: false,
-        child: Row(
-          children: List.generate(items.length, (index) {
-            final item = items[index];
-            final selected = index == selectedIndex;
-            final color = selected ? _selectedColor : _unselectedColor;
+        child: SizedBox(
+          height: 50,
+          child: Row(
+            children: List.generate(items.length, (index) {
+              final item = items[index];
+              final selected = index == selectedIndex;
+              final color = selected ? _selectedColor : _unselectedColor;
 
-            return Expanded(
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => onTap(index),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(item.icon, color: color, size: 28),
-                    const SizedBox(height: 4),
-                    Text(
-                      item.label,
-                      style: TextStyle(
-                        color: color,
-                        fontSize: 11,
-                        fontWeight:
-                            selected ? FontWeight.w600 : FontWeight.w400,
+              return Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
+                  onTap: () => onTap(index),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(item.icon, color: color, size: 28),
+                      const SizedBox(height: 4),
+                      Text(
+                        item.label,
+                        style: TextStyle(
+                          color: color,
+                          fontSize: 11,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.w400,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-            );
-          }),
+              );
+            }),
+          ),
         ),
       ),
     );
