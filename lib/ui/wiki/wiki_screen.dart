@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/wiki/my_site_screen.dart';
 import 'package:itk_app/data/services/auth_service.dart';
@@ -43,10 +44,12 @@ class _WikiScreenState extends State<WikiScreen> {
     }
   }
 
+  String? _error;
   Future<void> _loadAll({bool forceReload = false}) async {
-    if (!SitesService.instance.hasCachedSites || forceReload) {
-      setState(() => _loading = true);
-    }
+    setState(() {
+      _error = null;
+      if (!SitesService.instance.hasCachedSites || forceReload) _loading = true;
+    });
 
     try {
       final sites =
@@ -57,9 +60,13 @@ class _WikiScreenState extends State<WikiScreen> {
         _sites = sites;
         _loading = false;
       });
-    } catch (e) {
+      //throw DioException(requestOptions: RequestOptions());
+    } on DioException {
       if (!mounted) return;
-      setState(() => _loading = false);
+      setState(() {
+        _error = 'Nem sikerült betölteni az oldalakat.';
+        _loading = false;
+      });
     }
   }
 
@@ -215,9 +222,15 @@ class _WikiScreenState extends State<WikiScreen> {
                 child: TextField(
                   controller: _searchController,
                   onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     hintText: 'Oldal, tantárgy neve...',
-                    prefixIcon: Icon(Icons.search_rounded),
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    suffixIcon: _searchController.text.isEmpty
+                        ? null
+                        : IconButton(
+                            icon: const Icon(Icons.close_rounded),
+                            onPressed: () => setState(_searchController.clear),
+                          ),
                   ),
                 ),
               ),
@@ -234,7 +247,7 @@ class _WikiScreenState extends State<WikiScreen> {
                           color: Theme.of(context)
                               .colorScheme
                               .surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(AppRadius.xxl),
+                          borderRadius: BorderRadius.circular(AppRadius.lg),
                         ),
                         child: const CircularProgressIndicator.adaptive(),
                       )
@@ -259,6 +272,31 @@ class _WikiScreenState extends State<WikiScreen> {
                         ),
                       )
                     : _filteredSites;
+
+                if (!_loading && (_error != null || displaySites.isEmpty)) {
+                  final query = _searchController.text.trim();
+                  return SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppSpacing.xxl),
+                      child: Column(
+                        children: [
+                          Text(
+                            _error ??
+                                (query.isEmpty
+                                    ? 'Még nincs oldal.'
+                                    : 'Nincs találat erre: "$query"'),
+                            textAlign: TextAlign.center,
+                          ),
+                          if (_error != null)
+                            TextButton(
+                              onPressed: () => _loadAll(forceReload: true),
+                              child: const Text('Újra'),
+                            ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
 
                 return SliverPadding(
                   padding: const EdgeInsets.fromLTRB(

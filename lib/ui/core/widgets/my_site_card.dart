@@ -21,7 +21,7 @@ class MySiteCard extends StatelessWidget {
         height: 80,
         child: Material(
           color: scheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(AppRadius.xxl),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: openMySite,
