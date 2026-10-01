@@ -303,18 +303,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
 
                 // Logout
-                SettingsGroup(
-                  children: [
-                    DestructiveTile(
-                      title: 'Kijelentkezés',
-                      onTap: _confirmLogout,
-                    ),
-                  ],
-                ),
+
                 BrandButton(
                   onTap: _confirmLogout,
+                  height: 52,
                   backgroundColor: scheme.errorContainer,
-                  child: const Center(child: Text("Kijelentkezés")),
+                  child: Center(
+                      child: Text(
+                    "Kijelentkezés",
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: scheme.error,
+                    ),
+                  )),
                 ),
               ],
             ),

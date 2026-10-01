@@ -5,6 +5,7 @@ import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/ack_appbar.dart';
+import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:flutter/material.dart';
 
@@ -324,15 +325,25 @@ class _MySiteScreenState extends State<MySiteScreen> {
             ),
 
             // Törlés
-            if (_hasExistingSite)
-              SettingsGroup(
-                children: [
-                  DestructiveTile(
-                    title: 'Oldal törlése',
-                    onTap: _delete,
+            if (_hasExistingSite) ...[
+              BrandButton(
+                onTap: _delete,
+                height: 52,
+                backgroundColor: scheme.errorContainer,
+                child: Center(
+                    child: Text(
+                  "Oldal törlése",
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w600,
+                    color: scheme.error,
                   ),
-                ],
+                )),
               ),
+              const SizedBox(
+                height: AppSpacing.xxl,
+              )
+            ]
           ],
         ),
       ),

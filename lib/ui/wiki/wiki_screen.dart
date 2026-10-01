@@ -205,6 +205,7 @@ class _WikiScreenState extends State<WikiScreen> {
           ),
           slivers: [
             ShrinkingSliverAppBar(
+              middleValue: .8,
               centerTitle: false,
               title: Text(
                 'ITK Wiki 3 Beta',
@@ -253,7 +254,6 @@ class _WikiScreenState extends State<WikiScreen> {
                       )
                     : MySiteCard(mySite: _mySite, openMySite: _openMySite),
               ),
-              hasSearchBar: true,
             ),
             Builder(
               builder: (context) {

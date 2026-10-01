@@ -263,8 +263,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   : const Text(
                                       'Bejelentkezés',
                                       style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w700,
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w600,
                                         letterSpacing: 0.2,
                                       ),
                                     ),

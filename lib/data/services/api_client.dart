@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:dio_web_adapter/dio_web_adapter.dart';
+import 'package:itk_app/data/services/http_adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -28,9 +28,9 @@ class ApiClient {
     );
 
     if (kIsWeb) {
-    // Cross-origin XHR needs this explicitly, otherwise the browser
-    // drops the session cookie from the login response entirely.
-    dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+      // Cross-origin XHR needs this explicitly, otherwise the browser
+      // drops the session cookie from the login response entirely.
+      configureHttpAdapter(dio);
     } else {
       // dio_cookie_manager asserts against being used on web; only wire
       // up the file-based cookie jar on other platforms.

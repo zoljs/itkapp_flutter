@@ -7,13 +7,14 @@ class ComposeAppBarLarge extends StatefulWidget {
   final Widget title;
   final Widget body;
 
-  const ComposeAppBarLarge(
-      {super.key,
-      required this.collapseRange,
-      required this.expandedColor,
-      required this.collapsedColor,
-      required this.title,
-      required this.body});
+  const ComposeAppBarLarge({
+    super.key,
+    required this.collapseRange,
+    required this.expandedColor,
+    required this.collapsedColor,
+    required this.title,
+    required this.body,
+  });
 
   @override
   State<ComposeAppBarLarge> createState() => _ComposeAppBarLargeState();

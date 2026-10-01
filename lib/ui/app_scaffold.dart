@@ -23,7 +23,7 @@ class _AppScaffoldState extends State<AppScaffold> {
   int _selectedIndex = 0;
 
   final List<Widget> navItems = [
-    const HomeScreenTest(),
+    const HomeScreen(),
     const CalendarScreenTest(),
     const WikiScreen(),
     const SettingsScreen(),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/widgets/brand_icon_button.dart';
 
 PreferredSizeWidget buildAckAppBar({
   required ColorScheme scheme,
@@ -25,23 +25,22 @@ PreferredSizeWidget buildAckAppBar({
       ),
     ),
     title: title,
+    leadingWidth: 56,
+    leading: Center(
+      child: SizedBox.square(
+        dimension: 48,
+        child: BrandIconButton(
+            icon: Icons.arrow_back_ios_new_rounded,
+            onPressed: () => Navigator.pop(context)),
+      ),
+    ),
+    actionsPadding: const EdgeInsets.all(4.0),
     actions: [
-      Padding(
-        padding: const EdgeInsets.all(4.0),
+      Center(
         child: SizedBox.square(
           dimension: 48,
-          child: IconButton(
-            iconSize: 28,
-            style: IconButton.styleFrom(backgroundColor: Colors.transparent),
-            constraints: BoxConstraints.tight(
-              const Size.square(AppSpacing.minimumAndroid),
-            ),
-            onPressed: onPressed,
-            icon: const Icon(
-              Icons.check,
-              color: Colors.white70,
-            ),
-          ),
+          child:
+              BrandIconButton(icon: Icons.check_rounded, onPressed: onPressed),
         ),
       ),
     ],
