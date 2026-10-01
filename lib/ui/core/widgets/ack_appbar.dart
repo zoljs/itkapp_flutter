@@ -25,24 +25,9 @@ PreferredSizeWidget buildAckAppBar({
       ),
     ),
     title: title,
-    leadingWidth: 56,
-    leading: Center(
-      child: SizedBox.square(
-        dimension: 48,
-        child: BrandIconButton(
-            icon: Icons.arrow_back_ios_new_rounded,
-            onPressed: () => Navigator.pop(context)),
-      ),
-    ),
-    actionsPadding: const EdgeInsets.all(4.0),
+    actionsPadding: const EdgeInsets.all(8.0),
     actions: [
-      Center(
-        child: SizedBox.square(
-          dimension: 48,
-          child:
-              BrandIconButton(icon: Icons.check_rounded, onPressed: onPressed),
-        ),
-      ),
+      TextButton(onPressed: onPressed, child: const Text("Kész")),
     ],
   );
 }

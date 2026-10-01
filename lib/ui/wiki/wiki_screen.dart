@@ -250,7 +250,7 @@ class _WikiScreenState extends State<WikiScreen> {
                               .surfaceContainerHigh,
                           borderRadius: BorderRadius.circular(AppRadius.lg),
                         ),
-                        child: const CircularProgressIndicator.adaptive(),
+                        child: const CircularProgressIndicator(),
                       )
                     : MySiteCard(mySite: _mySite, openMySite: _openMySite),
               ),

@@ -10,7 +10,7 @@ class BrandIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox.square(
-      dimension: 48,
+      dimension: 44,
       child: IconButton(
         iconSize: 28,
         style: IconButton.styleFrom(backgroundColor: Colors.transparent),
@@ -20,7 +20,7 @@ class BrandIconButton extends StatelessWidget {
         onPressed: onPressed,
         icon: Icon(
           icon,
-          color: Colors.white70,
+          color: Colors.white,
         ),
       ),
     );

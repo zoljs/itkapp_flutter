@@ -254,7 +254,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   ? SizedBox(
                                       height: 24,
                                       width: 24,
-                                      child: CircularProgressIndicator.adaptive(
+                                      child: CircularProgressIndicator(
                                         valueColor: AlwaysStoppedAnimation(
                                             scheme.onPrimary),
                                         strokeWidth: 3,

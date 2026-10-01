@@ -1,3 +1,8 @@
+import 'dart:async';
+import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/home/widgets/event_card.dart';
+import 'package:itk_app/ui/settings/settings_screen.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -48,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
       _loadingEvents = true;
       _eventsError = null;
     });
+    //await Completer<void>().future;
     try {
       final events = await CalendarService.instance.getCalendar();
       final now = DateTime.now();
@@ -172,8 +178,21 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  const _SectionHeader('Gyors linkek'),
-                  _QuickLinksGrid(onTap: _openLink),
+                  SettingsGroup(
+                    header: 'Gyors linkek',
+                    children: [
+                      _QuickLinksGrid(onTap: _openLink),
+                      SettingsTile(
+                        icon: Icons.settings,
+                        iconColor: itkPrimary,
+                        title: 'Beállítások',
+                        onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const SettingsScreen())),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ),
@@ -184,7 +203,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildNextEvent(ColorScheme scheme) {
-    const nextEventHeight = 64.0;
     final muted = TextStyle(fontSize: 13, color: scheme.onSurfaceVariant);
     final Widget content;
 
@@ -195,57 +213,28 @@ class _HomeScreenState extends State<HomeScreen> {
           TextButton(onPressed: _loadNextEvent, child: const Text('Újra')),
         ],
       );
-    } else if (_nextEvent == null) {
+    } else if (!_loadingEvents && _nextEvent == null) {
       content = Text('Nincs közelgő órád.', style: muted);
     } else {
-      final e = _nextEvent!;
+      // While loading, show mock data
+      final e = _nextEvent ??
+          CalendarEvent(
+            title: BoneMock.words(3),
+            start: DateTime.now(),
+            end: DateTime.now(),
+          );
+
+      // Datetime stuff
       final isToday = DateUtils.isSameDay(e.start, DateTime.now());
       final day =
           isToday ? 'Ma' : DateFormat('MMM d., EEEE', 'hu').format(e.start);
       final time =
           '${DateFormat.Hm().format(e.start)}–${DateFormat.Hm().format(e.end)}';
 
-      content = Row(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                DateFormat.Hm().format(e.start),
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w700,
-                  color: scheme.primary,
-                ),
-              ),
-              Text(day, style: muted),
-            ],
-          ),
-          const SizedBox(width: AppSpacing.lg),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  e.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: scheme.onSurface,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  [time, if (e.location?.isNotEmpty ?? false) e.location!]
-                      .join(' · '),
-                  style: muted,
-                ),
-              ],
-            ),
-          ),
-        ],
+      content = Skeletonizer(
+        enabled: _loadingEvents,
+        child:
+            EventCard(e: e, scheme: scheme, day: day, muted: muted, time: time),
       );
     }
 
@@ -284,27 +273,6 @@ class _FadingLogo extends StatelessWidget {
   }
 }
 
-class _SectionHeader extends StatelessWidget {
-  const _SectionHeader(this.text);
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
-      child: Text(
-        text.toUpperCase(),
-        style: TextStyle(
-          fontSize: 13,
-          letterSpacing: 0.4,
-          color: Theme.of(context).colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
-  }
-}
-
 class _QuickLinksGrid extends StatelessWidget {
   const _QuickLinksGrid({required this.onTap});
 
@@ -314,42 +282,55 @@ class _QuickLinksGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return Material(
-      color: scheme.surfaceContainerHigh,
-      borderRadius: BorderRadius.circular(AppRadius.xl),
-      clipBehavior: Clip.antiAlias,
-      child: GridView.count(
-        crossAxisCount: 4,
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(AppSpacing.sm),
+    return GridView.count(
+      crossAxisCount: 4,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      children: [
+        for (final link in _quickLinks)
+          QuickLinkTile(onTap: onTap, link: link, scheme: scheme),
+      ],
+    );
+  }
+}
+
+class QuickLinkTile extends StatelessWidget {
+  const QuickLinkTile({
+    super.key,
+    required this.onTap,
+    required this.link,
+    required this.scheme,
+  });
+
+  final ValueChanged<String> onTap;
+  final QuickLink link;
+  final ColorScheme scheme;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      onTap: () => onTap(link.url),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          for (final link in _quickLinks)
-            InkWell(
-              borderRadius: BorderRadius.circular(AppRadius.lg),
-              onTap: () => onTap(link.url),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    link.iconAsset,
-                    height: 32,
-                    errorBuilder: (_, __, ___) => Icon(
-                      Icons.link_rounded,
-                      size: 32,
-                      color: scheme.primary,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(
-                    link.label,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12, color: scheme.onSurface),
-                  ),
-                ],
-              ),
+          Image.asset(
+            link.iconAsset,
+            height: 32,
+            errorBuilder: (_, __, ___) => Icon(
+              Icons.link_rounded,
+              size: 32,
+              color: scheme.primary,
             ),
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            link.label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(fontSize: 12, color: scheme.onSurface),
+          ),
         ],
       ),
     );

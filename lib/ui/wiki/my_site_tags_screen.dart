@@ -95,7 +95,7 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
         children: [
           _loading
               ? const Center(
-                  child: CircularProgressIndicator.adaptive(),
+                  child: CircularProgressIndicator(),
                 )
               : ListView.separated(
                   padding: EdgeInsets.only(

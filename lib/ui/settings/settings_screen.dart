@@ -318,6 +318,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   )),
                 ),
+
+                FittedBox(
+                  fit: BoxFit.contain,
+                  child: SizedBox(
+                    width: 356,
+                    height: 412,
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 0,
+                          right: 0,
+                          bottom: 0,
+                          child: Center(
+                            child: Image.network(
+                                width: 356,
+                                'https://freepngimg.com/thumb/trampoline/132588-trampoline.png'),
+                          ),
+                        ),
+                        Center(
+                          child: Image.network(
+                              width: 167,
+                              'https://media.tenor.com/h_jy2s28rlYAAAAj/spinning-cat.gif'),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
               ],
             ),
           ),
