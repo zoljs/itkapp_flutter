@@ -30,16 +30,17 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
   }
 
   Future<void> _loadEvents({bool forceReload = false}) async {
-    final events =
-        await CalendarService.instance.getCalendar(forceReload: forceReload);
-    final eventData = events.map((e) {
-      final isInstant = e.end.isAtSameMomentAs(e.start);
-      final displayEnd =
-          isInstant ? e.start.add(const Duration(minutes: 15)) : e.end;
+      final events = await CalendarService.instance.getCalendar(forceReload: forceReload);
+      final eventData = events.map((e) {
+      final start = e.start.toLocal();
+      final end = e.end.toLocal();
+      final isInstant = end.isAtSameMomentAs(start);
+      final displayEnd = isInstant ? start.add(const Duration(minutes: 15)) : end;
+
 
       return CalendarEventData<CalendarEvent>(
-        date: e.start,
-        startTime: e.start,
+        date: start,
+        startTime: start,
         endTime: displayEnd,
         title: e.title,
         event: e,
