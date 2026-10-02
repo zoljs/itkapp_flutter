@@ -40,6 +40,13 @@ class ApiClient {
       );
       dio.interceptors.add(CookieManager(_cookieJar!));
     }
+    // if (kDebugMode) {
+    //   dio.interceptors.add(LogInterceptor(
+    //     requestBody: true,
+    //     responseBody: true,
+    //     logPrint: (o) => debugPrint(o.toString()),
+    //   ));
+    // }
     _initialized = true;
   }
 

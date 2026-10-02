@@ -195,6 +195,8 @@ class _WikiScreenState extends State<WikiScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () => _loadAll(forceReload: true),
@@ -245,9 +247,7 @@ class _WikiScreenState extends State<WikiScreen> {
                         padding:
                             const EdgeInsets.all(AppSpacing.screenHorizontal),
                         decoration: BoxDecoration(
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surfaceContainerHigh,
+                          color: scheme.surfaceContainerHigh,
                           borderRadius: BorderRadius.circular(AppRadius.lg),
                         ),
                         child: const CircularProgressIndicator(),
@@ -275,24 +275,38 @@ class _WikiScreenState extends State<WikiScreen> {
 
                 if (!_loading && (_error != null || displaySites.isEmpty)) {
                   final query = _searchController.text.trim();
-                  return SliverToBoxAdapter(
+
+                  final (icon, message) = switch ((_error, query.isEmpty)) {
+                    (final String error, _) => (Icons.cloud_off_rounded, error),
+                    (null, true) => (Icons.hourglass_empty, 'Még nincs oldal.'),
+                    (null, false) => (
+                        Icons.search_off_rounded,
+                        'Nincs találat erre: „$query”'
+                      ),
+                  };
+
+                  return SliverFillRemaining(
+                    hasScrollBody: false,
                     child: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.xxl),
-                      child: Column(
-                        children: [
-                          Text(
-                            _error ??
-                                (query.isEmpty
-                                    ? 'Még nincs oldal.'
-                                    : 'Nincs találat erre: "$query"'),
-                            textAlign: TextAlign.center,
-                          ),
-                          if (_error != null)
-                            TextButton(
-                              onPressed: () => _loadAll(forceReload: true),
-                              child: const Text('Újra'),
-                            ),
-                        ],
+                      padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.xxl,
+                          AppSpacing.xxl,
+                          AppSpacing.xxl,
+                          AppSpacing.bottomNavClearance),
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(icon, size: 48, color: scheme.outline),
+                            const SizedBox(height: AppSpacing.md),
+                            Text(message, textAlign: TextAlign.center),
+                            if (_error != null)
+                              TextButton(
+                                onPressed: () => _loadAll(forceReload: true),
+                                child: const Text('Újra'),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   );
