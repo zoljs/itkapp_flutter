@@ -28,7 +28,7 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
     super.initState();
     _loadEvents();
   }
-
+  //correct approach
   Future<void> _loadEvents({bool forceReload = false}) async {
       final events = await CalendarService.instance.getCalendar(forceReload: forceReload);
       final eventData = events.map((e) {

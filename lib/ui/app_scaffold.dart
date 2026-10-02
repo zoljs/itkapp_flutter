@@ -5,6 +5,7 @@ import 'package:itk_app/ui/wiki/wiki_screen.dart';
 import 'package:itk_app/data/services/sites_service.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/widgets/navbar.dart';
+import 'package:itk_app/ui/online_videos/online_videos.dart';
 
 class AppScaffold extends StatefulWidget {
   const AppScaffold({super.key});
@@ -27,6 +28,7 @@ class _AppScaffoldState extends State<AppScaffold> {
     const CalendarScreenTest(),
     const WikiScreen(),
     const SettingsScreen(),
+    const OnlineVideos(),
   ];
 
   @override
@@ -58,6 +60,10 @@ class _AppScaffoldState extends State<AppScaffold> {
                   icon: Icons.settings_outlined,
                   selectedIcon: Icons.settings_rounded,
                   label: 'Beállítások'),
+              NavBarItem(
+                  icon: Icons.video_chat_outlined,
+                  label: 'Online Tananyagok',
+                  selectedIcon: Icons.video_chat_rounded)
             ],
           ),
         );
