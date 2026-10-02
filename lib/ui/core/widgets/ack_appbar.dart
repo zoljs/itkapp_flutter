@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/widgets/brand_icon_button.dart';
 
 PreferredSizeWidget buildAckAppBar({
   required ColorScheme scheme,
@@ -25,25 +25,9 @@ PreferredSizeWidget buildAckAppBar({
       ),
     ),
     title: title,
+    actionsPadding: const EdgeInsets.all(8.0),
     actions: [
-      Padding(
-        padding: const EdgeInsets.all(4.0),
-        child: SizedBox.square(
-          dimension: 48,
-          child: IconButton(
-            iconSize: 28,
-            style: IconButton.styleFrom(backgroundColor: Colors.transparent),
-            constraints: BoxConstraints.tight(
-              const Size.square(AppSpacing.minimumAndroid),
-            ),
-            onPressed: onPressed,
-            icon: const Icon(
-              Icons.check,
-              color: Colors.white70,
-            ),
-          ),
-        ),
-      ),
+      TextButton(onPressed: onPressed, child: const Text("Kész")),
     ],
   );
 }

@@ -24,8 +24,7 @@ class SettingsGroup extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(
                   AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
-              child: Text(header!.toUpperCase(),
-                  style: muted.copyWith(letterSpacing: 0.4)),
+              child: Text(header!, style: muted.copyWith(letterSpacing: 0.4)),
             ),
           ClipRRect(
             borderRadius: BorderRadius.circular(AppRadius.lg),

@@ -9,7 +9,6 @@ class SitesService {
 
   final Dio _dio = ApiClient.instance.dio;
   final ValueNotifier<UserSite?> mySiteNotifier = ValueNotifier(null);
-  final searchQuery = ValueNotifier<String>('');
 
   static const _legacyWikiUrl =
       'https://users.itk.ppke.hu/~perpa4/data/students.php';

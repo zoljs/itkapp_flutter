@@ -10,7 +10,7 @@ class ShrinkingSliverAppBar extends StatelessWidget {
     this.centerTitle = false,
     this.flexibleSpaceBarTitle,
     this.centeredWidget,
-    this.hasSearchBar = false,
+    this.middleValue = .65,
   });
 
   final Widget? preferredSizeChild;
@@ -18,22 +18,18 @@ class ShrinkingSliverAppBar extends StatelessWidget {
   final Widget? title;
   final Widget? flexibleSpaceBarTitle;
   final Widget? centeredWidget;
-  final bool hasSearchBar;
+  final double middleValue;
 
   final bool centerTitle;
 
   @override
   Widget build(BuildContext context) {
-    //final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-    const isIOS = false;
+    final scheme = Theme.of(context).colorScheme;
 
     const collapsedHeight = 60.0;
-    final idk = isIOS && hasSearchBar ? 0.0 : 70.0; // ignore: dead_code
-    final expandedHeight = 190.0 + idk;
-    final preferredSizeHeight =
-        isIOS && hasSearchBar ? 0.0 : 60.0; // ignore: dead_code
-    final separatorOffset =
-        isIOS && hasSearchBar ? 85 : 20.0; // ignore: dead_code
+    const expandedHeight = 260.0;
+    const preferredSizeHeight = 60.0;
+    const separatorOffset = 20.0;
 
     return SliverAppBar(
       stretch: true,
@@ -45,53 +41,71 @@ class ShrinkingSliverAppBar extends StatelessWidget {
       floating: true,
       pinned: true,
       scrolledUnderElevation: 0,
-      // backgroundColor: Colors.amber, //test
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Colors.transparent,
       actions: [
         ...?actions,
       ],
       actionsPadding:
           const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
-      bottom: !isIOS && hasSearchBar
-          ? PreferredSize(
-              preferredSize: Size.fromHeight(preferredSizeHeight),
+      bottom: preferredSizeChild == null
+          ? null
+          : PreferredSize(
+              preferredSize: const Size.fromHeight(preferredSizeHeight),
               child: preferredSizeChild!,
-            )
-          : null,
-      flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [
-          StretchMode.zoomBackground,
-        ],
-        collapseMode: CollapseMode.pin,
-        title: flexibleSpaceBarTitle,
-        centerTitle: true,
-        background: LayoutBuilder(
-          builder: (context, constraints) {
-            // constraints.maxHeight grows dynamically as the user pulls down
-            final currentHeight = constraints.maxHeight;
-            final dynamicSeparatorHeight =
-                (currentHeight / 2) + separatorOffset;
+            ),
+      flexibleSpace: Stack(
+        fit: StackFit.expand,
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  scheme.surface,
+                  scheme.surface,
+                  scheme.surface.withValues(alpha: 0.0),
+                ],
+                stops: [0.0, middleValue, 1.0],
+              ),
+            ),
+          ),
+          FlexibleSpaceBar(
+            stretchModes: const [
+              StretchMode.zoomBackground,
+            ],
+            collapseMode: CollapseMode.pin,
+            title: flexibleSpaceBarTitle,
+            centerTitle: true,
+            background: LayoutBuilder(
+              builder: (context, constraints) {
+                // constraints.maxHeight grows dynamically as the user pulls down
+                final currentHeight = constraints.maxHeight;
+                final dynamicSeparatorHeight =
+                    (currentHeight / 2) + separatorOffset;
 
-            return Stack(
-              children: [
-                Container(
-                  height: dynamicSeparatorHeight,
-                  width: double.infinity,
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                ),
-                Positioned(
-                  top: dynamicSeparatorHeight,
-                  left: 0,
-                  right: 0,
-                  child: FractionalTranslation(
-                    translation: const Offset(0.0, -0.5),
-                    child: centeredWidget,
-                  ),
-                ),
-              ],
-            );
-          },
-        ),
+                return Stack(
+                  children: [
+                    Container(
+                      height: dynamicSeparatorHeight,
+                      width: double.infinity,
+                      color: scheme.primaryContainer,
+                    ),
+                    Positioned(
+                      top: dynamicSeparatorHeight,
+                      left: 0,
+                      right: 0,
+                      child: FractionalTranslation(
+                        translation: const Offset(0.0, -0.5),
+                        child: centeredWidget,
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
