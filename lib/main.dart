@@ -26,6 +26,7 @@ Future<void> main() async {
 }
 
 final navigatorKey = GlobalKey<NavigatorState>();
+final _calendarController = EventController<CalendarEvent>();
 
 const _seedColor = itkDark;
 
@@ -96,7 +97,7 @@ class ITKApp extends StatelessWidget {
         final darkScheme = _darkSchemeFor(baseDarkScheme, isOled: isOled);
 
         return CalendarControllerProvider(
-          controller: EventController<CalendarEvent>(),
+          controller: _calendarController,
           child: MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'ITK App',
