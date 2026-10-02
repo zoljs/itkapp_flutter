@@ -9,16 +9,14 @@ class CalendarService {
   static final CalendarService instance = CalendarService.internal();
   final Dio _dio = ApiClient.instance.dio;
 
-  List<CalendarEvent> _cachedEvents = [];
-  bool _hasFetchedCalendar = false;
+  List<CalendarEvent>? _cached;
 
   Future<List<CalendarEvent>> getCalendar({bool forceReload = false}) async {
     final username = AuthService.instance.cachedUser?.login;
     if (username == null) return [];
 
-    if (_hasFetchedCalendar && !forceReload) {
-      return _cachedEvents;
-    }
+    final cached = _cached;
+    if (cached != null && !forceReload) return cached;
 
     final response = await _dio.get('/api/calendar/$username');
     final icsText = response.data as String;
@@ -29,8 +27,9 @@ class CalendarService {
         .map((item) => CalendarEvent.fromJson(item))
         .toList();
 
-    _cachedEvents = events;
-    _hasFetchedCalendar = true;
+    _cached = events;
     return events;
   }
+
+  void clearCache() => _cached = null;
 }

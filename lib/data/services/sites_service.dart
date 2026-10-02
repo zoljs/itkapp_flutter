@@ -10,14 +10,13 @@ class SitesService {
   final Dio _dio = ApiClient.instance.dio;
   final ValueNotifier<UserSite?> mySiteNotifier = ValueNotifier(null);
 
-  static const _legacyWikiUrl =
-      'https://users.itk.ppke.hu/~perpa4/data/students.php';
+  // static const _legacyWikiUrl =
+  //     'https://users.itk.ppke.hu/~perpa4/data/students.php';
 
   // Cache of all sites
   List<UserSite> _cachedSites = [];
   List<UserSite> get cachedSites => List.unmodifiable(_cachedSites);
   bool get hasCachedSites => _cachedSites.isNotEmpty;
-  void clearCache() => _cachedSites.clear();
 
   // Returns the cache, if empty: sets the result of the GET request as the cache then returns it
   Future<List<UserSite>> getAllSites({bool forceReload = false}) async {
@@ -31,16 +30,16 @@ class SitesService {
         .map((json) => UserSite.fromJson(json as Map<String, dynamic>))
         .toList();
 
-    try {
-      final legacyResponse = await Dio().get(_legacyWikiUrl);
+    // try {
+    //   final legacyResponse = await Dio().get(_legacyWikiUrl);
 
-      if (legacyResponse.statusCode == 200 && legacyResponse.data is List) {
-        final legacySites = (legacyResponse.data as List).map((json) {
-          return UserSite.fromJson(json as Map<String, dynamic>);
-        }).toList();
-        sites.addAll(legacySites);
-      }
-    } catch (_) {}
+    //   if (legacyResponse.statusCode == 200 && legacyResponse.data is List) {
+    //     final legacySites = (legacyResponse.data as List).map((json) {
+    //       return UserSite.fromJson(json as Map<String, dynamic>);
+    //     }).toList();
+    //     sites.addAll(legacySites);
+    //   }
+    // } catch (_) {}
 
     _cachedSites = sites;
     return _cachedSites;
@@ -83,4 +82,6 @@ class SitesService {
     mySiteNotifier.value = null;
     clearCache();
   }
+
+  void clearCache() => _cachedSites.clear();
 }
