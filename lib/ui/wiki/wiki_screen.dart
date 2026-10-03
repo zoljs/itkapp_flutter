@@ -1,4 +1,5 @@
 import 'package:itk_app/domain/models/user_site.dart';
+import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/wiki/my_site_screen.dart';
 import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/data/services/sites_service.dart';
@@ -10,6 +11,7 @@ import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
 import 'package:itk_app/ui/core/widgets/my_site_card.dart';
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -96,8 +98,7 @@ class _WikiScreenState extends State<WikiScreen> {
         await launchUrl(uri, mode: LaunchMode.inAppWebView);
 
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nem sikerült megnyitni az oldalt.')));
+      context.showMessage('Nem sikerült megnyitni az oldalt.');
     }
   }
 
@@ -287,25 +288,18 @@ class _WikiScreenState extends State<WikiScreen> {
                   return SliverFillRemaining(
                     hasScrollBody: false,
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.xxl,
-                          AppSpacing.xxl,
-                          AppSpacing.xxl,
-                          AppSpacing.bottomNavClearance),
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(icon, size: 48, color: scheme.outline),
-                            const SizedBox(height: AppSpacing.md),
-                            Text(message, textAlign: TextAlign.center),
-                            if (_error != null)
-                              TextButton(
-                                onPressed: () => _loadAll(forceReload: true),
-                                child: const Text('Újra'),
-                              ),
-                          ],
-                        ),
+                      padding: EdgeInsets.fromLTRB(
+                        AppSpacing.xxl,
+                        AppSpacing.xxl,
+                        AppSpacing.xxl,
+                        MediaQuery.paddingOf(context).bottom + AppSpacing.lg,
+                      ),
+                      child: StateMessage(
+                        icon: icon,
+                        message: message,
+                        onRetry: _error != null
+                            ? () => _loadAll(forceReload: true)
+                            : null,
                       ),
                     ),
                   );

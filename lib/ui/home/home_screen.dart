@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
+import 'package:itk_app/utils/open_link.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,6 @@ import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class QuickLink {
   const QuickLink(this.label, this.url, this.iconAsset);
@@ -71,17 +71,6 @@ class _HomeScreenState extends State<HomeScreen> {
           _eventsError = message;
           _loadingEvents = false;
         });
-    }
-  }
-
-  Future<void> _openLink(String url) async {
-    final uri = Uri.tryParse(url);
-    final ok = uri != null &&
-        uri.hasScheme &&
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nem sikerült megnyitni a linket.')));
     }
   }
 
@@ -182,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SettingsGroup(
                     header: 'Gyors linkek',
                     children: [
-                      _QuickLinksGrid(onTap: _openLink),
+                      _QuickLinksGrid(onTap: (url) => openLink(context, url)),
                       SettingsTile(
                         icon: Icons.settings,
                         iconColor: itkPrimary,

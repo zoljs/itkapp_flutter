@@ -4,6 +4,7 @@ import 'package:itk_app/ui/auth/login_screen.dart';
 import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/data/services/sites_service.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
+import 'package:itk_app/utils/context_extensions.dart';
 
 Future<void> performLogout(BuildContext context) async {
   await AuthService.instance.logout();
@@ -33,7 +34,5 @@ Future<void> handleSessionExpired() async {
     (_) => false,
   );
 
-  ScaffoldMessenger.of(navigator.context).showSnackBar(
-    const SnackBar(content: Text('A munkameneted lejárt, jelentkezz be újra.')),
-  );
+  navigator.context.showMessage('A munkameneted lejárt, jelentkezz be újra.');
 }

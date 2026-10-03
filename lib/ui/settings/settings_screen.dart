@@ -1,7 +1,11 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
+import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
+import 'package:itk_app/utils/context_extensions.dart';
+import 'package:itk_app/utils/open_link.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -44,51 +48,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Future<void> _reportBug() async {
-    final uri = Uri.parse(
-      'https://github.com/zoljs/itkapp_flutter/issues/new'
-      '?title=${Uri.encodeComponent('[App] ')}'
-      '&labels=${Uri.encodeComponent('bug,mobile-app')}',
-    );
-    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Nem sikerült megnyitni a linket.')),
-      );
-    }
-  }
+  Future<void> _reportBug() => openLink(context,
+      'https://github.com/zoljs/itkapp_flutter/issues/new?title=${Uri.encodeComponent('[App] ')}&labels=${Uri.encodeComponent('bug,mobile-app')}');
 
   Future<void> _confirmLogout() async {
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog.adaptive(
-        title: const Text('Kijelentkezel?'),
-        content: const Text(
-            'A naptárad és a beállításaid újra bejelentkezés után érhetők el.'),
-        actions: isIOS
-            ? [
-                CupertinoDialogAction(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Mégse'),
-                ),
-                CupertinoDialogAction(
-                  isDestructiveAction: true,
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Kijelentkezés'),
-                ),
-              ]
-            : [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: const Text('Mégse'),
-                ),
-                TextButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  child: const Text('Kijelentkezés'),
-                ),
-              ],
-      ),
+    final confirmed = await showConfirmDialog(
+      context,
+      title: 'Kijelentkezel?',
+      message:
+          'A naptárad és a beállításaid újra bejelentkezés után érhetők el.',
+      confirmLabel: 'Kijelentkezés',
+      isDestructive: true,
     );
     if (confirmed == true && mounted) performLogout(context);
   }
@@ -299,6 +269,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         );
                       },
                     ),
+                    if (kDebugMode)
+                      SettingsTile(
+                        icon: Icons.bug_report_rounded,
+                        iconColor: Colors.orange,
+                        title: 'Session törlése',
+                        onTap: () async {
+                          await ApiClient.instance.clearCookies();
+                          if (!context.mounted) return;
+                          context.showMessage(
+                              'Cookie törölve, most frissíts valamit.');
+                        },
+                      ),
                   ],
                 ),
 

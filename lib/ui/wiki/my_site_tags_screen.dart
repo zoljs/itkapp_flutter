@@ -4,6 +4,7 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/widgets/ack_appbar.dart';
+import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/utils/result.dart';
 
 class MySiteTagsScreen extends StatefulWidget {
@@ -59,6 +60,10 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
   String? _error;
 
   Future<void> _loadSubjects() async {
+    setState(() {
+      _error = null;
+      _loading = true;
+    });
     final result = await SubjectsService.instance.getSubjects();
     if (!mounted) return;
 
@@ -95,23 +100,10 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
                   child: CircularProgressIndicator(),
                 )
               : _error != null
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(_error!, textAlign: TextAlign.center),
-                          TextButton(
-                            onPressed: () {
-                              setState(() {
-                                _error = null;
-                                _loading = true;
-                              });
-                              _loadSubjects();
-                            },
-                            child: const Text('Újra'),
-                          ),
-                        ],
-                      ),
+                  ? StateMessage(
+                      icon: Icons.cloud_off_rounded,
+                      message: _error!,
+                      onRetry: _loadSubjects,
                     )
                   : ListView.separated(
                       padding: EdgeInsets.only(

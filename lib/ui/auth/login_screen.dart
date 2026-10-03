@@ -5,6 +5,7 @@ import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
+import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/result.dart';
 import '../../data/services/auth_service.dart';
 
@@ -52,8 +53,7 @@ class _LoginScreenState extends State<LoginScreen> {
           MaterialPageRoute(builder: (_) => const AppScaffold()),
         );
       case Err(:final message):
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(message)));
+        context.showMessage(message);
     }
   }
 

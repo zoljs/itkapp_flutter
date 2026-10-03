@@ -1,16 +1,17 @@
-import 'package:flutter/cupertino.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/ack_appbar.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
+import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:flutter/material.dart';
 
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/wiki/my_site_tags_screen.dart';
 import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/result.dart';
 
 class MySiteScreen extends StatefulWidget {
@@ -83,8 +84,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
         });
       case Err(:final message):
         setState(() => _loading = false);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(message)));
+        context.showMessage(message);
     }
   }
 
@@ -105,63 +105,11 @@ class _MySiteScreenState extends State<MySiteScreen> {
     switch (result) {
       case Ok():
         setState(() => _hasExistingSite = true);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(const SnackBar(content: Text('Elmentve!')));
+        context.showMessage('Elmentve!');
+
       case Err(:final message):
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(message)));
+        context.showMessage(message);
     }
-  }
-
-  Future<bool?> showConfirmDialog(
-    BuildContext context, {
-    required String title,
-    required String message,
-    required String confirmLabel,
-    String cancelLabel = 'Mégse',
-    bool isDestructive = false,
-  }) {
-    final scheme = Theme.of(context).colorScheme;
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
-
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog.adaptive(
-        title: Text(title),
-        content: Text(message),
-        actions: isIOS
-            ? [
-                CupertinoDialogAction(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(cancelLabel),
-                ),
-                CupertinoDialogAction(
-                  isDestructiveAction: isDestructive,
-                  isDefaultAction: !isDestructive,
-                  onPressed: () => Navigator.pop(context, true),
-                  child: Text(confirmLabel),
-                ),
-              ]
-            : [
-                TextButton(
-                  onPressed: () => Navigator.pop(context, false),
-                  child: Text(cancelLabel),
-                ),
-                FilledButton(
-                  onPressed: () => Navigator.pop(context, true),
-                  style: isDestructive
-                      ? FilledButton.styleFrom(
-                          backgroundColor: scheme.errorContainer,
-                        )
-                      : null,
-                  child: Text(
-                    confirmLabel,
-                    style: TextStyle(color: scheme.error),
-                  ),
-                ),
-              ],
-      ),
-    );
   }
 
   Future<void> _delete() async {
@@ -181,8 +129,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
       case Ok():
         Navigator.pop(context);
       case Err(:final message):
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(message)));
+        context.showMessage(message);
     }
   }
 
