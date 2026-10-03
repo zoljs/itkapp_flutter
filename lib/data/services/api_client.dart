@@ -15,6 +15,20 @@ class ApiClient {
   CookieJar? _cookieJar;
   bool _initialized = false;
 
+  Future<void> Function()? onUnauthorized;
+  bool _handlingUnauthorized = false;
+
+  Future<void> _handleUnauthorized() async {
+    if (_handlingUnauthorized) return;
+    _handlingUnauthorized = true;
+
+    try {
+      await onUnauthorized?.call();
+    } finally {
+      _handlingUnauthorized = false;
+    }
+  }
+
   Future<void> init() async {
     if (_initialized) return;
 
@@ -23,30 +37,46 @@ class ApiClient {
         baseUrl: baseUrl,
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
-        validateStatus: (status) => status != null && status < 500,
       ),
     );
 
     if (kIsWeb) {
-      // Cross-origin XHR needs this explicitly, otherwise the browser
-      // drops the session cookie from the login response entirely.
       configureHttpAdapter(dio);
     } else {
-      // dio_cookie_manager asserts against being used on web; only wire
-      // up the file-based cookie jar on other platforms.
       final appDocDir = await getApplicationDocumentsDirectory();
       _cookieJar = PersistCookieJar(
         storage: FileStorage('${appDocDir.path}/.cookies/'),
       );
       dio.interceptors.add(CookieManager(_cookieJar!));
     }
-    // if (kDebugMode) {
-    //   dio.interceptors.add(LogInterceptor(
-    //     requestBody: true,
-    //     responseBody: true,
-    //     logPrint: (o) => debugPrint(o.toString()),
-    //   ));
-    // }
+
+    // 401 Interceptor
+    dio.interceptors.add(InterceptorsWrapper(
+      onError: (error, handler) {
+        if (isSessionExpired(
+            error.requestOptions.uri, error.response?.statusCode)) {
+          _handleUnauthorized();
+        }
+        handler.next(error);
+      },
+    ));
+
+    // Session expired Interceptor
+    dio.interceptors.add(InterceptorsWrapper(
+      onResponse: (response, handler) {
+        if (isSessionExpired(
+            response.requestOptions.uri, response.statusCode)) {
+          _handleUnauthorized();
+          return handler.reject(DioException.badResponse(
+            statusCode: 401,
+            requestOptions: response.requestOptions,
+            response: response,
+          ));
+        }
+        handler.next(response);
+      },
+    ));
+
     _initialized = true;
   }
 
@@ -54,3 +84,9 @@ class ApiClient {
     await _cookieJar?.deleteAll();
   }
 }
+
+const _pathsWithoutLogout = {'/api/auth/login', '/api/auth/logout'};
+bool isSessionExpired(Uri uri, int? statusCode) =>
+    statusCode == 401 &&
+    uri.host == Uri.parse(ApiClient.baseUrl).host &&
+    !_pathsWithoutLogout.contains(uri.path);

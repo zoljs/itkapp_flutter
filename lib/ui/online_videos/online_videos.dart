@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
-
-import 'package:flutter/material.dart';
 
 class VideoCategory {
   const VideoCategory(this.label, this.icon);
@@ -33,58 +29,54 @@ class OnlineVideos extends StatefulWidget {
 }
 
 class _OnlineVideosState extends State<OnlineVideos> {
+  @override
   Widget build(BuildContext context) {
-    const _categoryBarHeight = 56.0;
-    int _selected = 0;
+    const categoryBarHeight = 56.0;
+    int selected = 0;
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       backgroundColor: scheme.primaryContainer,
       body: SafeArea(
           bottom: false,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenHorizontal,
-                1,
-                AppSpacing.screenHorizontal,
-                18,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.screenHorizontal,
+                  1,
+                  AppSpacing.screenHorizontal,
+                  18,
+                ),
+                child: Text(widget.title,
+                    style: textTheme.headlineSmall?.merge(topBarTitleStyle)),
               ),
-              child: Text(
-                widget.title,
-                style: textTheme.headlineSmall?.merge(topBarTitleStyle)
-              ),
-            ),
-            Expanded(
-                child: ColoredBox(
-                    color: scheme.surface,
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
+              Expanded(
+                  child: ColoredBox(
+                      color: scheme.surface,
+                      child: Stack(
+                        children: [
+                          Positioned.fill(
                             child: _CategoryContent(
-                              category: _categories[_selected],
-                              topPadding: _categoryBarHeight,
+                              category: _categories[selected],
+                              topPadding: categoryBarHeight,
                             ),
-                        ),
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          right: 0,
-                          child: _CategoryBar(
-                              height: _categoryBarHeight,
-                              selected: _selected,
-                              onSelected: (i) => setState(() => _selected = i),
                           ),
-                        )
-                      ],
-
-                    )
-                )
-            )
-          ],
-        )
-      ),
+                          Positioned(
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            child: _CategoryBar(
+                              height: categoryBarHeight,
+                              selected: selected,
+                              onSelected: (i) => setState(() => selected = i),
+                            ),
+                          )
+                        ],
+                      )))
+            ],
+          )),
     );
   }
 }

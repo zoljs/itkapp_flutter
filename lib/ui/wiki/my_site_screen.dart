@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/data/services/auth_service.dart';
@@ -12,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/wiki/my_site_tags_screen.dart';
 import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/utils/result.dart';
 
 class MySiteScreen extends StatefulWidget {
   const MySiteScreen({super.key});
@@ -63,51 +63,53 @@ class _MySiteScreenState extends State<MySiteScreen> {
   }
 
   Future<void> _loadExistingSite() async {
-    final response = await SitesService.instance.getMySite();
+    final result = await SitesService.instance.getMySite();
     if (!mounted) return;
 
-    setState(() {
-      if (response != null) {
-        _nameController.text = response.name;
-        tags = response.tags;
-        _hasExistingSite = true;
-      } else {
-        _hasExistingSite = false;
-      }
-      _loading = false;
-    });
+    switch (result) {
+      // Own site exists
+      case Ok(value: final UserSite site):
+        setState(() {
+          _nameController.text = site.name;
+          tags = List.of(site.tags);
+          _hasExistingSite = true;
+          _loading = false;
+        });
+      // No own site yet
+      case Ok(value: null):
+        setState(() {
+          _hasExistingSite = false;
+          _loading = false;
+        });
+      case Err(:final message):
+        setState(() => _loading = false);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate() && _currentUser != null) return;
+    final user = _currentUser;
+    if (user == null || !_formKey.currentState!.validate()) return;
 
-    try {
-      await SitesService.instance.saveMySite(
-        UserSite(
-          name: _currentUser!.login,
-          url: 'https://users.itk.ppke.hu/~${_currentUser?.login}',
-          tags: tags,
-          category: _category,
-        ),
-      );
+    final result = await SitesService.instance.saveMySite(
+      UserSite(
+        name: user.login,
+        url: 'https://users.itk.ppke.hu/~${user.login}',
+        tags: tags,
+        category: _category,
+      ),
+    );
+    if (!mounted) return;
 
-      if (!mounted) return;
-      setState(() {
-        _hasExistingSite = true;
-      });
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Elmentve!')));
-    } on DioException catch (e) {
-      if (!mounted) return;
-
-      final data = e.response?.data;
-      final message = (data is Map && data['message'] != null)
-          ? data['message'].toString()
-          : 'Nem sikerült menteni.';
-
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(message)));
+    switch (result) {
+      case Ok():
+        setState(() => _hasExistingSite = true);
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('Elmentve!')));
+      case Err(:final message):
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
     }
   }
 
@@ -172,15 +174,15 @@ class _MySiteScreenState extends State<MySiteScreen> {
     );
     if (confirmed != true) return;
 
-    try {
-      await SitesService.instance.deleteMySite();
-      if (!mounted) return;
-      Navigator.pop(context);
-    } on DioException {
-      if (!mounted) return;
+    final result = await SitesService.instance.deleteMySite();
+    if (!mounted) return;
 
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Nem sikerült törölni.')));
+    switch (result) {
+      case Ok():
+        Navigator.pop(context);
+      case Err(:final message):
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
     }
   }
 

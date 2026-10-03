@@ -2,8 +2,8 @@ import 'dart:async';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
+import 'package:itk_app/utils/result.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:itk_app/data/services/auth_service.dart';
@@ -54,22 +54,23 @@ class _HomeScreenState extends State<HomeScreen> {
       _eventsError = null;
     });
     //await Completer<void>().future;
-    try {
-      final events = await CalendarService.instance.getCalendar();
-      final now = DateTime.now();
-      final upcoming = events.where((e) => e.end.isAfter(now)).toList()
-        ..sort((a, b) => a.start.compareTo(b.start));
-      if (!mounted) return;
-      setState(() {
-        _nextEvent = upcoming.isEmpty ? null : upcoming.first;
-        _loadingEvents = false;
-      });
-    } on DioException {
-      if (!mounted) return;
-      setState(() {
-        _eventsError = 'Nem sikerült betölteni a naptárat.';
-        _loadingEvents = false;
-      });
+    final result = await CalendarService.instance.getCalendar();
+    if (!mounted) return;
+
+    switch (result) {
+      case Ok(:final value):
+        final now = DateTime.now();
+        final upcoming = value.where((e) => e.end.isAfter(now)).toList()
+          ..sort((a, b) => a.start.compareTo(b.start));
+        setState(() {
+          _nextEvent = upcoming.firstOrNull;
+          _loadingEvents = false;
+        });
+      case Err(:final message):
+        setState(() {
+          _eventsError = message;
+          _loadingEvents = false;
+        });
     }
   }
 

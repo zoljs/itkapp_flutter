@@ -20,7 +20,7 @@ class BrandIconButton extends StatelessWidget {
         onPressed: onPressed,
         icon: Icon(
           icon,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.onSurface,
         ),
       ),
     );

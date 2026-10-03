@@ -5,6 +5,7 @@ import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
+import 'package:itk_app/utils/result.dart';
 import '../../data/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,7 +23,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _loading = false;
   bool _obscurePassword = true;
-  String? _error;
 
   @override
   void dispose() {
@@ -36,34 +36,24 @@ class _LoginScreenState extends State<LoginScreen> {
 
     setState(() {
       _loading = true;
-      _error = null;
     });
 
     final result = await _authService.login(
       _usernameController.text.trim(),
       _passwordController.text,
     );
-
     if (!mounted) return;
     setState(() => _loading = false);
 
-    if (result.success) {
-      TextInput.finishAutofillContext();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AppScaffold()),
-      );
-    } else {
-      setState(() => _error = result.errorMessage);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor:
-              Theme.of(context).colorScheme.surfaceContainerHighest,
-          content: Text(
-            _error!,
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
-          ),
-        ),
-      );
+    switch (result) {
+      case Ok():
+        TextInput.finishAutofillContext();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const AppScaffold()),
+        );
+      case Err(:final message):
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(message)));
     }
   }
 

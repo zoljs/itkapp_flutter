@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/user.dart';
+import 'package:itk_app/utils/result.dart';
 import 'api_client.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,116 +19,101 @@ class AuthService {
   AuthService.internal();
   static final AuthService instance = AuthService.internal();
 
+  static const _cacheKey = 'cached_user';
+
   final Dio _dio = ApiClient.instance.dio;
-
   LdapUser? _cachedUser;
+  LdapUser? get cachedUser => _cachedUser;
 
-  Future<void> _cacheUserToDisk(LdapUser user) async {
-    final prefs = await SharedPreferences.getInstance();
-    final encodedJson = jsonEncode(user.toJson());
-    await prefs.setString('cached_user', encodedJson);
-  }
-
-  Future<void> _clearUserFromDisk() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('cached_user');
-  }
-
-  Future<LdapUser?> _loadUserFromDisk() async {
-    final prefs = await SharedPreferences.getInstance();
-    final jsonString = prefs.getString('cached_user');
-
-    if (jsonString == null) {
-      return null;
-    }
-
-    final decodedJson = jsonDecode(jsonString);
-    final user = LdapUser.fromJson(decodedJson as Map<String, dynamic>);
-
-    return user;
-  }
-
-  Future<AuthResult> login(String username, String password) async {
+  Future<Result<void>> login(String username, String password) async {
     try {
-      final response = await _dio.post(
+      await _dio.post(
         '/api/auth/login',
         data: {'username': username, 'password': password},
       );
-
-      if (response.statusCode == 200) {
-        await getSessionUser();
-        return const AuthResult(success: true);
-      }
-
-      final msg = response.data['message'];
-      return AuthResult(success: false, errorMessage: msg);
     } on DioException catch (e) {
-      return AuthResult(
-        success: false,
-        errorMessage: _networkErrorMessage(e),
-      );
+      return Err(apiErrorMessage(e));
     }
+
+    final user = await _fetchUserFromNetwork();
+    if (user == null) {
+      return const Err('Nem sikerült lekérni a felhasználói adatokat.');
+    }
+    return const Ok(null);
   }
 
-  Future<LdapUser?> _fetchUserFromNetwork() async {
-    try {
-      final response = await _dio.get('/api/auth/me');
-
-      if (response.statusCode == 200 && response.data is Map) {
-        _cachedUser = LdapUser.fromJson(
-          Map<String, dynamic>.from(response.data as Map),
-        );
-        await _cacheUserToDisk(_cachedUser!);
-
-        return _cachedUser;
-      }
-
-      return null;
-    } on DioException catch (e) {
-      // ignore: avoid_print
-      print(
-          '[/api/auth/me] DioException type=${e.type} message=${e.message} response=${e.response?.data}');
-      return null;
-    }
-  }
-
+  // Logged in user, or null if session is invalid
   Future<LdapUser?> getSessionUser() async {
     // Load from disk
-    final cachedUser = await _loadUserFromDisk();
+    final fromDisk = await _loadUserFromDisk();
 
-    // If disk has not null user, set cache
-    if (cachedUser != null) {
-      _cachedUser = cachedUser;
+    // If disk has valid user, set cache
+    if (fromDisk != null) {
+      _cachedUser = fromDisk;
       unawaited(_fetchUserFromNetwork());
-      return _cachedUser;
+      return fromDisk;
     }
 
     // Else wait for network and return that
-    return await _fetchUserFromNetwork();
+    return _fetchUserFromNetwork();
   }
 
   Future<void> logout() async {
     try {
       await _dio.post('/api/auth/logout');
-    } on DioException {
-      // Ignore
+    } on DioException catch (e) {
+      debugPrint('[AuthService] logout request failed: ${e.message}');
     } finally {
       await ApiClient.instance.clearCookies();
       _cachedUser = null;
-      await _clearUserFromDisk();
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_cacheKey);
     }
   }
 
-  String _networkErrorMessage(DioException e) {
-    if (e.type == DioExceptionType.connectionTimeout ||
-        e.type == DioExceptionType.receiveTimeout) {
-      return 'Időtúllépés - a szerver nem válaszol.';
+  Future<LdapUser?> _fetchUserFromNetwork() async {
+    final Response<dynamic> response;
+    try {
+      response = await _dio.get('/api/auth/me');
+    } on DioException catch (e) {
+      debugPrint('[AuthService] /me failed: ${apiErrorMessage(e)}');
+      return null;
     }
-    if (e.type == DioExceptionType.connectionError) {
-      return 'Nem sikerült kapcsolódni a szerverhez.';
-    }
-    return 'Váratlan hiba történt: ${e.message}';
+
+    final user = _parseUser(response.data);
+    if (user == null) return null;
+
+    _cachedUser = user;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_cacheKey, jsonEncode(user.toJson()));
+    return user;
   }
 
-  LdapUser? get cachedUser => _cachedUser;
+  Future<LdapUser?> _loadUserFromDisk() async {
+    final prefs = await SharedPreferences.getInstance();
+    final raw = prefs.getString(_cacheKey);
+    if (raw == null) return null;
+
+    final Object? decoded;
+    try {
+      decoded = jsonDecode(raw);
+    } on FormatException {
+      await prefs.remove(_cacheKey);
+      return null;
+    }
+
+    final user = _parseUser(decoded);
+    if (user == null) await prefs.remove(_cacheKey);
+    return user;
+  }
+
+  LdapUser? _parseUser(Object? data) {
+    if (data is! Map<String, dynamic>) return null;
+    try {
+      return LdapUser.fromJson(data);
+    } catch (e) {
+      debugPrint('[AuthService] bad user json: $e');
+      return null;
+    }
+  }
 }

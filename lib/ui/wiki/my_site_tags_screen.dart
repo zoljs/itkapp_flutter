@@ -4,6 +4,7 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/widgets/ack_appbar.dart';
+import 'package:itk_app/utils/result.dart';
 
 class MySiteTagsScreen extends StatefulWidget {
   final List<String> currentTags;
@@ -55,27 +56,23 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
     });
   }
 
+  String? _error;
+
   Future<void> _loadSubjects() async {
-    try {
-      // final response = await ApiClient.instance.dio
-      //     .get('https://space.itk.ppke.hu/api/subjects');
-      // final data = response.data as List;
-      // final subjects = data
-      //     .map((json) => Subject.fromJson(json as Map<String, dynamic>))
-      //     .toList();
-      final subjects = await SubjectsService.instance.getSubjects();
+    final result = await SubjectsService.instance.getSubjects();
+    if (!mounted) return;
 
-      if (!mounted) return;
-
-      setState(() {
-        _subjects = subjects;
-        _loading = false;
-      });
-    } catch (e) {
-      if (!mounted) return;
-      setState(() {
-        _loading = false;
-      });
+    switch (result) {
+      case Ok(:final value):
+        setState(() {
+          _subjects = value;
+          _loading = false;
+        });
+      case Err(:final message):
+        setState(() {
+          _error = message;
+          _loading = false;
+        });
     }
   }
 
@@ -97,26 +94,45 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
               ? const Center(
                   child: CircularProgressIndicator(),
                 )
-              : ListView.separated(
-                  padding: EdgeInsets.only(
-                    bottom: MediaQuery.paddingOf(context).bottom + 80,
-                    top: kToolbarHeight + MediaQuery.paddingOf(context).top,
-                  ),
-                  itemCount: _filteredSubjects.length,
-                  itemBuilder: (context, index) {
-                    final subject = _filteredSubjects[index];
-                    final selected = _selectedTags.contains(subject.name);
+              : _error != null
+                  ? Center(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(_error!, textAlign: TextAlign.center),
+                          TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _error = null;
+                                _loading = true;
+                              });
+                              _loadSubjects();
+                            },
+                            child: const Text('Újra'),
+                          ),
+                        ],
+                      ),
+                    )
+                  : ListView.separated(
+                      padding: EdgeInsets.only(
+                        bottom: MediaQuery.paddingOf(context).bottom + 80,
+                        top: kToolbarHeight + MediaQuery.paddingOf(context).top,
+                      ),
+                      itemCount: _filteredSubjects.length,
+                      itemBuilder: (context, index) {
+                        final subject = _filteredSubjects[index];
+                        final selected = _selectedTags.contains(subject.name);
 
-                    return _buildSubjectrow(
-                      context,
-                      subject,
-                      selected,
-                    );
-                  },
-                  separatorBuilder: (context, index) => const Divider(
-                    height: 1,
-                  ),
-                ),
+                        return _buildSubjectrow(
+                          context,
+                          subject,
+                          selected,
+                        );
+                      },
+                      separatorBuilder: (context, index) => const Divider(
+                        height: 1,
+                      ),
+                    ),
           Positioned(
             left: 0,
             right: 0,

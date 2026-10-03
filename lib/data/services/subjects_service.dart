@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:itk_app/data/services/api_client.dart';
+import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/subject.dart';
+import 'package:itk_app/utils/result.dart';
 
 class SubjectsService {
   SubjectsService._();
@@ -8,14 +11,20 @@ class SubjectsService {
 
   List<Subject>? _cached;
 
-  Future<List<Subject>> getSubjects({bool forceReload = false}) async {
+  Future<Result<List<Subject>>> getSubjects({bool forceReload = false}) async {
     final cached = _cached;
-    if (cached != null && !forceReload) return cached;
+    if (cached != null && !forceReload) return Ok(cached);
 
-    final response = await ApiClient.instance.dio.get(_url);
-    final subjects = parseSubjects(response.data);
-    _cached = subjects;
-    return subjects;
+    try {
+      final response = await ApiClient.instance.dio.get(_url);
+      final subjects = parseSubjects(response.data);
+      _cached = subjects;
+      return Ok(subjects);
+    } on DioException catch (e) {
+      return Err(apiErrorMessage(e));
+    } on FormatException catch (e) {
+      return Err(e.message);
+    }
   }
 
   List<Subject> parseSubjects(Object? data) {

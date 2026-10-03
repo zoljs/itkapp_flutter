@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/wiki/my_site_screen.dart';
 import 'package:itk_app/data/services/auth_service.dart';
@@ -11,6 +10,7 @@ import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
 import 'package:itk_app/ui/core/widgets/my_site_card.dart';
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/utils/result.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -51,22 +51,21 @@ class _WikiScreenState extends State<WikiScreen> {
       if (!SitesService.instance.hasCachedSites || forceReload) _loading = true;
     });
 
-    try {
-      final sites =
-          await SitesService.instance.getAllSites(forceReload: forceReload);
+    final result =
+        await SitesService.instance.getAllSites(forceReload: forceReload);
+    if (!mounted) return;
 
-      if (!mounted) return;
-      setState(() {
-        _sites = sites;
-        _loading = false;
-      });
-      //throw DioException(requestOptions: RequestOptions());
-    } on DioException {
-      if (!mounted) return;
-      setState(() {
-        _error = 'Nem sikerült betölteni az oldalakat.';
-        _loading = false;
-      });
+    switch (result) {
+      case Ok(:final value):
+        setState(() {
+          _sites = value;
+          _loading = false;
+        });
+      case Err(:final message):
+        setState(() {
+          _error = message;
+          _loading = false;
+        });
     }
   }
 

@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import '../../domain/models/user_site.dart';
-import 'api_client.dart';
+import 'package:flutter/foundation.dart';
+import 'package:itk_app/data/services/api_client.dart';
+import 'package:itk_app/data/services/api_error.dart';
+import 'package:itk_app/domain/models/user_site.dart';
+import 'package:itk_app/utils/result.dart';
 
 class SitesService {
   SitesService.internal();
@@ -13,75 +15,109 @@ class SitesService {
   // static const _legacyWikiUrl =
   //     'https://users.itk.ppke.hu/~perpa4/data/students.php';
 
-  // Cache of all sites
-  List<UserSite> _cachedSites = [];
-  List<UserSite> get cachedSites => List.unmodifiable(_cachedSites);
-  bool get hasCachedSites => _cachedSites.isNotEmpty;
+  List<UserSite>? _cachedSites;
+  List<UserSite> get cachedSites => _cachedSites ?? const [];
+  bool get hasCachedSites => _cachedSites != null;
+  void clearCache() => _cachedSites = null;
 
-  // Returns the cache, if empty: sets the result of the GET request as the cache then returns it
-  Future<List<UserSite>> getAllSites({bool forceReload = false}) async {
-    if (_cachedSites.isNotEmpty && forceReload == false) {
-      return _cachedSites;
+  Future<Result<List<UserSite>>> getAllSites({bool forceReload = false}) async {
+    final cached = _cachedSites;
+    if (cached != null && !forceReload) return Ok(cached);
+
+    final Response<dynamic> response;
+    try {
+      response = await _dio.get('/api/sites');
+    } on DioException catch (e) {
+      return Err(apiErrorMessage(e));
     }
 
-    final response = await _dio.get('/api/sites');
-    final data = response.data as List;
-    final sites = data
-        .map((json) => UserSite.fromJson(json as Map<String, dynamic>))
-        .toList();
+    final sites = _parseSites(response.data);
+    if (sites == null) {
+      return const Err('Nem sikerült feldolgozni az oldalakat.');
+    }
 
-    // try {
-    //   final legacyResponse = await Dio().get(_legacyWikiUrl);
-
-    //   if (legacyResponse.statusCode == 200 && legacyResponse.data is List) {
-    //     final legacySites = (legacyResponse.data as List).map((json) {
-    //       return UserSite.fromJson(json as Map<String, dynamic>);
-    //     }).toList();
-    //     sites.addAll(legacySites);
-    //   }
-    // } catch (_) {}
-
+    //sites.addAll(await _fetchLegacySites());
     _cachedSites = sites;
-    return _cachedSites;
+    return Ok(sites);
   }
 
-  // Get the users site only, e.g. the settings page
-  Future<UserSite?> getMySite() async {
-    final response = await _dio.get('/api/sites/me');
-    final data = response.data;
-    if (data is Map) {
-      final fetchedSite = UserSite.fromJson(data as Map<String, dynamic>);
-      mySiteNotifier.value = fetchedSite;
-      return fetchedSite;
-    }
-    return null;
-  }
-
-  // Saves the users site and clears the cache for automatic reload on pages
-  Future<UserSite> saveMySite(UserSite site) async {
-    final requestBody = site.toJson();
-    final response = await _dio.post('/api/sites', data: requestBody);
-
-    if (response.statusCode != 200) {
-      throw DioException(
-          requestOptions: response.requestOptions, response: response);
+  Future<Result<UserSite?>> getMySite() async {
+    final Response<dynamic> response;
+    try {
+      response = await _dio.get('/api/sites/me');
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 404) return _setMySite(null);
+      return Err(apiErrorMessage(e));
     }
 
     final data = response.data;
-    final userSite = UserSite.fromJson(data as Map<String, dynamic>);
-    mySiteNotifier.value = userSite;
+    if (data is! Map<String, dynamic>) return _setMySite(null);
+    final site = _parseSite(data);
+    if (site == null) return const Err('Nem sikerült feldolgozni az oldalad.');
+    return _setMySite(site);
+  }
 
+  Future<Result<UserSite>> saveMySite(UserSite site) async {
+    final Response<dynamic> response;
+    try {
+      response = await _dio.post('/api/sites', data: site.toJson());
+    } on DioException catch (e) {
+      return Err(apiErrorMessage(e));
+    }
+
+    final data = response.data;
+    final saved = data is Map<String, dynamic> ? _parseSite(data) : null;
+    if (saved == null) return const Err('Nem sikerült feldolgozni a választ.');
+
+    mySiteNotifier.value = saved;
     clearCache();
-
-    return userSite;
+    return Ok(saved);
   }
 
-  // Deletes the users site and clears the cache for automatic reload on pages
-  Future<void> deleteMySite() async {
-    await _dio.delete('/api/sites');
+  Future<Result<void>> deleteMySite() async {
+    try {
+      await _dio.delete('/api/sites');
+    } on DioException catch (e) {
+      return Err(apiErrorMessage(e));
+    }
     mySiteNotifier.value = null;
     clearCache();
+    return const Ok(null);
   }
 
-  void clearCache() => _cachedSites.clear();
+  Ok<UserSite?> _setMySite(UserSite? site) {
+    mySiteNotifier.value = site;
+    return Ok(site);
+  }
+
+  UserSite? _parseSite(Map<String, dynamic> json) {
+    try {
+      return UserSite.fromJson(json);
+    } catch (e) {
+      debugPrint('[SitesService] bad site json: $e');
+      return null;
+    }
+  }
+
+  List<UserSite>? _parseSites(Object? data) {
+    if (data is! List) return null;
+    final sites = <UserSite>[];
+    for (final item in data) {
+      if (item is! Map<String, dynamic>) return null;
+      final site = _parseSite(item);
+      if (site == null) return null;
+      sites.add(site);
+    }
+    return sites;
+  }
+
+  // Future<List<UserSite>> _fetchLegacySites() async {
+  //   try {
+  //     final response = await Dio().get(_legacyWikiUrl);
+  //     return _parseSites(response.data) ?? const [];
+  //   } on DioException catch (e) {
+  //     debugPrint('[SitesService] legacy wiki unavailable: ${e.message}');
+  //     return const [];
+  //   }
+  // }
 }
