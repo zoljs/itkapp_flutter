@@ -10,6 +10,7 @@ class SubjectsService {
   static const _url = 'https://space.itk.ppke.hu/api/subjects';
 
   List<Subject>? _cached;
+  void clearCache() => _cached = null;
 
   Future<Result<List<Subject>>> getSubjects({bool forceReload = false}) async {
     final cached = _cached;

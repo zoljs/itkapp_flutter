@@ -199,32 +199,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: Icons.cleaning_services_rounded,
                       iconColor: scheme.secondary,
                       title: 'Gyorsítótár törlése',
-                      onTap: () {},
+                      onTap: () {
+                        clearAllCaches();
+                        context.showMessage("Gyorsítótárak törölve!");
+                      },
                     ),
                     SettingsTile(
                       icon: Icons.privacy_tip_rounded,
                       iconColor: scheme.secondary,
                       title: 'Adatkezelési tájékoztató',
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-
-                // Help
-                SettingsGroup(
-                  header: 'Súgó és visszajelzés',
-                  children: [
-                    SettingsTile(
-                      icon: Icons.bug_report_rounded,
-                      iconColor: scheme.error,
-                      title: 'Hiba bejelentése',
-                      external: true,
-                      onTap: _reportBug,
-                    ),
-                    SettingsTile(
-                      icon: Icons.help_rounded,
-                      iconColor: scheme.primary,
-                      title: 'Gyakori kérdések',
                       onTap: () {},
                     ),
                   ],
@@ -268,7 +251,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         );
                       },
                     ),
-                    if (kDebugMode)
+                    SettingsTile(
+                      icon: Icons.bug_report_rounded,
+                      iconColor: scheme.error,
+                      title: 'Hiba bejelentése',
+                      external: true,
+                      onTap: _reportBug,
+                    ),
+                  ],
+                ),
+
+                if (kDebugMode)
+                  SettingsGroup(
+                    header: 'Debug',
+                    children: [
                       SettingsTile(
                         icon: Icons.bug_report_rounded,
                         iconColor: Colors.orange,
@@ -280,8 +276,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               'Cookie törölve, most frissíts valamit.');
                         },
                       ),
-                  ],
-                ),
+                    ],
+                  ),
 
                 // Logout
 

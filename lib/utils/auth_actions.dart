@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/services/calendar_service.dart';
+import 'package:itk_app/data/services/subjects_service.dart';
 import 'package:itk_app/ui/auth/login_screen.dart';
 import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/data/services/sites_service.dart';
@@ -8,6 +9,7 @@ import 'package:itk_app/utils/context_extensions.dart';
 
 Future<void> performLogout(BuildContext context) async {
   await AuthService.instance.logout();
+  SubjectsService.instance.clearCache();
   SitesService.instance.clearCache();
   CalendarService.instance.clearCache();
 
@@ -35,4 +37,10 @@ Future<void> handleSessionExpired() async {
   );
 
   navigator.context.showMessage('A munkameneted lejárt, jelentkezz be újra.');
+}
+
+void clearAllCaches() {
+  SubjectsService.instance.clearCache();
+  SitesService.instance.clearCache();
+  CalendarService.instance.clearCache();
 }
