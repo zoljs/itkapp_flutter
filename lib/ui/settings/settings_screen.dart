@@ -7,7 +7,6 @@ import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/data/services/sites_service.dart';
