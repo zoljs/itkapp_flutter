@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
+import 'package:itk_app/ui/midterms/midterms_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:itk_app/utils/result.dart';
@@ -16,6 +17,7 @@ import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 
 class QuickLink {
   const QuickLink(this.label, this.url, this.iconAsset);
+
   final String label;
   final String url;
   final String iconAsset;
@@ -78,13 +80,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final hour = DateTime.now().hour;
     if (hour < 10) return 'Jó reggelt';
     if (hour < 18) return 'Szép napot';
-    return 'Szép estét';
+    return 'Jó estét';
   }
 
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final login = AuthService.instance.cachedUser?.login;
+    final firstName = AuthService.instance.cachedUser?.firstName;
     final today = DateFormat('MMMM d., EEEE', 'hu').format(DateTime.now());
 
     return Scaffold(
@@ -143,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
               sliver: SliverList.list(
                 children: [
                   Text(
-                    login == null ? '$_greeting!' : '$_greeting, $login!',
+                    '$_greeting, $firstName!',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   const SizedBox(height: AppSpacing.xs),
@@ -163,7 +165,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (_) => const Placeholder()),
+                              builder: (_) => const MidtermsScreen()),
                         ),
                       ),
                     ],

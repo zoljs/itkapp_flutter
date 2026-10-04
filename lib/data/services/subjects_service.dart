@@ -6,10 +6,11 @@ import 'package:itk_app/utils/result.dart';
 
 class SubjectsService {
   SubjectsService._();
+
   static final SubjectsService instance = SubjectsService._();
-  static const _url = 'https://space.itk.ppke.hu/api/subjects';
 
   List<Subject>? _cached;
+
   void clearCache() => _cached = null;
 
   Future<Result<List<Subject>>> getSubjects({bool forceReload = false}) async {
@@ -17,7 +18,7 @@ class SubjectsService {
     if (cached != null && !forceReload) return Ok(cached);
 
     try {
-      final response = await ApiClient.instance.dio.get(_url);
+      final response = await ApiClient.instance.dio.get('/api/subjects');
       final subjects = parseSubjects(response.data);
       _cached = subjects;
       return Ok(subjects);
@@ -38,18 +39,8 @@ class SubjectsService {
       if (entry is! Map<String, dynamic>) {
         throw const FormatException('Egy tárgy nem objektum formátumú.');
       }
-      final name = entry['name'];
-      final semester = entry['semester'];
-      if (name is! String || name.trim().isEmpty) {
-        throw const FormatException('Egy tárgynak hiányzik a neve.');
-      }
-      if (semester is! String) {
-        throw FormatException('A(z) "$name" tárgynak hiányzik a féléve.');
-      }
-      subjects.add(Subject(name: name, semester: semester));
+      subjects.add(Subject.fromJson(entry));
     }
-
-    subjects.sort((a, b) => a.name.compareTo(b.name));
     return List.unmodifiable(subjects);
   }
 }
