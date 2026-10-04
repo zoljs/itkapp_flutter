@@ -24,11 +24,7 @@ class MySiteScreen extends StatefulWidget {
 class _MySiteScreenState extends State<MySiteScreen> {
   LdapUser? _currentUser;
 
-  final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
   List<String> tags = [];
-
-  final String _category = 'current';
 
   bool _loading = true;
   bool _hasExistingSite = false;
@@ -53,7 +49,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
 
   @override
   void dispose() {
-    _nameController.dispose();
     super.dispose();
   }
 
@@ -71,7 +66,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
       // Own site exists
       case Ok(value: final UserSite site):
         setState(() {
-          _nameController.text = site.name;
           tags = List.of(site.tags);
           _hasExistingSite = true;
           _loading = false;
@@ -90,16 +84,9 @@ class _MySiteScreenState extends State<MySiteScreen> {
 
   Future<void> _submit() async {
     final user = _currentUser;
-    if (user == null || !_formKey.currentState!.validate()) return;
+    if (user == null) return;
 
-    final result = await SitesService.instance.saveMySite(
-      UserSite(
-        name: user.login,
-        url: 'https://users.itk.ppke.hu/~${user.login}',
-        tags: tags,
-        category: _category,
-      ),
-    );
+    final result = await SitesService.instance.saveMySite(tags);
     if (!mounted) return;
 
     switch (result) {
@@ -149,152 +136,146 @@ class _MySiteScreenState extends State<MySiteScreen> {
   Widget _buildForm(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    return Form(
-      key: _formKey,
-      child: SingleChildScrollView(
-        padding: EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            AppSpacing.lg + MediaQuery.paddingOf(context).top + kToolbarHeight,
-            AppSpacing.lg,
-            AppSpacing.xxxl),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SettingsGroup(
-              header: 'Adatok',
-              footer:
-                  'Az oldal neve és az URL a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
-              children: [
-                SettingsTile(
-                  title: 'Név és URL',
-                  value: _currentUser?.login ?? "",
-                ),
-              ],
-            ),
+    return SingleChildScrollView(
+      padding: EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.lg + MediaQuery.paddingOf(context).top + kToolbarHeight,
+          AppSpacing.lg,
+          AppSpacing.xxxl),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SettingsGroup(
+            header: 'Adatok',
+            footer:
+                'Az oldal neve és az URL a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
+            children: [
+              SettingsTile(
+                title: 'Név és URL',
+                value: _currentUser?.login ?? "",
+              ),
+            ],
+          ),
 
-            // Szín
-            SettingsGroup(
-              header: 'Megjelenés',
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-                    child: Row(
-                      children: _colors.indexed.map((record) {
-                        final (index, color) = record;
-                        final isSelected = index == _selectedIndex;
-                        final double borderRadius = isSelected ? 12.0 : 28.0;
-                        final double innerBorderRadius =
-                            isSelected ? 6.0 : 20.0;
+          // Szín
+          SettingsGroup(
+            header: 'Megjelenés',
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+                  child: Row(
+                    children: _colors.indexed.map((record) {
+                      final (index, color) = record;
+                      final isSelected = index == _selectedIndex;
+                      final double borderRadius = isSelected ? 12.0 : 28.0;
+                      final double innerBorderRadius = isSelected ? 6.0 : 20.0;
 
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 8.0),
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 8.0),
+                        child: AnimatedContainer(
+                          curve: Curves.easeInOutCubic,
+                          duration: const Duration(milliseconds: 300),
+                          height: 56,
+                          width: 56,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(borderRadius),
+                              border: Border.all(
+                                color: isSelected ? color : Colors.transparent,
+                                width: 4,
+                              )),
                           child: AnimatedContainer(
                             curve: Curves.easeInOutCubic,
                             duration: const Duration(milliseconds: 300),
-                            height: 56,
-                            width: 56,
-                            alignment: Alignment.center,
+                            height: 40,
+                            width: 40,
                             decoration: BoxDecoration(
-                                borderRadius:
-                                    BorderRadius.circular(borderRadius),
-                                border: Border.all(
-                                  color:
-                                      isSelected ? color : Colors.transparent,
-                                  width: 4,
-                                )),
-                            child: AnimatedContainer(
-                              curve: Curves.easeInOutCubic,
-                              duration: const Duration(milliseconds: 300),
-                              height: 40,
-                              width: 40,
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [
-                                    color,
-                                    Color.lerp(color, Colors.black, 0.4)!,
-                                  ],
-                                ),
-                                borderRadius:
-                                    BorderRadius.circular(innerBorderRadius),
+                              gradient: LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [
+                                  color,
+                                  Color.lerp(color, Colors.black, 0.4)!,
+                                ],
                               ),
-                              child: GestureDetector(
-                                onTap: () =>
-                                    setState(() => _selectedIndex = index),
-                              ),
+                              borderRadius:
+                                  BorderRadius.circular(innerBorderRadius),
+                            ),
+                            child: GestureDetector(
+                              onTap: () =>
+                                  setState(() => _selectedIndex = index),
                             ),
                           ),
-                        );
-                      }).toList(),
-                    ),
+                        ),
+                      );
+                    }).toList(),
                   ),
                 ),
-              ],
-            ),
-
-            // Címkék
-            SettingsGroup(
-              header: 'Címkék',
-              children: [
-                SettingsTile(
-                  title: 'Új címke hozzáadása',
-                  onTap: _openTagPicker,
-                ),
-                if (tags.isNotEmpty) ...[
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.lg,
-                        AppSpacing.xs, AppSpacing.lg, AppSpacing.lg),
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: tags.map((tag) {
-                        return Chip(
-                          padding: const EdgeInsets.all(AppSpacing.sm),
-                          label: Text(tag),
-                          labelStyle:
-                              TextStyle(color: scheme.onSecondaryContainer),
-                          backgroundColor: scheme.secondaryContainer,
-                          shape: const StadiumBorder(),
-                          side: BorderSide.none,
-                          deleteIcon: const Icon(Icons.close_rounded, size: 16),
-                          deleteIconColor: scheme.onSecondaryContainer,
-                          onDeleted: () =>
-                              setState(() => tags = [...tags]..remove(tag)),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ]
-              ],
-            ),
-
-            // Törlés
-            if (_hasExistingSite) ...[
-              BrandButton(
-                onTap: _delete,
-                height: 52,
-                backgroundColor: scheme.errorContainer,
-                child: Center(
-                    child: Text(
-                  "Oldal törlése",
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: scheme.error,
-                  ),
-                )),
               ),
-              const SizedBox(
-                height: AppSpacing.xxl,
-              )
-            ]
-          ],
-        ),
+            ],
+          ),
+
+          // Címkék
+          SettingsGroup(
+            header: 'Címkék',
+            children: [
+              SettingsTile(
+                title: 'Új címke hozzáadása',
+                onTap: _openTagPicker,
+              ),
+              if (tags.isNotEmpty) ...[
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.lg,
+                      AppSpacing.xs, AppSpacing.lg, AppSpacing.lg),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: tags.map((tag) {
+                      return Chip(
+                        padding: const EdgeInsets.all(AppSpacing.sm),
+                        label: Text(tag),
+                        labelStyle:
+                            TextStyle(color: scheme.onSecondaryContainer),
+                        backgroundColor: scheme.secondaryContainer,
+                        shape: const StadiumBorder(),
+                        side: BorderSide.none,
+                        deleteIcon: const Icon(Icons.close_rounded, size: 16),
+                        deleteIconColor: scheme.onSecondaryContainer,
+                        onDeleted: () =>
+                            setState(() => tags = [...tags]..remove(tag)),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ]
+            ],
+          ),
+
+          // Törlés
+          if (_hasExistingSite) ...[
+            BrandButton(
+              onTap: _delete,
+              height: 52,
+              backgroundColor: scheme.errorContainer,
+              child: Center(
+                  child: Text(
+                "Oldal törlése",
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                  color: scheme.error,
+                ),
+              )),
+            ),
+            const SizedBox(
+              height: AppSpacing.xxl,
+            )
+          ]
+        ],
       ),
     );
   }

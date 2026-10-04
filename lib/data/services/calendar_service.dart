@@ -26,7 +26,7 @@ class CalendarService {
     // Reponse try
     final Response<dynamic> response;
     try {
-      response = await _dio.get('/api/calendar/$username');
+      response = await _dio.get('/api/calendar');
     } on DioException catch (e) {
       // Does not have calendar aka empty
       if (e.response?.statusCode == 404) {

@@ -57,10 +57,10 @@ class SitesService {
     return _setMySite(site);
   }
 
-  Future<Result<UserSite>> saveMySite(UserSite site) async {
+  Future<Result<UserSite>> saveMySite(List<String> tags) async {
     final Response<dynamic> response;
     try {
-      response = await _dio.post('/api/sites', data: site.toJson());
+      response = await _dio.post('/api/sites', data: {'tags': tags});
     } on DioException catch (e) {
       return Err(apiErrorMessage(e));
     }

@@ -12,9 +12,18 @@ DioException withResponse(int status, [Object? data]) {
 }
 
 void main() {
-  test('a szerver üzenetét használja, ha van', () {
-    final e = withResponse(401, {'message': 'Hibás jelszó!'});
-    expect(apiErrorMessage(e), 'Hibás jelszó!');
+  test('a hibakódot fordítja le, ha van', () {
+    final e = withResponse(401, {
+      'data': {'code': 'INVALID_CREDENTIALS'}
+    });
+    expect(apiErrorMessage(e), 'Hibás felhasználónév vagy jelszó!');
+  });
+
+  test('ismeretlen kódnál a státuszkódot használja', () {
+    final e = withResponse(403, {
+      'data': {'code': 'VALAMI_UJ'}
+    });
+    expect(apiErrorMessage(e), 'Ehhez nincs jogosultságod.');
   });
 
   test('üzenet nélkül a státuszkód alapján dönt', () {

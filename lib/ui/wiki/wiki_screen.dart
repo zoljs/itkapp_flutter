@@ -268,7 +268,6 @@ class _WikiScreenState extends State<WikiScreen> {
                             BoneMock.words(1),
                             BoneMock.words(1),
                           ],
-                          category: 'wip',
                         ),
                       )
                     : _filteredSites;

@@ -189,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             keyboardType: TextInputType.visiblePassword,
                             decoration: _buildInputDecoration(
                               context: context,
-                              hintText: 'Felhasználónév (pl. naszy)',
+                              hintText: 'Shibboleth ID (pl. naszy)',
                               prefixIcon: Icons.person_outline_rounded,
                             ),
                             validator: (value) =>

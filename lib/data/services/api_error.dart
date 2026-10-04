@@ -1,11 +1,27 @@
 import 'package:dio/dio.dart';
 
+const _errorMessages = {
+  'MISSING_CREDENTIALS': 'Add meg a felhasználónevet és a jelszót!',
+  'INVALID_CREDENTIALS': 'Hibás felhasználónév vagy jelszó!',
+  'INVALID_URL': 'Érvénytelen URL.',
+  'INVALID_SYNC_INTERVAL': 'Érvénytelen frissítési időköz.',
+  'INVALID_BODY': 'Hibás adatok.',
+};
+
+// Sent by server
+String? _errorCode(DioException e) {
+  final body = e.response?.data;
+  if (body is! Map) return null;
+  final data = body['data'];
+  if (data is! Map) return null;
+  final code = data['code'];
+  return code is String ? code : null;
+}
+
+// Network errors
 String apiErrorMessage(DioException e) {
-  final serverMessage =
-      e.response?.data is Map ? (e.response!.data as Map)['message'] : null;
-  if (serverMessage is String && serverMessage.trim().isNotEmpty) {
-    return serverMessage;
-  }
+  final known = _errorMessages[_errorCode(e)];
+  if (known != null) return known;
 
   switch (e.type) {
     case DioExceptionType.connectionTimeout:

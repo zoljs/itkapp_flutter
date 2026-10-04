@@ -162,6 +162,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       value: 'Nap',
                       onTap: () {},
                     ),
+                    SettingsTile(
+                      icon: Icons.link_rounded,
+                      iconColor: scheme.primary,
+                      title: 'Naptárlinkek',
+                      onTap: () {},
+                    ),
                   ],
                 ),
 
