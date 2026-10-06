@@ -56,4 +56,16 @@ class MidtermsService {
     }
     return const Ok(null);
   }
+
+  Future<Result<void>> deleteMidterm({
+    required int midtermId,
+  }) async {
+    try {
+      await _dio.delete('/api/midterms/$midtermId');
+    } on DioException catch (e) {
+      return Err(apiErrorMessage(e));
+    }
+
+    return const Ok(null);
+  }
 }

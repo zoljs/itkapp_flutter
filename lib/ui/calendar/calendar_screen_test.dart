@@ -323,7 +323,6 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
 
     final picked = await showAdaptiveDatePicker(
       context: context,
-      initialDate: current,
       firstDate: DateTime(now.year - 1),
       lastDate: DateTime(2050, 12, 31),
     );
