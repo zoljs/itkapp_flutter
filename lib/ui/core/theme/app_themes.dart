@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
   return InputDecorationThemeData(
+    isDense: true,
     hintStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),
     filled: true,
     fillColor: scheme.surfaceContainerHigh,

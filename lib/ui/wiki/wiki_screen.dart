@@ -28,6 +28,7 @@ class _WikiScreenState extends State<WikiScreen> {
 
   final int? _currentUserId = AuthService.instance.cachedUser?.id;
   List<UserSite> _sites = SitesService.instance.cachedSites;
+
   UserSite? get _mySite {
     if (_currentUserId == null) return null;
     for (final s in _sites) {
@@ -47,6 +48,7 @@ class _WikiScreenState extends State<WikiScreen> {
   }
 
   String? _error;
+
   Future<void> _loadAll({bool forceReload = false}) async {
     setState(() {
       _error = null;
@@ -217,23 +219,28 @@ class _WikiScreenState extends State<WikiScreen> {
                     ?.merge(topBarTitleStyle),
               ),
               preferredSizeChild: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.screenHorizontal,
-                    0,
-                    AppSpacing.screenHorizontal,
-                    AppSpacing.screenHorizontal),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (_) => setState(() {}),
-                  decoration: InputDecoration(
-                    hintText: 'Oldal, tantárgy neve...',
-                    prefixIcon: const Icon(Icons.search_rounded),
-                    suffixIcon: _searchController.text.isEmpty
-                        ? null
-                        : IconButton(
-                            icon: const Icon(Icons.close_rounded),
-                            onPressed: () => setState(_searchController.clear),
-                          ),
+                padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
+                child: SizedBox(
+                  height: AppSpacing.searchFieldHeight,
+                  child: TextField(
+                    expands: true,
+                    minLines: null,
+                    maxLines: null,
+                    textAlignVertical: TextAlignVertical.center,
+                    textInputAction: TextInputAction.search,
+                    controller: _searchController,
+                    onChanged: (_) => setState(() {}),
+                    decoration: InputDecoration(
+                      hintText: 'Oldal, tantárgy neve...',
+                      prefixIcon: const Icon(Icons.search_rounded),
+                      suffixIcon: _searchController.text.isEmpty
+                          ? null
+                          : IconButton(
+                              icon: const Icon(Icons.close_rounded),
+                              onPressed: () =>
+                                  setState(_searchController.clear),
+                            ),
+                    ),
                   ),
                 ),
               ),
