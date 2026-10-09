@@ -164,11 +164,12 @@ class _CalendarScreenTestState extends State<CalendarScreenTest> {
                           BrandIconButton(
                             icon: Icons.refresh_rounded,
                             onPressed: () => _loadEvents(forceReload: true),
+                            semanticLabel: 'Frissítés',
                           ),
                           BrandIconButton(
-                            icon: Icons.calendar_month,
-                            onPressed: () => _pickDate(date),
-                          ),
+                              icon: Icons.calendar_month,
+                              onPressed: () => _pickDate(date),
+                              semanticLabel: 'Dátum választása'),
                         ],
                       ),
                     ],

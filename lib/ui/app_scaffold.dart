@@ -1,6 +1,6 @@
 import 'package:itk_app/ui/calendar/calendar_screen_test.dart';
 import 'package:itk_app/ui/home/home_screen.dart';
-import 'package:itk_app/ui/online_videos/online_videos.dart';
+import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/ui/wiki/wiki_screen.dart';
 import 'package:itk_app/data/services/sites_service.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +26,8 @@ class _AppScaffoldState extends State<AppScaffold> {
     const HomeScreen(),
     const CalendarScreenTest(),
     const WikiScreen(),
-    const OnlineVideos(),
+    // const OnlineVideos(),
+    const SettingsScreen(),
   ];
 
   @override
@@ -51,10 +52,14 @@ class _AppScaffoldState extends State<AppScaffold> {
               selectedIcon: Icons.groups_rounded,
               label: 'Wiki'),
           //NavBarItem(icon: Icons.note_rounded, label: 'ZHk'),
+          // NavBarItem(
+          //     icon: Icons.video_chat_outlined,
+          //     label: 'Online',
+          //     selectedIcon: Icons.video_chat),
           NavBarItem(
-              icon: Icons.video_chat_outlined,
-              label: 'Online',
-              selectedIcon: Icons.video_chat)
+              icon: Icons.settings_outlined,
+              label: 'Beállítások',
+              selectedIcon: Icons.settings_rounded)
         ],
       ),
     );

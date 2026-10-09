@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/services/midterms_service.dart';
-import 'package:itk_app/data/services/subjects_service.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
-import 'package:itk_app/ui/core/widgets/ack_appbar.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
+import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
-import 'package:itk_app/ui/core/widgets/state_message.dart';
+import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
+import 'package:itk_app/ui/midterms/subject_picker_screen.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AddMidtermScreen extends StatefulWidget {
-  const AddMidtermScreen({super.key});
+  const AddMidtermScreen({super.key, this.scrollController});
+
+  final ScrollController? scrollController;
 
   @override
   State<AddMidtermScreen> createState() => _AddMidtermScreenState();
@@ -20,20 +22,10 @@ class AddMidtermScreen extends StatefulWidget {
 class _AddMidtermScreenState extends State<AddMidtermScreen> {
   final _locationController = TextEditingController();
 
-  List<Subject> _subjects = const [];
-  bool _loading = true;
-  String? _error;
-
   Subject? _subject;
   DateTime? _date;
   TimeOfDay? _time;
   bool _saving = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSubjects();
-  }
 
   @override
   void dispose() {
@@ -41,27 +33,17 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
     super.dispose();
   }
 
-  Future<void> _loadSubjects() async {
-    setState(() {
-      _error = null;
-      _loading = true;
-    });
-
-    final result = await SubjectsService.instance.getSubjects();
-    if (!mounted) return;
-
-    switch (result) {
-      case Ok(:final value):
-        setState(() {
-          _subjects = value;
-          _loading = false;
-        });
-      case Err(:final message):
-        setState(() {
-          _error = message;
-          _loading = false;
-        });
-    }
+  Future<void> _pickSubject() async {
+    final picked = await Navigator.push<Subject>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => SubjectPickerScreen(
+          selectedId: _subject?.id,
+          scrollController: widget.scrollController,
+        ),
+      ),
+    );
+    if (picked != null) setState(() => _subject = picked);
   }
 
   Future<void> _pickDate() async {
@@ -104,7 +86,7 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
 
     switch (result) {
       case Ok():
-        Navigator.pop(context);
+        closeSheet(context);
       case Err(:final message):
         setState(() => _saving = false);
         context.showMessage(message);
@@ -115,9 +97,10 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
     final localizations = MaterialLocalizations.of(context);
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(
+      controller: widget.scrollController,
+      padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
-        AppSpacing.lg + MediaQuery.paddingOf(context).top + kToolbarHeight,
+        AppSpacing.lg,
         AppSpacing.lg,
         AppSpacing.xxxl,
       ),
@@ -127,29 +110,10 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
           SettingsGroup(
             header: 'Tárgy',
             children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.lg,
-                  vertical: AppSpacing.sm,
-                ),
-                child: DropdownMenu<Subject>(
-                  hintText: 'Keresés kód vagy név alapján...',
-                  expandedInsets: EdgeInsets.zero,
-                  enableFilter: true,
-                  requestFocusOnTap: true,
-                  menuHeight: 300,
-                  inputDecorationTheme: const InputDecorationTheme(
-                    border: InputBorder.none,
-                  ),
-                  onSelected: (s) => setState(() => _subject = s),
-                  dropdownMenuEntries: [
-                    for (final s in _subjects)
-                      DropdownMenuEntry(
-                        value: s,
-                        label: '${s.code} – ${s.name}',
-                      ),
-                  ],
-                ),
+              SettingsTile(
+                title: 'Tárgy',
+                value: _subject?.name ?? 'Válassz',
+                onTap: _pickSubject,
               ),
             ],
           ),
@@ -195,30 +159,16 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
-    final Widget body;
-    if (_loading) {
-      body = const Center(child: RefreshProgressIndicator());
-    } else if (_error != null) {
-      body = StateMessage(
-        icon: Icons.cloud_off_rounded,
-        message: _error!,
-        onRetry: _loadSubjects,
-      );
-    } else {
-      body = _buildForm(context);
-    }
-
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: buildAckAppBar(
+      backgroundColor: sheetBackgroundColor(context),
+      appBar: buildBrandAppBar(
         context: context,
-        scheme: scheme,
-        title: const Text('Új ZH'),
-        onPressed: _save,
+        title: 'Új ZH',
+        closesSheet: true,
+        actionIcon: Icons.check,
+        onAction: _save,
       ),
-      body: body,
+      body: _buildForm(context),
     );
   }
 }

@@ -209,7 +209,6 @@ class _WikiScreenState extends State<WikiScreen> {
           ),
           slivers: [
             ShrinkingSliverAppBar(
-              middleValue: .8,
               centerTitle: false,
               title: Text(
                 'ITK Wiki 3 Beta',

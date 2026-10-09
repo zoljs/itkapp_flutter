@@ -1,37 +1,43 @@
 import 'package:flutter/cupertino.dart';
-import 'package:itk_app/data/services/subjects_service.dart';
-import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/services/subjects_service.dart';
 import 'package:itk_app/domain/models/subject.dart';
-import 'package:itk_app/ui/core/widgets/ack_appbar.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
+import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/utils/result.dart';
 
 class MySiteTagsScreen extends StatefulWidget {
   final List<String> currentTags;
-  const MySiteTagsScreen({super.key, required this.currentTags});
+  final ValueChanged<List<String>> onSave;
+  final ScrollController? scrollController;
+
+  const MySiteTagsScreen({
+    super.key,
+    required this.currentTags,
+    required this.onSave,
+    this.scrollController,
+  });
 
   @override
   State<MySiteTagsScreen> createState() => _MySiteTagsScreenState();
 }
 
 class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
-  // [REMEMBER FOR FUTURE] if catches error it wont get initialized so 'late' wont work lol
-  List<Subject> _subjects = [];
-  bool _loading = true;
-
   final _searchController = TextEditingController();
   late final Set<String> _selectedTags;
 
+  List<Subject> _subjects = [];
+  bool _loading = true;
+  String? _error;
+
   List<Subject> get _filteredSubjects {
     final query = _searchController.text.trim().toLowerCase();
-
-    return _subjects.where((s) {
-      final matchesSearch =
-          query.isEmpty || s.name.toLowerCase().contains(query);
-
-      return matchesSearch;
-    }).toList();
+    if (query.isEmpty) return _subjects;
+    return _subjects
+        .where((s) => s.name.toLowerCase().contains(query))
+        .toList();
   }
 
   @override
@@ -57,13 +63,17 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
     });
   }
 
-  String? _error;
+  void _save() {
+    widget.onSave(_selectedTags.toList());
+    closeSheet(context);
+  }
 
   Future<void> _loadSubjects() async {
     setState(() {
       _error = null;
       _loading = true;
     });
+
     final result = await SubjectsService.instance.getSubjects();
     if (!mounted) return;
 
@@ -81,93 +91,69 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
     }
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+  Widget _buildList(BuildContext context) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator.adaptive());
+    }
+    if (_error != null) {
+      return StateMessage(
+        icon: Icons.cloud_off_rounded,
+        message: _error!,
+        onRetry: _loadSubjects,
+      );
+    }
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: buildAckAppBar(
-        context: context,
-        scheme: scheme,
-        title: const Text('Címkék'),
-        onPressed: () => Navigator.pop(context, _selectedTags.toList()),
+    final subjects = _filteredSubjects;
+    return ListView.separated(
+      controller: widget.scrollController,
+      padding: EdgeInsets.only(
+        top: kToolbarHeight + MediaQuery.paddingOf(context).top,
+        bottom: MediaQuery.paddingOf(context).bottom + 80,
       ),
-      body: Stack(
-        children: [
-          _loading
-              ? const Center(
-                  child: CircularProgressIndicator(),
-                )
-              : _error != null
-                  ? StateMessage(
-                      icon: Icons.cloud_off_rounded,
-                      message: _error!,
-                      onRetry: _loadSubjects,
-                    )
-                  : ListView.separated(
-                      padding: EdgeInsets.only(
-                        bottom: MediaQuery.paddingOf(context).bottom + 80,
-                        top: kToolbarHeight + MediaQuery.paddingOf(context).top,
-                      ),
-                      itemCount: _filteredSubjects.length,
-                      itemBuilder: (context, index) {
-                        final subject = _filteredSubjects[index];
-                        final selected = _selectedTags.contains(subject.name);
+      itemCount: subjects.length,
+      itemBuilder: (context, index) {
+        final subject = subjects[index];
+        return _buildSubjectRow(
+          context,
+          subject,
+          _selectedTags.contains(subject.name),
+        );
+      },
+      separatorBuilder: (context, index) => const Divider(height: 1),
+    );
+  }
 
-                        return _buildSubjectrow(
-                          context,
-                          subject,
-                          selected,
-                        );
-                      },
-                      separatorBuilder: (context, index) => const Divider(
-                        height: 1,
-                      ),
-                    ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.screenHorizontal,
-                AppSpacing.screenHorizontal,
-                AppSpacing.screenHorizontal,
-                MediaQuery.paddingOf(context).bottom +
-                    AppSpacing.screenHorizontal,
-              ),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    scheme.surface.withValues(alpha: 0.0),
-                    scheme.surface,
-                  ],
-                  stops: const [0.0, 0.4],
-                ),
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _searchController,
-                      onChanged: (_) => setState(() {}),
-                      decoration:
-                          const InputDecoration(hint: Text("Tantárgy neve...")),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
+  Widget _buildSearch(BuildContext context) {
+    final bg = sheetBackgroundColor(context);
+
+    return Container(
+      padding: EdgeInsets.fromLTRB(
+        AppSpacing.screenHorizontal,
+        AppSpacing.screenHorizontal,
+        AppSpacing.screenHorizontal,
+        MediaQuery.paddingOf(context).bottom + AppSpacing.screenHorizontal,
+      ),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [bg.withValues(alpha: 0.0), bg],
+          stops: const [0.0, 0.4],
+        ),
+      ),
+      child: TextField(
+        controller: _searchController,
+        onChanged: (_) => setState(() {}),
+        textInputAction: TextInputAction.search,
+        decoration: const InputDecoration(
+          hintText: 'Tantárgy neve...',
+          prefixIcon: Icon(Icons.search_rounded),
+        ),
       ),
     );
   }
 
-  Widget _buildSubjectrow(
+  Widget _buildSubjectRow(
       BuildContext context, Subject subject, bool selected) {
     final scheme = Theme.of(context).colorScheme;
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
@@ -175,7 +161,7 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
     return InkWell(
       onTap: () => _toggleTag(subject.name),
       child: Padding(
-        padding: const EdgeInsetsGeometry.symmetric(
+        padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.screenHorizontal,
         ),
         child: ConstrainedBox(
@@ -185,10 +171,7 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
               Expanded(
                 child: Text(
                   subject.name,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: scheme.onSurface,
-                  ),
+                  style: TextStyle(fontSize: 15, color: scheme.onSurface),
                 ),
               ),
               if (isIOS)
@@ -209,6 +192,32 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      backgroundColor: sheetBackgroundColor(context),
+      appBar: buildBrandAppBar(
+        closesSheet: true,
+        context: context,
+        title: 'Címkék',
+        actionIcon: Icons.check,
+        onAction: _save,
+      ),
+      body: Stack(
+        children: [
+          Positioned.fill(child: _buildList(context)),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _buildSearch(context),
+          ),
+        ],
       ),
     );
   }

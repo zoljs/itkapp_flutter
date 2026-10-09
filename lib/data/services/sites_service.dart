@@ -7,17 +7,21 @@ import 'package:itk_app/utils/result.dart';
 
 class SitesService {
   SitesService.internal();
+
   static final SitesService instance = SitesService.internal();
 
   final Dio _dio = ApiClient.instance.dio;
   final ValueNotifier<UserSite?> mySiteNotifier = ValueNotifier(null);
 
-  // static const _legacyWikiUrl =
-  //     'https://users.itk.ppke.hu/~perpa4/data/students.php';
+  static const _legacyWikiUrl =
+      'https://users.itk.ppke.hu/~perpa4/data/students.php';
 
   List<UserSite>? _cachedSites;
+
   List<UserSite> get cachedSites => _cachedSites ?? const [];
+
   bool get hasCachedSites => _cachedSites != null;
+
   void clearCache() => _cachedSites = null;
 
   Future<Result<List<UserSite>>> getAllSites({bool forceReload = false}) async {
@@ -36,7 +40,7 @@ class SitesService {
       return const Err('Nem sikerült feldolgozni az oldalakat.');
     }
 
-    //sites.addAll(await _fetchLegacySites());
+    sites.addAll(await _fetchLegacySites());
     _cachedSites = sites;
     return Ok(sites);
   }
@@ -111,13 +115,13 @@ class SitesService {
     return sites;
   }
 
-  // Future<List<UserSite>> _fetchLegacySites() async {
-  //   try {
-  //     final response = await Dio().get(_legacyWikiUrl);
-  //     return _parseSites(response.data) ?? const [];
-  //   } on DioException catch (e) {
-  //     debugPrint('[SitesService] legacy wiki unavailable: ${e.message}');
-  //     return const [];
-  //   }
-  // }
+  Future<List<UserSite>> _fetchLegacySites() async {
+    try {
+      final response = await Dio().get(_legacyWikiUrl);
+      return _parseSites(response.data) ?? const [];
+    } on DioException catch (e) {
+      debugPrint('[SitesService] legacy wiki unavailable: ${e.message}');
+      return const [];
+    }
+  }
 }

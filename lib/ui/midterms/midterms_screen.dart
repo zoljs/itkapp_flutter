@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:itk_app/data/services/auth_service.dart';
@@ -10,9 +9,13 @@ import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
+import 'package:itk_app/ui/core/widgets/circles_painter.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/midterms/add_midterms_screen.dart';
+import 'package:itk_app/ui/midterms/widgets/midterm_card.dart';
+import 'package:itk_app/ui/midterms/widgets/weekstrip.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -100,9 +103,10 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
       );
 
   Future<void> _openAddMidterm() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const AddMidtermScreen()),
+    await showAdaptiveSheet(
+      context: context,
+      builder: (context, controller) =>
+          AddMidtermScreen(scrollController: controller),
     );
     _load();
   }
@@ -146,7 +150,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
           IconButton(
             tooltip: 'Új ZH',
             icon: const Icon(Icons.add_rounded),
-            onPressed: _openAddMidterm,
+            onPressed: () => _openAddMidterm(),
           ),
       ],
       flexibleSpace: FlexibleSpaceBar(
@@ -156,7 +160,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
           children: [
             ColoredBox(color: scheme.primaryContainer),
             CustomPaint(
-              painter: _CirclesPainter([
+              painter: CirclesPainter([
                 scheme.secondary.withValues(alpha: 0.55),
                 itkDark.withValues(alpha: 0.44),
                 itkPrimary.withValues(alpha: 0.66),
@@ -182,7 +186,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  const _WeekStrip(),
+                  const WeekStrip(),
                 ],
               ),
             ),
@@ -226,7 +230,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
   }
 
   Widget _buildCard(MidtermDate m) {
-    final card = _MidtermCard(midterm: m);
+    final card = MidtermCard(midterm: m);
     if (!_canModerate || _loading) return card;
 
     final scheme = Theme.of(context).colorScheme;
@@ -308,161 +312,6 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
             _buildListSliver(context),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _CirclesPainter extends CustomPainter {
-  _CirclesPainter(this.colors);
-
-  final List<Color> colors;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final circles = [
-      (Offset(w * 0.0, h * 0.55), w * 0.55, colors[0]),
-      (Offset(w * 0.95, h * 0.05), w * 0.45, colors[1]),
-      (Offset(w * 0.75, h * 1.05), w * 0.50, colors[2]),
-    ];
-    for (final (center, radius, color) in circles) {
-      canvas.drawCircle(center, radius, Paint()..color = color);
-    }
-  }
-
-  @override
-  bool shouldRepaint(_CirclesPainter old) => !listEquals(old.colors, colors);
-}
-
-class _WeekStrip extends StatelessWidget {
-  const _WeekStrip();
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final today = DateUtils.dateOnly(DateTime.now());
-    final weekStart = today.subtract(Duration(days: today.weekday - 1));
-
-    return Row(
-      children: List.generate(7, (i) {
-        final day = DateUtils.addDaysToDate(weekStart, i);
-        final isToday = day == today;
-
-        return Expanded(
-          child: Column(
-            children: [
-              Container(
-                height: 44,
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isToday
-                      ? scheme.onPrimary
-                      : scheme.onPrimary.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: Text(
-                  '${day.day}',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: isToday
-                        ? scheme.primary
-                        : scheme.primary.withValues(alpha: 0.5),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      }),
-    );
-  }
-}
-
-class _MidtermCard extends StatelessWidget {
-  const _MidtermCard({required this.midterm});
-
-  final MidtermDate midterm;
-
-  String _whenLabel(BuildContext context, DateTime local) {
-    final today = DateUtils.dateOnly(DateTime.now());
-    final diff = DateUtils.dateOnly(local).difference(today).inDays;
-    return switch (diff) {
-      0 => 'MA',
-      1 => 'HOLNAP',
-      < 7 => '$diff NAP MÚLVA',
-      _ =>
-        MaterialLocalizations.of(context).formatMediumDate(local).toUpperCase(),
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final local = midterm.startsAt.toLocal();
-    final today = DateUtils.dateOnly(DateTime.now());
-    final isSoon = DateUtils.dateOnly(local).difference(today).inDays <= 1;
-
-    final background =
-        isSoon ? scheme.primaryContainer : scheme.surfaceContainerHigh;
-    final foreground = isSoon ? scheme.onPrimaryContainer : scheme.onSurface;
-    final muted = isSoon
-        ? scheme.onPrimaryContainer.withValues(alpha: 0.7)
-        : scheme.onSurfaceVariant;
-
-    final subtitle = [
-      midterm.subject.code,
-      if (midterm.location != null) midterm.location!,
-    ].join(' · ');
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  _whenLabel(context, local),
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 0.6,
-                    color: muted,
-                  ),
-                ),
-              ),
-              Text(
-                TimeOfDay.fromDateTime(local).format(context),
-                style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w600,
-                  color: foreground,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            midterm.subject.name,
-            style: TextStyle(
-              fontSize: 19,
-              fontWeight: FontWeight.bold,
-              color: foreground,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(subtitle, style: TextStyle(fontSize: 13, color: muted)),
-        ],
       ),
     );
   }

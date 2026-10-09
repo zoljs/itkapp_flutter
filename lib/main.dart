@@ -19,6 +19,10 @@ Future<void> main() async {
   await ApiClient.instance.init();
   ApiClient.instance.onUnauthorized = handleSessionExpired;
 
+  if (kDebugMode) {
+    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+  }
+
   await ThemeService.instance.loadFromDisk();
 
   initializeDateFormatting().then(

@@ -50,7 +50,7 @@ class MySiteCard extends StatelessWidget {
     // Own site
     return UserSiteCard(
       color: itkPrimary,
-      height: 80,
+      height: AppSpacing.mySiteCardHeight,
       onTap: openMySite,
       child: Row(
         children: [

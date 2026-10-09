@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
 import 'package:itk_app/ui/midterms/midterms_screen.dart';
+import 'package:itk_app/ui/online_videos/online_videos.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:itk_app/utils/result.dart';
@@ -104,35 +105,16 @@ class _HomeScreenState extends State<HomeScreen> {
               expandedHeight: 150,
               collapsedHeight: 60,
               scrolledUnderElevation: 0,
-              backgroundColor: Colors.transparent,
+              backgroundColor: scheme.surface,
               title: const _FadingLogo(showWhenCollapsed: true, height: 30),
-              flexibleSpace: Stack(
-                fit: StackFit.expand,
-                children: [
-                  DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                          scheme.surface,
-                          scheme.surface,
-                          scheme.surface.withValues(alpha: 0.0),
-                        ],
-                        stops: const [0.0, 0.55, 1.0],
-                      ),
-                    ),
-                  ),
-                  FlexibleSpaceBar(
-                    collapseMode: CollapseMode.pin,
-                    background: Container(
-                      color: scheme.primaryContainer,
-                      alignment: Alignment.center,
-                      child: const _FadingLogo(
-                          showWhenCollapsed: false, height: 45),
-                    ),
-                  ),
-                ],
+              flexibleSpace: FlexibleSpaceBar(
+                collapseMode: CollapseMode.pin,
+                background: Container(
+                  color: scheme.primaryContainer,
+                  alignment: Alignment.center,
+                  child:
+                      const _FadingLogo(showWhenCollapsed: false, height: 45),
+                ),
               ),
             ),
             SliverPadding(
@@ -175,13 +157,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       _QuickLinksGrid(onTap: (url) => openLink(context, url)),
                       SettingsTile(
-                        icon: Icons.settings,
+                        icon: Icons.video_chat_outlined,
                         iconColor: itkPrimary,
-                        title: 'Beállítások',
+                        title: 'Online Videók',
                         onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => const SettingsScreen())),
+                                builder: (_) => const OnlineVideos())),
                       )
                     ],
                   ),

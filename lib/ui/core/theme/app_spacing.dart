@@ -22,4 +22,7 @@ class AppSpacing {
 
   static const searchFieldHeight = 55.0;
   static const searchBarHeight = searchFieldHeight + 2 * lg;
+  static const mySiteCardHeight = 80.0;
+
+  static const toolbarHeight = 64.0;
 }
