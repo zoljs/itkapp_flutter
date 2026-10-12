@@ -3,7 +3,6 @@ import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
 import 'package:itk_app/ui/midterms/midterms_screen.dart';
 import 'package:itk_app/ui/online_videos/online_videos.dart';
-import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -29,7 +28,7 @@ const _quickLinks = [
       'assets/icons/neptun.png'),
   QuickLink(
       'ITK Space', 'https://space.itk.ppke.hu', 'assets/icons/itk-small.png'),
-  QuickLink('T.O.', '', 'assets/icons/sharepoint.png'),
+  QuickLink('TO', '', 'assets/icons/sharepoint.png'),
   QuickLink('Oktatók', '', 'assets/icons/ppke.png'),
 ];
 
