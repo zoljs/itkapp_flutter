@@ -6,6 +6,7 @@ class LdapUser {
   final String givenName;
   final String familyName;
   final bool canModerateMidterms;
+  final bool isAdmin;
 
   const LdapUser({
     required this.id,
@@ -15,6 +16,7 @@ class LdapUser {
     required this.givenName,
     required this.familyName,
     this.canModerateMidterms = false,
+    this.isAdmin = false,
   });
 
   String get firstName {
@@ -31,6 +33,7 @@ class LdapUser {
       givenName: json['givenName'] as String? ?? '',
       familyName: json['familyName'] as String? ?? '',
       canModerateMidterms: json['canModerateMidterms'] as bool? ?? false,
+      isAdmin: json['isAdmin'] as bool? ?? false,
     );
   }
 

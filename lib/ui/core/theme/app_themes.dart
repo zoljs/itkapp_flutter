@@ -4,31 +4,30 @@ import 'package:flutter/material.dart';
 
 InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
   return InputDecorationThemeData(
-    isDense: true,
     hintStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),
     filled: true,
     fillColor: scheme.surfaceContainerHigh,
     contentPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.lg, vertical: AppSpacing.lg),
+        horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppRadius.lg),
+      borderRadius: BorderRadius.circular(AppRadius.xxxl),
       borderSide: BorderSide.none,
     ),
     enabledBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppRadius.lg),
+      borderRadius: BorderRadius.circular(AppRadius.xxxl),
       borderSide: BorderSide.none,
     ),
     focusedBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      borderSide: BorderSide(color: scheme.primary, width: 2.0),
+      borderRadius: BorderRadius.circular(AppRadius.xxxl),
+      borderSide: BorderSide.none,
     ),
     errorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppRadius.lg),
+      borderRadius: BorderRadius.circular(AppRadius.xxxl),
       borderSide: BorderSide(color: scheme.error, width: 2.0),
     ),
     focusedErrorBorder: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(AppRadius.lg),
-      borderSide: BorderSide(color: scheme.error, width: 1.5),
+      borderRadius: BorderRadius.circular(AppRadius.xxxl),
+      borderSide: BorderSide(color: scheme.error, width: 2.0),
     ),
   );
 }

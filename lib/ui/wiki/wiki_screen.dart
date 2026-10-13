@@ -129,12 +129,6 @@ class _WikiScreenState extends State<WikiScreen> {
                   ),
                 ),
               ),
-              Skeleton.ignore(
-                child: Image.asset(
-                  'assets/icons/itk-small.png',
-                  height: 30,
-                ),
-              ),
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -246,17 +240,12 @@ class _WikiScreenState extends State<WikiScreen> {
               centeredWidget: Padding(
                 padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
                 child: _loading
-                    ? Container(
-                        width: double.infinity,
+                    ? UserSiteCard(
                         height: 80,
-                        alignment: Alignment.center,
-                        padding:
-                            const EdgeInsets.all(AppSpacing.screenHorizontal),
-                        decoration: BoxDecoration(
-                          color: scheme.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(AppRadius.lg),
+                        color: scheme.surfaceContainerHigh,
+                        child: const Center(
+                          child: CircularProgressIndicator.adaptive(),
                         ),
-                        child: const CircularProgressIndicator(),
                       )
                     : MySiteCard(mySite: _mySite, openMySite: _openMySite),
               ),

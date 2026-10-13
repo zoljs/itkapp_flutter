@@ -1,5 +1,4 @@
 import 'package:itk_app/domain/models/user_site.dart';
-import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
@@ -17,32 +16,22 @@ class MySiteCard extends StatelessWidget {
 
     // No own site yet
     if (mySite == null) {
-      return SizedBox(
+      return UserSiteCard(
+        color: scheme.surfaceContainerHigh,
+        onTap: openMySite,
         height: 80,
-        child: Material(
-          color: scheme.surfaceContainerHigh,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: openMySite,
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-              child: Row(
-                children: [
-                  Icon(Icons.add_circle_outline_rounded, color: scheme.primary),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'Még nincs saját wiki-oldalad, hozz létre egyet!',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                  ),
-                  Icon(Icons.chevron_right_rounded,
-                      color: scheme.onSurfaceVariant),
-                ],
+        child: Row(
+          children: [
+            Icon(Icons.add_circle_outline_rounded, color: scheme.primary),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Még nincs saját wiki-oldalad, hozz létre egyet!',
+                style: TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
-          ),
+            Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
+          ],
         ),
       );
     }
@@ -85,12 +74,8 @@ class MySiteCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          IconButton(
-            onPressed: openMySite,
-            iconSize: 22,
-            padding: EdgeInsets.zero,
-            icon: const Icon(Icons.edit_rounded, color: Colors.black87),
-          ),
+          const Icon(Icons.edit_rounded,
+              color: Colors.black87, size: AppSpacing.minimumAndroid / 2),
         ],
       ),
     );

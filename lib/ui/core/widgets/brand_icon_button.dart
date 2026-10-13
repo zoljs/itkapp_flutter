@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_themes.dart';
 
 class BrandIconButton extends StatefulWidget {
   const BrandIconButton({
@@ -9,8 +9,10 @@ class BrandIconButton extends StatefulWidget {
     required this.icon,
     required this.semanticLabel,
     this.onPressed,
-    this.backgroundColor,
-    this.iconColor,
+    this.backgroundColor = itkPrimary,
+    this.iconColor = itkDark,
+    this.size = AppSpacing.minimumAndroid,
+    this.elevated = false,
   });
 
   final VoidCallback? onPressed;
@@ -18,6 +20,9 @@ class BrandIconButton extends StatefulWidget {
   final IconData icon;
   final Color? backgroundColor;
   final Color? iconColor;
+
+  final double size;
+  final bool elevated;
 
   @override
   State<BrandIconButton> createState() => _BrandIconButtonState();
@@ -48,16 +53,25 @@ class _BrandIconButtonState extends State<BrandIconButton> {
           behavior: HitTestBehavior.opaque,
           onTap: widget.onPressed,
           child: Container(
-            height: AppSpacing.minimumAndroid,
-            width: AppSpacing.minimumAndroid,
+            height: widget.size,
+            width: widget.size,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: widget.backgroundColor,
-              borderRadius: BorderRadius.circular(AppRadius.xxxl),
+              shape: BoxShape.circle,
+              boxShadow: widget.elevated
+                  ? [
+                      BoxShadow(
+                        color: widget.backgroundColor!.withValues(alpha: 0.2),
+                        blurRadius: AppSpacing.md,
+                        offset: const Offset(AppSpacing.xs, AppSpacing.xs),
+                      ),
+                    ]
+                  : null,
             ),
             child: Icon(
               widget.icon,
-              size: 24,
+              size: widget.size * 0.5,
               color: widget.iconColor ?? scheme.onSurface,
               semanticLabel: widget.semanticLabel,
             ),

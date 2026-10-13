@@ -209,39 +209,16 @@ class _MySiteScreenState extends State<MySiteScreen> {
           // ),
           SettingsGroup(
             header: 'Címkék',
+            footer: 'A címkék alapján a kereső is listázza az oldalakat.'
+                '\nBalra húzva törölheted a címkét.',
             children: [
               SettingsTile(
                 title: 'Új címke hozzáadása',
                 onTap: _openTagPicker,
               ),
-              if (tags.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.lg,
-                    AppSpacing.xs,
-                    AppSpacing.lg,
-                    AppSpacing.lg,
-                  ),
-                  child: Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: tags.map((tag) {
-                      return Chip(
-                        padding: const EdgeInsets.all(AppSpacing.sm),
-                        label: Text(tag),
-                        labelStyle:
-                            TextStyle(color: scheme.onSecondaryContainer),
-                        backgroundColor: scheme.secondaryContainer,
-                        shape: const StadiumBorder(),
-                        side: BorderSide.none,
-                        deleteIcon: const Icon(Icons.close_rounded, size: 16),
-                        deleteIconColor: scheme.onSecondaryContainer,
-                        onDeleted: () =>
-                            setState(() => tags = [...tags]..remove(tag)),
-                      );
-                    }).toList(),
-                  ),
-                ),
+              ...tags.map((tag) {
+                return buildTagRow(tag);
+              }),
             ],
           ),
           if (_hasExistingSite) ...[
@@ -264,6 +241,30 @@ class _MySiteScreenState extends State<MySiteScreen> {
           ],
         ],
       ),
+    );
+  }
+
+  Dismissible buildTagRow(String tag) {
+    final scheme = Theme.of(context).colorScheme;
+
+    return Dismissible(
+      key: ValueKey(tag.hashCode),
+      direction: DismissDirection.endToStart,
+      background: Container(
+        color: scheme.error,
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+        child: Icon(Icons.delete_rounded, color: scheme.onError),
+      ),
+      child: Container(
+        color: scheme.surfaceContainerHigh,
+        child: SettingsTile(
+          title: tag,
+        ),
+      ),
+      onDismissed: (_) => setState(() {
+        tags.remove(tag);
+      }),
     );
   }
 

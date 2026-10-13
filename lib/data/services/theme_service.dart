@@ -2,23 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeService {
+  static const _oledKey = 'oledMode';
+  static const _fabKey = 'actionButtonAsFab';
+
   ThemeService.internal();
   static final ThemeService instance = ThemeService.internal();
 
   final ValueNotifier<bool> oledMode = ValueNotifier(false);
+  final ValueNotifier<bool> actionButtonAsFab = ValueNotifier(false);
 
-  Future<void> _saveToDisk(bool value) async {
+  Future<void> _saveToDisk(bool value, String key) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('oledMode', value);
+    await prefs.setBool(key, value);
   }
 
   Future<void> loadFromDisk() async {
     final prefs = await SharedPreferences.getInstance();
-    oledMode.value = prefs.getBool('oledMode') ?? false;
+    oledMode.value = prefs.getBool(_oledKey) ?? false;
+    actionButtonAsFab.value = prefs.getBool(_fabKey) ?? false;
   }
 
   Future<void> toggleOledMode(bool value) async {
     oledMode.value = value;
-    _saveToDisk(value);
+    await _saveToDisk(value, _oledKey);
+  }
+
+  Future<void> toggleActionButtonAsFab(bool value) async {
+    actionButtonAsFab.value = value;
+    await _saveToDisk(value, _fabKey);
   }
 }

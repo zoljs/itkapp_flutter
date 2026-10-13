@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/data/services/midterms_service.dart';
+import 'package:itk_app/data/services/theme_service.dart';
 import 'package:itk_app/domain/models/midterm_date.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
+import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/circles_painter.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
@@ -134,23 +136,26 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
     }
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, {required bool asFab}) {
     final scheme = Theme.of(context).colorScheme;
 
     return SliverAppBar(
       pinned: true,
       stretch: true,
       expandedHeight: 260,
-      collapsedHeight: 66,
+      collapsedHeight: AppSpacing.searchBarHeight,
       backgroundColor: scheme.surface,
       scrolledUnderElevation: 0,
       title: const Text('ZH-k'),
+      leading: buildBrandLeading(context),
+      leadingWidth: AppSpacing.minimumAndroid + 2 * AppSpacing.sm,
+      actionsPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       actions: [
-        if (_canModerate)
-          IconButton(
-            tooltip: 'Új ZH',
-            icon: const Icon(Icons.add_rounded),
-            onPressed: () => _openAddMidterm(),
+        if (_canModerate && !asFab)
+          buildBrandAction(
+            actionIcon: Icons.add_rounded,
+            label: 'Új ZH felvétele',
+            onAction: () => _openAddMidterm(),
           ),
       ],
       flexibleSpace: FlexibleSpaceBar(
@@ -231,26 +236,32 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
 
   Widget _buildCard(MidtermDate m) {
     final card = MidtermCard(midterm: m);
-    if (!_canModerate || _loading) return card;
-
     final scheme = Theme.of(context).colorScheme;
-    return Dismissible(
-      key: ValueKey(m.id),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        decoration: BoxDecoration(
-          color: scheme.error,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        child: Icon(Icons.delete_rounded, color: scheme.onError),
-      ),
-      confirmDismiss: (_) => _confirmAndDelete(m),
-      onDismissed: (_) => setState(() {
-        _midterms = _midterms.where((x) => x.id != m.id).toList();
-      }),
-      child: card,
+
+    final content = (!_canModerate || _loading)
+        ? card
+        : Dismissible(
+            key: ValueKey(m.id),
+            direction: DismissDirection.endToStart,
+            background: Container(
+              decoration: BoxDecoration(
+                color: scheme.error,
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+              ),
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+              child: Icon(Icons.delete_rounded, color: scheme.onError),
+            ),
+            confirmDismiss: (_) => _confirmAndDelete(m),
+            onDismissed: (_) => setState(() {
+              _midterms = _midterms.where((x) => x.id != m.id).toList();
+            }),
+            child: card,
+          );
+
+    return ClipRSuperellipse(
+      borderRadius: BorderRadius.circular(AppRadius.xxl),
+      child: content,
     );
   }
 
@@ -300,18 +311,28 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: RefreshIndicator(
-        onRefresh: _load,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics(),
+    return ValueListenableBuilder<bool>(
+      valueListenable: ThemeService.instance.actionButtonAsFab,
+      builder: (context, asFab, _) => Scaffold(
+        body: RefreshIndicator(
+          onRefresh: _load,
+          child: CustomScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
+            slivers: [
+              _buildHeader(context, asFab: asFab),
+              _buildListSliver(context),
+            ],
           ),
-          slivers: [
-            _buildHeader(context),
-            _buildListSliver(context),
-          ],
         ),
+        floatingActionButton: _canModerate && asFab
+            ? buildBrandFab(
+                icon: Icons.add_rounded,
+                semanticLabel: "Új ZH felvétele",
+                onPressed: _openAddMidterm,
+              )
+            : null,
       ),
     );
   }

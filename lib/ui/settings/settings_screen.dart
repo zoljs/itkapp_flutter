@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/services/api_client.dart';
+import 'package:itk_app/ui/admin/admin_roles_screen.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
@@ -175,16 +176,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 SettingsGroup(
                   header: 'Megjelenés',
                   footer:
-                      'OLED kijelzőn a tiszta fekete háttér kíméli az akkumulátort.',
+                      'Az új elem hozzáadása gomb a képernyő alján jelenik meg, egy kézzel könnyebben elérhető.',
                   children: [
+                    SettingsTile(
+                      icon: Icons.add_rounded,
+                      iconColor: scheme.tertiary,
+                      title: 'Akció gombok lent',
+                      onTap: () => ThemeService.instance
+                          .toggleActionButtonAsFab(
+                              !ThemeService.instance.actionButtonAsFab.value),
+                      trailing: ValueListenableBuilder<bool>(
+                        valueListenable:
+                            ThemeService.instance.actionButtonAsFab,
+                        builder: (context, asFab, _) => Switch.adaptive(
+                          activeTrackColor: itkPrimary,
+                          value: asFab,
+                          onChanged:
+                              ThemeService.instance.toggleActionButtonAsFab,
+                        ),
+                      ),
+                    ),
                     SettingsTile(
                       icon: Icons.dark_mode_rounded,
                       iconColor: scheme.tertiary,
                       title: 'OLED mód',
-                      onTap: () {
-                        setState(() => ThemeService.instance.toggleOledMode(
-                            !ThemeService.instance.oledMode.value));
-                      },
+                      onTap: () => ThemeService.instance.toggleOledMode(
+                          !ThemeService.instance.oledMode.value),
                       trailing: ValueListenableBuilder<bool>(
                         valueListenable: ThemeService.instance.oledMode,
                         builder: (context, isOled, _) => Switch.adaptive(
@@ -218,6 +235,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ],
                 ),
+
+                // Admin
+                if (_currentUser?.isAdmin ?? false)
+                  SettingsGroup(
+                    header: 'Adminisztrátor',
+                    footer: 'Évfolyamfelelősök kinevezése és visszavonása.',
+                    children: [
+                      SettingsTile(
+                        title: 'Jogosultságok',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AdminRolesScreen(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
 
                 // App info
                 SettingsGroup(

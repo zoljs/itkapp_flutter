@@ -6,8 +6,8 @@ import 'package:itk_app/utils/result.dart';
 
 class SubjectsService {
   SubjectsService._();
-
   static final SubjectsService instance = SubjectsService._();
+  final Dio _dio = ApiClient.instance.dio;
 
   List<Subject>? _cached;
 
@@ -18,7 +18,7 @@ class SubjectsService {
     if (cached != null && !forceReload) return Ok(cached);
 
     try {
-      final response = await ApiClient.instance.dio.get('/api/subjects');
+      final response = await _dio.get('/api/subjects');
       final subjects = parseSubjects(response.data);
       _cached = subjects;
       return Ok(subjects);

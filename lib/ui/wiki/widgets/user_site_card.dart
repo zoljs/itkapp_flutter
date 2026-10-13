@@ -19,29 +19,13 @@ class UserSiteCard extends StatelessWidget {
   // redesigned to somewhat follow HIG
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: height,
-      // drop shadow provides depth
-      decoration: BoxDecoration(
-        color: color, // flat background color following HIG deference principle
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        boxShadow: [
-          BoxShadow(
-            color: color.withValues(
-                alpha: 0.25), // tinted shadow based on the card's primary color
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 4,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
       child: Material(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
+        color: color,
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xxl),
+        ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           highlightColor: Colors.white38,

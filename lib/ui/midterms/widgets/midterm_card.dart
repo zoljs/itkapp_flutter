@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/domain/models/midterm_date.dart';
-import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
 class MidtermCard extends StatelessWidget {
@@ -42,10 +41,7 @@ class MidtermCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.lg),
-      decoration: BoxDecoration(
-        color: background,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-      ),
+      color: background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

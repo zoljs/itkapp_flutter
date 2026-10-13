@@ -26,8 +26,8 @@ class SettingsGroup extends StatelessWidget {
                   AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
               child: Text(header!, style: muted.copyWith(letterSpacing: 0.4)),
             ),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(AppRadius.lg),
+          ClipRSuperellipse(
+            borderRadius: BorderRadius.circular(AppRadius.xxl),
             child: Material(
               color: scheme.surfaceContainerHigh,
               child: Column(

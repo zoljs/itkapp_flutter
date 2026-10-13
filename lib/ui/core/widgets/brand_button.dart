@@ -43,9 +43,10 @@ class _BrandButtonState extends State<BrandButton> {
         child: Container(
           height: widget.height,
           alignment: Alignment.center,
-          decoration: BoxDecoration(
+          decoration: ShapeDecoration(
             color: widget.backgroundColor,
-            borderRadius: BorderRadius.circular(AppRadius.lg),
+            shape: RoundedSuperellipseBorder(
+                borderRadius: BorderRadius.circular(AppRadius.xxl)),
           ),
           child: widget.child,
         )

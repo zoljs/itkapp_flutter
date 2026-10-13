@@ -8,11 +8,7 @@ Color sheetBackgroundColor(BuildContext context) {
 }
 
 void closeSheet(BuildContext context) {
-  if (Theme.of(context).platform == TargetPlatform.iOS) {
-    CupertinoSheetRoute.popSheet(context);
-  } else {
-    Navigator.pop(context);
-  }
+  CupertinoSheetRoute.popSheet(context);
 }
 
 Future<T?> showAdaptiveSheet<T>({

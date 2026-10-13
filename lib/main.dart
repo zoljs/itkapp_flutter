@@ -20,7 +20,7 @@ Future<void> main() async {
   ApiClient.instance.onUnauthorized = handleSessionExpired;
 
   if (kDebugMode) {
-    debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+    //debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   }
 
   await ThemeService.instance.loadFromDisk();

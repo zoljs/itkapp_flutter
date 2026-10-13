@@ -24,7 +24,6 @@ class ShrinkingSliverAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
-    const collapsedHeight = 60.0;
     const expandedHeight = 260.0;
 
     return SliverAppBar(
@@ -33,7 +32,9 @@ class ShrinkingSliverAppBar extends StatelessWidget {
       centerTitle: centerTitle,
       title: title,
       expandedHeight: expandedHeight,
-      collapsedHeight: collapsedHeight,
+      collapsedHeight: preferredSizeChild != null
+          ? AppSpacing.searchBarHeight
+          : kToolbarHeight,
       floating: true,
       pinned: true,
       scrolledUnderElevation: 0,
