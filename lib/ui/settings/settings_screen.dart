@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/ui/admin/admin_roles_screen.dart';
@@ -294,7 +293,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                     SettingsTile(
                       icon: Icons.bug_report_rounded,
-                      iconColor: scheme.error,
+                      iconColor: scheme.outline,
                       title: 'Hiba bejelentése',
                       external: true,
                       onTap: _reportBug,
@@ -302,23 +301,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ],
                 ),
 
-                if (kDebugMode)
-                  SettingsGroup(
-                    header: 'Debug',
-                    children: [
-                      SettingsTile(
-                        icon: Icons.bug_report_rounded,
-                        iconColor: Colors.orange,
-                        title: 'Session törlése',
-                        onTap: () async {
-                          await ApiClient.instance.clearCookies();
-                          if (!context.mounted) return;
-                          context.showMessage(
-                              'Cookie törölve, most frissíts valamit.');
-                        },
-                      ),
-                    ],
-                  ),
+                // if (kDebugMode)
+                SettingsGroup(
+                  header: 'Debug',
+                  children: [
+                    SettingsTile(
+                      icon: Icons.bug_report_rounded,
+                      iconColor: Colors.orange,
+                      title: 'Session törlése',
+                      onTap: () async {
+                        await ApiClient.instance.clearCookies();
+                        if (!context.mounted) return;
+                        context.showMessage(
+                            'Cookie törölve, most frissíts valamit.');
+                      },
+                    ),
+                  ],
+                ),
 
                 // Logout
 
@@ -337,32 +336,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   )),
                 ),
 
-                FittedBox(
-                  fit: BoxFit.contain,
-                  child: SizedBox(
-                    width: 356,
-                    height: 412,
-                    child: Stack(
-                      children: [
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: 0,
-                          child: Center(
-                            child: Image.network(
-                                width: 356,
-                                'https://freepngimg.com/thumb/trampoline/132588-trampoline.png'),
-                          ),
-                        ),
-                        Center(
-                          child: Image.network(
-                              width: 167,
-                              'https://media.tenor.com/h_jy2s28rlYAAAAj/spinning-cat.gif'),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
+                // FittedBox(
+                //   fit: BoxFit.contain,
+                //   child: SizedBox(
+                //     width: 356,
+                //     height: 412,
+                //     child: Stack(
+                //       children: [
+                //         Positioned(
+                //           left: 0,
+                //           right: 0,
+                //           bottom: 0,
+                //           child: Center(
+                //             child: Image.network(
+                //                 width: 356,
+                //                 'https://freepngimg.com/thumb/trampoline/132588-trampoline.png'),
+                //           ),
+                //         ),
+                //         Center(
+                //           child: Image.network(
+                //               width: 167,
+                //               'https://media.tenor.com/h_jy2s28rlYAAAAj/spinning-cat.gif'),
+                //         ),
+                //       ],
+                //     ),
+                //   ),
+                // )
               ],
             ),
           ),

@@ -26,13 +26,13 @@ class WikiScreen extends StatefulWidget {
 class _WikiScreenState extends State<WikiScreen> {
   final _searchController = TextEditingController();
 
-  final int? _currentUserId = AuthService.instance.cachedUser?.id;
+  final String? _currentLogin = AuthService.instance.cachedUser?.login;
   List<UserSite> _sites = SitesService.instance.cachedSites;
 
   UserSite? get _mySite {
-    if (_currentUserId == null) return null;
+    if (_currentLogin == null) return null;
     for (final s in _sites) {
-      if (s.userId == _currentUserId) return s;
+      if (s.login == _currentLogin) return s;
     }
     return null;
   }
@@ -112,7 +112,7 @@ class _WikiScreenState extends State<WikiScreen> {
 
   Widget _buildSiteCard(UserSite site, int index) {
     return UserSiteCard(
-      color: itkPrimary,
+      color: site.name.length > 7 ? itkPrimary : Colors.grey,
       onTap: () => _openSite(site.url),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,7 +256,6 @@ class _WikiScreenState extends State<WikiScreen> {
                     ? List.filled(
                         4,
                         UserSite(
-                          userId: -1,
                           name: BoneMock.name,
                           url: 'https://example.com/${BoneMock.words(1)}',
                           tags: [

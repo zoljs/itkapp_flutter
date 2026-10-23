@@ -1,11 +1,12 @@
 class UserSite {
-  final int? userId;
+  //final int? userId;
+  final String? login;
   final String name;
   final String url;
   final List<String> tags;
 
   const UserSite({
-    this.userId,
+    this.login,
     required this.name,
     required this.url,
     required this.tags,
@@ -13,7 +14,7 @@ class UserSite {
 
   factory UserSite.fromJson(Map<String, dynamic> json) {
     return UserSite(
-      userId: json['userId'] as int?,
+      login: json['login'] as String?,
       name: json['name'] as String,
       url: json['url'] as String,
       tags: (json['tags'] as List).map((e) => e.toString()).toList(),

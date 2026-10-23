@@ -1,0 +1,44 @@
+Test and Set
+dart run test_and_set.dart
+
+
+Sandbox a telon
+adb shell run-as hu.ppke.itk.app ls app_flutter
+adb shell run-as hu.ppke.itk.app ls -a app_flutter
+adb shell run-as hu.ppke.itk.app ls -la app_flutter/.cookies
+adb shell ls /data/data/hu.ppke.itk.app
+adb shell ps -A -Z | grep hu.ppke.itk.app
+
+
+
+Előtér, háttér
+PID=$(adb shell pidof hu.ppke.itk.app)
+adb shell cat /proc/$PID/oom_score_adj
+adb shell cat /proc/$PID/cgroup
+
+
+
+Kernel
+uname -r
+docker exec itkapp2-app-1 uname -r
+
+head -2 /etc/os-release
+docker exec itkapp2-app-1 head -2 /etc/os-release
+
+docker exec itkapp2-app-1 ps
+ps -e | wc -l
+
+docker volume inspect itkapp2_pg_data --format '{{.Mountpoint}}'
+docker exec itkapp2-db-1 ls /var/lib/postgresql/data
+sudo ls /var/lib/docker/volumes/itkapp2_pg_data/_data
+
+
+
+
+
+Szerver dont
+read -s SESSION
+
+curl -si https://test.app.itk.ppke.hu/api/auth/me | head -1
+curl -si -H "Cookie: nuxt-session=$SESSION" https://test.app.itk.ppke.hu/api/auth/me | head -1
+unset SESSION
