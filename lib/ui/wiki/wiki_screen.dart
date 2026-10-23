@@ -112,7 +112,7 @@ class _WikiScreenState extends State<WikiScreen> {
 
   Widget _buildSiteCard(UserSite site, int index) {
     return UserSiteCard(
-      color: site.name.length > 7 ? itkPrimary : Colors.grey,
+      color: site.claimed ? itkPrimary : Colors.grey,
       onTap: () => _openSite(site.url),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,6 +256,7 @@ class _WikiScreenState extends State<WikiScreen> {
                     ? List.filled(
                         4,
                         UserSite(
+                          claimed: true,
                           name: BoneMock.name,
                           url: 'https://example.com/${BoneMock.words(1)}',
                           tags: [

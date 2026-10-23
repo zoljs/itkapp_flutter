@@ -4,12 +4,14 @@ class UserSite {
   final String name;
   final String url;
   final List<String> tags;
+  final bool claimed;
 
   const UserSite({
     this.login,
     required this.name,
     required this.url,
     required this.tags,
+    this.claimed = false,
   });
 
   factory UserSite.fromJson(Map<String, dynamic> json) {
@@ -18,6 +20,7 @@ class UserSite {
       name: json['name'] as String,
       url: json['url'] as String,
       tags: (json['tags'] as List).map((e) => e.toString()).toList(),
+      claimed: json['claimed'] as bool? ?? false,
     );
   }
 

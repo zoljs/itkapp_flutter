@@ -24,6 +24,8 @@ class _MySiteScreenState extends State<MySiteScreen> {
   LdapUser? _currentUser;
 
   List<String> tags = [];
+  bool isPublic = true;
+  bool isPhpEnabled = false;
 
   bool _loading = true;
   bool _hasExistingSite = false;
@@ -207,6 +209,29 @@ class _MySiteScreenState extends State<MySiteScreen> {
           //     ),
           //   ],
           // ),
+          SettingsGroup(
+              header: 'Beállítások',
+              footer:
+                  'Bekapcsolásával ki lesz listázva a Users oldalad tartalma az alkalmazásban.',
+              children: [
+                SettingsTile(
+                  title: 'Oldal publikussá tétele',
+                  trailing: Switch.adaptive(
+                    value: isPublic,
+                    onChanged: (value) => setState(() => isPublic = value),
+                  ),
+                  onTap: () => setState(() => isPublic = !isPublic),
+                ),
+                SettingsTile(
+                  title: 'PHP Fájlkezelő engedélyezése',
+                  trailing: Switch.adaptive(
+                    value: isPhpEnabled,
+                    onChanged: (value) => setState(() => isPhpEnabled = value),
+                  ),
+                  onTap: () => setState(() => isPhpEnabled = !isPhpEnabled),
+                ),
+              ]),
+
           SettingsGroup(
             header: 'Címkék',
             footer: 'A címkék alapján a kereső is listázza az oldalakat.'
