@@ -6,7 +6,7 @@ import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
-import 'package:itk_app/ui/midterms/subject_picker_screen.dart';
+import 'package:itk_app/ui/core/screens/subject_picker_screen.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/result.dart';
 

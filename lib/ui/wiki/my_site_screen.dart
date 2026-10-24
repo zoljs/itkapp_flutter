@@ -9,7 +9,7 @@ import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
-import 'package:itk_app/ui/wiki/my_site_tags_screen.dart';
+import 'package:itk_app/ui/core/screens/subject_multi_picker_screen.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/result.dart';
 
@@ -119,7 +119,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
   Future<void> _openTagPicker() async {
     await showAdaptiveSheet<void>(
       context: context,
-      builder: (context, controller) => MySiteTagsScreen(
+      builder: (context, controller) => SubjectMultiPickerScreen(
         scrollController: controller,
         currentTags: tags,
         onSave: (result) => setState(() => tags = result),

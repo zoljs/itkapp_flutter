@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/admin/users_service.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
+import 'package:itk_app/ui/admin/viewmodels/user_picker_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
+import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
-import 'package:itk_app/utils/result.dart';
 
 class UserPickerScreen extends StatefulWidget {
   const UserPickerScreen({
@@ -25,54 +25,12 @@ class UserPickerScreen extends StatefulWidget {
 
 class _UserPickerScreenState extends State<UserPickerScreen> {
   final _searchController = TextEditingController();
-
-  List<UserSummary> _users = const [];
-  bool _loading = true;
-  String? _error;
-
-  List<UserSummary> get _filteredUsers {
-    final query = _searchController.text.trim().toLowerCase();
-    if (query.isEmpty) return _users;
-    return _users
-        .where((u) =>
-            u.fullName.toLowerCase().contains(query) ||
-            u.ldapUsername.toLowerCase().contains(query))
-        .toList();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadUsers();
-  }
+  late final _viewModel = UserPickerViewModel.create()..load();
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  Future<void> _loadUsers() async {
-    setState(() {
-      _error = null;
-      _loading = true;
-    });
-
-    final result = await AdminUsersService.instance.getUsers();
-    if (!mounted) return;
-
-    switch (result) {
-      case Ok(:final value):
-        setState(() {
-          _users = value;
-          _loading = false;
-        });
-      case Err(:final message):
-        setState(() {
-          _error = message;
-          _loading = false;
-        });
-    }
   }
 
   void _pick(UserSummary user) {
@@ -81,18 +39,18 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
   }
 
   Widget _buildList(BuildContext context) {
-    if (_loading) {
+    if (_viewModel.loading) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
-    if (_error != null) {
+    if (_viewModel.error != null) {
       return StateMessage(
         icon: Icons.cloud_off_rounded,
-        message: _error!,
-        onRetry: _loadUsers,
+        message: _viewModel.error!,
+        onRetry: _viewModel.load,
       );
     }
 
-    final users = _filteredUsers;
+    final users = _viewModel.filteredUsers;
     return ListView.separated(
       controller: widget.scrollController,
       padding: EdgeInsets.only(
@@ -154,36 +112,6 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
     );
   }
 
-  Widget _buildSearch(BuildContext context) {
-    final bg = sheetBackgroundColor(context);
-
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.screenHorizontal,
-        AppSpacing.screenHorizontal,
-        AppSpacing.screenHorizontal,
-        MediaQuery.paddingOf(context).bottom + AppSpacing.screenHorizontal,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [bg.withValues(alpha: 0.0), bg],
-          stops: const [0.0, 0.4],
-        ),
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (_) => setState(() {}),
-        textInputAction: TextInputAction.search,
-        decoration: const InputDecoration(
-          hintText: 'Név vagy felhasználónév...',
-          prefixIcon: Icon(Icons.search_rounded),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -193,17 +121,30 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
         title: 'Felhasználó',
         closesSheet: true,
       ),
-      body: Stack(
-        children: [
-          Positioned.fill(child: _buildList(context)),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _buildSearch(context),
-          ),
-        ],
-      ),
+      body: ListenableBuilder(
+          listenable: _viewModel,
+          builder: (context, _) {
+            return Stack(
+              children: [
+                Positioned.fill(
+                    child: ListenableBuilder(
+                        listenable: _viewModel,
+                        builder: (context, _) {
+                          return _buildList(context);
+                        })),
+                Positioned(
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: PickerSearchField(
+                    searchController: _searchController,
+                    onChanged: (value) => _viewModel.setQuery(value),
+                    hintText: 'Felhasználó neve vagy loginja...',
+                  ),
+                ),
+              ],
+            );
+          }),
     );
   }
 }

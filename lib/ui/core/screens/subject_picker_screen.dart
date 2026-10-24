@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/subjects_service.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
+import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
-import 'package:itk_app/utils/result.dart';
+import 'package:itk_app/ui/core/screens/viewmodels/subject_picker_viewmodel.dart';
 
 class SubjectPickerScreen extends StatefulWidget {
   final int? selectedId;
@@ -20,26 +20,7 @@ class SubjectPickerScreen extends StatefulWidget {
 
 class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
   final _searchController = TextEditingController();
-
-  List<Subject> _subjects = [];
-  bool _loading = true;
-  String? _error;
-
-  List<Subject> get _filteredSubjects {
-    final query = _searchController.text.trim().toLowerCase();
-    if (query.isEmpty) return _subjects;
-    return _subjects
-        .where((s) =>
-            s.name.toLowerCase().contains(query) ||
-            s.code.toLowerCase().contains(query))
-        .toList();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadSubjects();
-  }
+  late final _viewModel = SubjectPickerViewModel.create()..load();
 
   @override
   void dispose() {
@@ -47,42 +28,19 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
     super.dispose();
   }
 
-  Future<void> _loadSubjects() async {
-    setState(() {
-      _error = null;
-      _loading = true;
-    });
-
-    final result = await SubjectsService.instance.getSubjects();
-    if (!mounted) return;
-
-    switch (result) {
-      case Ok(:final value):
-        setState(() {
-          _subjects = value;
-          _loading = false;
-        });
-      case Err(:final message):
-        setState(() {
-          _error = message;
-          _loading = false;
-        });
-    }
-  }
-
   Widget _buildList(BuildContext context) {
-    if (_loading) {
+    if (_viewModel.loading) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
-    if (_error != null) {
+    if (_viewModel.error != null) {
       return StateMessage(
         icon: Icons.cloud_off_rounded,
-        message: _error!,
-        onRetry: _loadSubjects,
+        message: _viewModel.error!,
+        onRetry: _viewModel.load,
       );
     }
 
-    final subjects = _filteredSubjects;
+    final subjects = _viewModel.filteredSubjects;
     return ListView.separated(
       controller: widget.scrollController,
       padding: EdgeInsets.only(
@@ -92,36 +50,6 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
       itemBuilder: (context, index) =>
           _buildSubjectRow(context, subjects[index]),
       separatorBuilder: (context, index) => const Divider(height: 1),
-    );
-  }
-
-  Widget _buildSearch(BuildContext context) {
-    final bg = sheetBackgroundColor(context);
-
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.screenHorizontal,
-        AppSpacing.screenHorizontal,
-        AppSpacing.screenHorizontal,
-        MediaQuery.paddingOf(context).bottom + AppSpacing.screenHorizontal,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [bg.withValues(alpha: 0.0), bg],
-          stops: const [0.0, 0.4],
-        ),
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (_) => setState(() {}),
-        textInputAction: TextInputAction.search,
-        decoration: const InputDecoration(
-          hintText: 'Tárgy neve vagy kódja...',
-          prefixIcon: Icon(Icons.search_rounded),
-        ),
-      ),
     );
   }
 
@@ -176,12 +104,21 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: _buildList(context)),
+          Positioned.fill(
+              child: ListenableBuilder(
+                  listenable: _viewModel,
+                  builder: (context, _) {
+                    return _buildList(context);
+                  })),
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            child: _buildSearch(context),
+            child: PickerSearchField(
+              searchController: _searchController,
+              onChanged: (value) => _viewModel.setQuery(value),
+              hintText: 'Tárgy neve vagy kódja...',
+            ),
           ),
         ],
       ),

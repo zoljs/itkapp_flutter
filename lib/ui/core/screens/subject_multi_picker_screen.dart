@@ -1,19 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/subjects_service.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
+import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
-import 'package:itk_app/utils/result.dart';
+import 'package:itk_app/ui/core/screens/viewmodels/subject_multi_picker_viewmodel.dart';
 
-class MySiteTagsScreen extends StatefulWidget {
+class SubjectMultiPickerScreen extends StatefulWidget {
   final List<String> currentTags;
   final ValueChanged<List<String>> onSave;
   final ScrollController? scrollController;
 
-  const MySiteTagsScreen({
+  const SubjectMultiPickerScreen({
     super.key,
     required this.currentTags,
     required this.onSave,
@@ -21,31 +21,14 @@ class MySiteTagsScreen extends StatefulWidget {
   });
 
   @override
-  State<MySiteTagsScreen> createState() => _MySiteTagsScreenState();
+  State<SubjectMultiPickerScreen> createState() =>
+      _SubjectMultiPickerScreenState();
 }
 
-class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
+class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   final _searchController = TextEditingController();
-  late final Set<String> _selectedTags;
-
-  List<Subject> _subjects = [];
-  bool _loading = true;
-  String? _error;
-
-  List<Subject> get _filteredSubjects {
-    final query = _searchController.text.trim().toLowerCase();
-    if (query.isEmpty) return _subjects;
-    return _subjects
-        .where((s) => s.name.toLowerCase().contains(query))
-        .toList();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _selectedTags = Set<String>.from(widget.currentTags);
-    _loadSubjects();
-  }
+  late final _viewModel = SubjectMultiPickerViewModel.create(widget.currentTags)
+    ..load();
 
   @override
   void dispose() {
@@ -53,61 +36,27 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
     super.dispose();
   }
 
-  void _toggleTag(String tag) {
-    setState(() {
-      if (_selectedTags.contains(tag)) {
-        _selectedTags.remove(tag);
-      } else {
-        _selectedTags.add(tag);
-      }
-    });
-  }
-
   void _save() {
-    widget.onSave(_selectedTags.toList());
+    widget.onSave(_viewModel.selectedSubjects.toList());
     closeSheet(context);
   }
 
-  Future<void> _loadSubjects() async {
-    setState(() {
-      _error = null;
-      _loading = true;
-    });
-
-    final result = await SubjectsService.instance.getSubjects();
-    if (!mounted) return;
-
-    switch (result) {
-      case Ok(:final value):
-        setState(() {
-          _subjects = value;
-          _loading = false;
-        });
-      case Err(:final message):
-        setState(() {
-          _error = message;
-          _loading = false;
-        });
-    }
-  }
-
   Widget _buildList(BuildContext context) {
-    if (_loading) {
+    if (_viewModel.loading) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
-    if (_error != null) {
+    if (_viewModel.error != null) {
       return StateMessage(
         icon: Icons.cloud_off_rounded,
-        message: _error!,
-        onRetry: _loadSubjects,
+        message: _viewModel.error!,
+        onRetry: _viewModel.load,
       );
     }
 
-    final subjects = _filteredSubjects;
+    final subjects = _viewModel.filteredSubjects;
     return ListView.separated(
       controller: widget.scrollController,
       padding: EdgeInsets.only(
-        top: kToolbarHeight + MediaQuery.paddingOf(context).top,
         bottom: MediaQuery.paddingOf(context).bottom + 80,
       ),
       itemCount: subjects.length,
@@ -115,41 +64,11 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
         final subject = subjects[index];
         return _buildSubjectRow(
           context,
-          subject,
-          _selectedTags.contains(subject.name),
+          subjects[index],
+          _viewModel.selectedSubjects.contains(subject.name),
         );
       },
       separatorBuilder: (context, index) => const Divider(height: 1),
-    );
-  }
-
-  Widget _buildSearch(BuildContext context) {
-    final bg = sheetBackgroundColor(context);
-
-    return Container(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.screenHorizontal,
-        AppSpacing.screenHorizontal,
-        AppSpacing.screenHorizontal,
-        MediaQuery.paddingOf(context).bottom + AppSpacing.screenHorizontal,
-      ),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [bg.withValues(alpha: 0.0), bg],
-          stops: const [0.0, 0.4],
-        ),
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (_) => setState(() {}),
-        textInputAction: TextInputAction.search,
-        decoration: const InputDecoration(
-          hintText: 'Tantárgy neve...',
-          prefixIcon: Icon(Icons.search_rounded),
-        ),
-      ),
     );
   }
 
@@ -159,7 +78,7 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
     return InkWell(
-      onTap: () => _toggleTag(subject.name),
+      onTap: () => _viewModel.toggleSubject(subject.name),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.screenHorizontal,
@@ -187,7 +106,7 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
                   value: selected,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   visualDensity: VisualDensity.compact,
-                  onChanged: (_) => _toggleTag(subject.name),
+                  onChanged: (_) => _viewModel.toggleSubject(subject.name),
                 ),
             ],
           ),
@@ -199,7 +118,6 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
       backgroundColor: sheetBackgroundColor(context),
       appBar: buildBrandAppBar(
         closesSheet: true,
@@ -210,12 +128,23 @@ class _MySiteTagsScreenState extends State<MySiteTagsScreen> {
       ),
       body: Stack(
         children: [
-          Positioned.fill(child: _buildList(context)),
+          Positioned.fill(
+            child: ListenableBuilder(
+              listenable: _viewModel,
+              builder: (context, _) {
+                return _buildList(context);
+              },
+            ),
+          ),
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            child: _buildSearch(context),
+            child: PickerSearchField(
+              searchController: _searchController,
+              onChanged: (value) => _viewModel.setQuery(value),
+              hintText: 'Tárgy neve vagy kódja...',
+            ),
           ),
         ],
       ),

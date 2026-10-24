@@ -15,12 +15,12 @@ class WikiViewModel extends ChangeNotifier {
   factory WikiViewModel.create() =>
       WikiViewModel(service: SitesService.instance);
 
-  // State
   final SitesService _service;
-  List<UserSite> _sites;
-  bool _loading;
 
+  // State
+  List<UserSite> _sites;
   UserSite? _mySite;
+  bool _loading;
   String? _error;
   String _query = '';
 

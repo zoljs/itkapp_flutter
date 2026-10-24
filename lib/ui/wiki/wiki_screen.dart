@@ -27,19 +27,13 @@ class WikiScreen extends StatefulWidget {
 
 class _WikiScreenState extends State<WikiScreen> {
   final _searchController = TextEditingController();
-  late final viewModel = WikiViewModel.create();
-
-  @override
-  void initState() {
-    super.initState();
-    viewModel.load();
-  }
+  late final _viewModel = WikiViewModel.create()..load();
 
   Future<void> _openMySite() async {
     await Navigator.push(
         context, MaterialPageRoute(builder: (context) => const MySiteScreen()));
 
-    viewModel.load();
+    _viewModel.load();
   }
 
   Future<void> _openSite(String url) async {
@@ -144,10 +138,10 @@ class _WikiScreenState extends State<WikiScreen> {
 
     return Scaffold(
       body: ListenableBuilder(
-          listenable: viewModel,
+          listenable: _viewModel,
           builder: (context, _) {
             return RefreshIndicator(
-              onRefresh: () => viewModel.load(forceReload: true),
+              onRefresh: () => _viewModel.load(forceReload: true),
               child: CustomScrollView(
                 // ios bounce physics even if the list does NOT overflow
                 physics: const AlwaysScrollableScrollPhysics(
@@ -175,7 +169,7 @@ class _WikiScreenState extends State<WikiScreen> {
                           textAlignVertical: TextAlignVertical.center,
                           textInputAction: TextInputAction.search,
                           controller: _searchController,
-                          onChanged: (value) => viewModel.setQuery(value),
+                          onChanged: (value) => _viewModel.setQuery(value),
                           decoration: InputDecoration(
                             hintText: 'Oldal, tantárgy neve...',
                             prefixIcon: const Icon(Icons.search_rounded),
@@ -185,7 +179,7 @@ class _WikiScreenState extends State<WikiScreen> {
                                     icon: const Icon(Icons.close_rounded),
                                     onPressed: () {
                                       _searchController.clear();
-                                      viewModel.setQuery('');
+                                      _viewModel.setQuery('');
                                     },
                                   ),
                           ),
@@ -195,7 +189,7 @@ class _WikiScreenState extends State<WikiScreen> {
                     centeredWidget: Padding(
                       padding:
                           const EdgeInsets.all(AppSpacing.screenHorizontal),
-                      child: viewModel.loading
+                      child: _viewModel.loading
                           ? UserSiteCard(
                               height: 80,
                               color: scheme.surfaceContainerHigh,
@@ -204,14 +198,14 @@ class _WikiScreenState extends State<WikiScreen> {
                               ),
                             )
                           : MySiteCard(
-                              mySite: viewModel.mySite,
+                              mySite: _viewModel.mySite,
                               openMySite: _openMySite,
                             ),
                     ),
                   ),
                   Builder(
                     builder: (context) {
-                      final displaySites = viewModel.loading
+                      final displaySites = _viewModel.loading
                           ? List.filled(
                               4,
                               UserSite(
@@ -224,14 +218,14 @@ class _WikiScreenState extends State<WikiScreen> {
                                 ],
                               ),
                             )
-                          : viewModel.filteredSites;
+                          : _viewModel.filteredSites;
 
-                      if (!viewModel.loading &&
-                          (viewModel.error != null || displaySites.isEmpty)) {
+                      if (!_viewModel.loading &&
+                          (_viewModel.error != null || displaySites.isEmpty)) {
                         final query = _searchController.text.trim();
 
                         final (icon, message) =
-                            switch ((viewModel.error, query.isEmpty)) {
+                            switch ((_viewModel.error, query.isEmpty)) {
                           (final String error, _) => (
                               Icons.cloud_off_rounded,
                               error
@@ -259,8 +253,8 @@ class _WikiScreenState extends State<WikiScreen> {
                             child: StateMessage(
                               icon: icon,
                               message: message,
-                              onRetry: viewModel.error != null
-                                  ? () => viewModel.load(forceReload: true)
+                              onRetry: _viewModel.error != null
+                                  ? () => _viewModel.load(forceReload: true)
                                   : null,
                             ),
                           ),
@@ -274,7 +268,7 @@ class _WikiScreenState extends State<WikiScreen> {
                             AppSpacing.screenHorizontal,
                             AppSpacing.bottomNavClearance),
                         sliver: Skeletonizer.sliver(
-                          enabled: viewModel.loading,
+                          enabled: _viewModel.loading,
                           child: SliverList.separated(
                             itemCount: displaySites.length,
                             itemBuilder: (context, index) =>
