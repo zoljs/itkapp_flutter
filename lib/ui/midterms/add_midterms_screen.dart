@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/midterms_service.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
@@ -7,8 +6,8 @@ import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/screens/subject_picker_screen.dart';
+import 'package:itk_app/ui/midterms/viewmodels/add_midterm_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
-import 'package:itk_app/utils/result.dart';
 
 class AddMidtermScreen extends StatefulWidget {
   const AddMidtermScreen({super.key, this.scrollController});
@@ -21,11 +20,7 @@ class AddMidtermScreen extends StatefulWidget {
 
 class _AddMidtermScreenState extends State<AddMidtermScreen> {
   final _locationController = TextEditingController();
-
-  Subject? _subject;
-  DateTime? _date;
-  TimeOfDay? _time;
-  bool _saving = false;
+  late final _viewModel = AddMidtermViewModel.create();
 
   @override
   void dispose() {
@@ -38,58 +33,38 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
       context,
       MaterialPageRoute(
         builder: (_) => SubjectPickerScreen(
-          selectedId: _subject?.id,
+          selectedId: _viewModel.subject?.id,
           scrollController: widget.scrollController,
         ),
       ),
     );
-    if (picked != null) setState(() => _subject = picked);
+    if (picked != null) _viewModel.setSubject(picked);
   }
 
   Future<void> _pickDate() async {
     final picked = await showAdaptiveDatePicker(
       context: context,
-      initialDate: _date,
+      initialDate: _viewModel.date ?? DateTime.now(),
     );
-    if (picked != null) setState(() => _date = picked);
+    if (picked != null) _viewModel.setDate(picked);
   }
 
   Future<void> _pickTime() async {
     final picked = await showAdaptiveTimePicker(
       context: context,
-      initialTime: _time ?? const TimeOfDay(hour: 8, minute: 0),
+      initialTime: _viewModel.time ?? const TimeOfDay(hour: 8, minute: 0),
     );
-    if (picked != null) setState(() => _time = picked);
+    if (picked != null) _viewModel.setTime(picked);
   }
 
   Future<void> _save() async {
-    if (_saving) return;
-
-    final subject = _subject;
-    final date = _date;
-    final time = _time;
-    if (subject == null || date == null || time == null) {
-      context.showMessage('Válassz tárgyat, dátumot és időpontot.');
-      return;
-    }
-
-    setState(() => _saving = true);
-
-    final location = _locationController.text.trim();
-    final result = await MidtermsService.instance.addMidterm(
-      subjectId: subject.id,
-      startsAt:
-          DateTime(date.year, date.month, date.day, time.hour, time.minute),
-      location: location.isEmpty ? null : location,
-    );
+    await _viewModel.save.execute();
     if (!mounted) return;
 
-    switch (result) {
-      case Ok():
-        closeSheet(context);
-      case Err(:final message):
-        setState(() => _saving = false);
-        context.showMessage(message);
+    if (_viewModel.save.completed) {
+      closeSheet(context);
+    } else if (_viewModel.save.errorMessage case final message?) {
+      context.showMessage(message);
     }
   }
 
@@ -112,7 +87,7 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
             children: [
               SettingsTile(
                 title: 'Tárgy',
-                value: _subject?.name ?? 'Válassz',
+                value: _viewModel.subject?.name ?? 'Válassz',
                 onTap: _pickSubject,
               ),
             ],
@@ -122,14 +97,16 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
             children: [
               SettingsTile(
                 title: 'Dátum',
-                value: _date == null
+                value: _viewModel.date == null
                     ? 'Válassz'
-                    : localizations.formatMediumDate(_date!),
+                    : localizations.formatMediumDate(_viewModel.date!),
                 onTap: _pickDate,
               ),
               SettingsTile(
                 title: 'Kezdés',
-                value: _time == null ? 'Válassz' : _time!.format(context),
+                value: _viewModel.time == null
+                    ? 'Válassz'
+                    : _viewModel.time!.format(context),
                 onTap: _pickTime,
               ),
             ],
@@ -143,6 +120,7 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
                 child: TextField(
                   controller: _locationController,
                   maxLength: 100,
+                  onChanged: _viewModel.setLocation,
                   decoration: const InputDecoration(
                     hintText: 'pl. 201-es terem',
                     border: InputBorder.none,
@@ -159,16 +137,21 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: sheetBackgroundColor(context),
-      appBar: buildBrandAppBar(
-        context: context,
-        title: 'Új ZH',
-        closesSheet: true,
-        actionIcon: Icons.check,
-        onAction: _save,
-      ),
-      body: _buildForm(context),
-    );
+    return ListenableBuilder(
+        listenable: Listenable.merge([_viewModel, _viewModel.save]),
+        builder: (context, _) {
+          return Scaffold(
+            backgroundColor: sheetBackgroundColor(context),
+            appBar: buildBrandAppBar(
+              context: context,
+              title: 'Új ZH',
+              closesSheet: true,
+              actionIcon: Icons.check,
+              onAction:
+                  _viewModel.canSave && !_viewModel.save.running ? _save : null,
+            ),
+            body: _buildForm(context),
+          );
+        });
   }
 }
