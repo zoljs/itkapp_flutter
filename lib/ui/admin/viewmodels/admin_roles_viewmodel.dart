@@ -1,0 +1,59 @@
+import 'dart:collection';
+
+import 'package:flutter/foundation.dart';
+import 'package:itk_app/data/services/admin/roles_service.dart';
+import 'package:itk_app/domain/models/user_summary.dart';
+import 'package:itk_app/utils/command.dart';
+import 'package:itk_app/utils/result.dart';
+
+class AdminRolesViewModel extends ChangeNotifier {
+  AdminRolesViewModel({required AdminRolesService service})
+      : _service = service {
+    load = Command0<void>(_load)..execute();
+    assign = Command1<void, int>(_assign);
+    revoke = Command1<void, int>(_revoke);
+  }
+
+  factory AdminRolesViewModel.create() =>
+      AdminRolesViewModel(service: AdminRolesService.instance);
+
+  final AdminRolesService _service;
+
+  // State
+  List<UserSummary> _roleHolders = [];
+  late final Command0<void> load;
+  late final Command1<void, int> assign;
+  late final Command1<void, int> revoke;
+
+  // Getters
+  UnmodifiableListView<UserSummary> get roleHolders =>
+      UnmodifiableListView(_roleHolders);
+
+  // Methods
+  Future<Result<void>> _load() async {
+    final result = await _service.getRoleHolders();
+
+    switch (result) {
+      case Ok(:final value):
+        _roleHolders = value;
+        notifyListeners();
+        return const Ok(null);
+      case Err(:final message):
+        return Err(message);
+    }
+  }
+
+  Future<Result<void>> _assign(int id) async {
+    final result = await _service.assignCohortRep(id);
+    if (result is Ok) await _load();
+    return result;
+  }
+
+  Future<Result<void>> _revoke(int id) async {
+    _roleHolders = _roleHolders.where((u) => u.userId != id).toList();
+    notifyListeners();
+    final result = await _service.revokeRole(id);
+    if (result is Err) await _load();
+    return result;
+  }
+}

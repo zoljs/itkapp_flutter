@@ -3,6 +3,7 @@ import 'package:itk_app/data/services/admin/roles_service.dart';
 import 'package:itk_app/data/services/theme_service.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/ui/admin/user_picker_screen.dart';
+import 'package:itk_app/ui/admin/viewmodels/admin_roles_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
@@ -10,7 +11,6 @@ import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/utils/context_extensions.dart';
-import 'package:itk_app/utils/result.dart';
 
 class AdminRolesScreen extends StatefulWidget {
   const AdminRolesScreen({super.key});
@@ -20,38 +20,8 @@ class AdminRolesScreen extends StatefulWidget {
 }
 
 class _AdminRolesScreenState extends State<AdminRolesScreen> {
-  List<UserSummary> _holders = const [];
-  bool _loading = true;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    setState(() {
-      _error = null;
-      if (_holders.isEmpty) _loading = true;
-    });
-
-    final result = await AdminRolesService.instance.getRoleHolders();
-    if (!mounted) return;
-
-    switch (result) {
-      case Ok(:final value):
-        setState(() {
-          _holders = value;
-          _loading = false;
-        });
-      case Err(:final message):
-        setState(() {
-          _error = message;
-          _loading = false;
-        });
-    }
-  }
+  late final _viewModel =
+      AdminRolesViewModel(service: AdminRolesService.instance);
 
   Future<void> _openUserPicker() async {
     UserSummary? picked;
@@ -59,7 +29,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
       context: context,
       builder: (context, controller) => UserPickerScreen(
         scrollController: controller,
-        excludedIds: {for (final u in _holders) u.userId},
+        excludedIds: {for (final u in _viewModel.roleHolders) u.userId},
         onPicked: (user) => picked = user,
       ),
     );
@@ -67,39 +37,11 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
     final user = picked;
     if (user == null || !mounted) return;
 
-    final result =
-        await AdminRolesService.instance.assignCohortRep(user.userId);
+    await _viewModel.assign.execute(user.userId);
     if (!mounted) return;
 
-    switch (result) {
-      case Ok():
-        context.showMessage('${user.fullName} évfolyamfelelős lett.');
-        _load();
-      case Err(:final message):
-        context.showMessage(message);
-    }
-  }
-
-  Future<bool> _confirmAndRevoke(UserSummary user) async {
-    final confirmed = await showConfirmDialog(
-      context,
-      title: 'Rang visszavonása',
-      message: '${user.fullName} többé nem lesz évfolyamfelelős.',
-      confirmLabel: 'Visszavonás',
-      isDestructive: true,
-    );
-    if (confirmed != true) return false;
-
-    final result = await AdminRolesService.instance.revokeRole(user.userId);
-    if (!mounted) return false;
-
-    switch (result) {
-      case Ok():
-        return true;
-      case Err(:final message):
-        context.showMessage(message);
-        return false;
-    }
+    final error = _viewModel.assign.errorMessage;
+    context.showMessage(error ?? '${user.fullName} évfolyamfelelős lett.');
   }
 
   Widget _buildRow(UserSummary user) {
@@ -114,10 +56,21 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
         child: Icon(Icons.person_remove_rounded, color: scheme.onError),
       ),
-      confirmDismiss: (_) => _confirmAndRevoke(user),
-      onDismissed: (_) => setState(() {
-        _holders = _holders.where((u) => u.userId != user.userId).toList();
-      }),
+      confirmDismiss: (_) async =>
+          await showConfirmDialog(
+            context,
+            title: 'Rang visszavonása',
+            message: '${user.fullName} többé nem lesz évfolyamfelelős.',
+            confirmLabel: 'Visszavonás',
+            isDestructive: true,
+          ) ==
+          true,
+      onDismissed: (_) async {
+        await _viewModel.revoke.execute(user.userId);
+        if (!mounted) return;
+        final error = _viewModel.revoke.errorMessage;
+        if (error != null) context.showMessage(error);
+      },
       child: SettingsTile(
         title: user.fullName,
         value: user.ldapUsername,
@@ -126,20 +79,20 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (_loading) {
+    if (_viewModel.load.running && _viewModel.roleHolders.isEmpty) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
-    if (_error != null) {
+    if (_viewModel.load.errorMessage != null) {
       return Padding(
         padding: const EdgeInsets.all(AppSpacing.xxl),
         child: StateMessage(
           icon: Icons.cloud_off_rounded,
-          message: _error!,
-          onRetry: _load,
+          message: _viewModel.load.errorMessage!,
+          onRetry: _viewModel.load.execute,
         ),
       );
     }
-    if (_holders.isEmpty) {
+    if (_viewModel.roleHolders.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(AppSpacing.xxl),
         child: StateMessage(
@@ -150,7 +103,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: _load,
+      onRefresh: _viewModel.load.execute,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(
           parent: BouncingScrollPhysics(),
@@ -167,7 +120,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
             footer:
                 'Az évfolyamfelelősök bármely ZH-t felvehetik és törölhetik. '
                 'Balra húzva visszavonhatod a rangot.',
-            children: [for (final u in _holders) _buildRow(u)],
+            children: [for (final u in _viewModel.roleHolders) _buildRow(u)],
           ),
         ],
       ),
@@ -186,7 +139,10 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
           actionLabel: 'Kinevezés',
           onAction: asFab ? null : _openUserPicker,
         ),
-        body: _buildBody(context),
+        body: ListenableBuilder(
+          listenable: Listenable.merge([_viewModel, _viewModel.load]),
+          builder: (context, _) => _buildBody(context),
+        ),
         floatingActionButton: asFab
             ? buildBrandFab(
                 icon: Icons.add_rounded,

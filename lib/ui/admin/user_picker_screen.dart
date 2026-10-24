@@ -121,30 +121,26 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
         title: 'Felhasználó',
         closesSheet: true,
       ),
-      body: ListenableBuilder(
-          listenable: _viewModel,
-          builder: (context, _) {
-            return Stack(
-              children: [
-                Positioned.fill(
-                    child: ListenableBuilder(
-                        listenable: _viewModel,
-                        builder: (context, _) {
-                          return _buildList(context);
-                        })),
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: PickerSearchField(
-                    searchController: _searchController,
-                    onChanged: (value) => _viewModel.setQuery(value),
-                    hintText: 'Felhasználó neve vagy loginja...',
-                  ),
-                ),
-              ],
-            );
-          }),
+      body: Stack(
+        children: [
+          Positioned.fill(
+              child: ListenableBuilder(
+                  listenable: _viewModel,
+                  builder: (context, _) {
+                    return _buildList(context);
+                  })),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: PickerSearchField(
+              searchController: _searchController,
+              onChanged: (value) => _viewModel.setQuery(value),
+              hintText: 'Felhasználó neve vagy loginja...',
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
