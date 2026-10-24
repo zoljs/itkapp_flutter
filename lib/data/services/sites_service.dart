@@ -11,10 +11,6 @@ class SitesService {
   static final SitesService instance = SitesService.internal();
 
   final Dio _dio = ApiClient.instance.dio;
-  final ValueNotifier<UserSite?> mySiteNotifier = ValueNotifier(null);
-
-  static const _legacyWikiUrl =
-      'https://users.itk.ppke.hu/~perpa4/data/students.php';
 
   List<UserSite>? _cachedSites;
 
@@ -40,7 +36,6 @@ class SitesService {
       return const Err('Nem sikerült feldolgozni az oldalakat.');
     }
 
-    sites.addAll(await _fetchLegacySites());
     _cachedSites = sites;
     return Ok(sites);
   }
@@ -50,21 +45,26 @@ class SitesService {
     try {
       response = await _dio.get('/api/sites/me');
     } on DioException catch (e) {
-      if (e.response?.statusCode == 404) return _setMySite(null);
+      if (e.response?.statusCode == 404) return const Ok(null);
       return Err(apiErrorMessage(e));
     }
 
     final data = response.data;
-    if (data is! Map<String, dynamic>) return _setMySite(null);
+    if (data is! Map<String, dynamic>) return const Ok(null);
     final site = _parseSite(data);
     if (site == null) return const Err('Nem sikerült feldolgozni az oldalad.');
-    return _setMySite(site);
+    return Ok(site);
   }
 
-  Future<Result<UserSite>> saveMySite(List<String> tags) async {
+  Future<Result<UserSite>> saveMySite(
+      List<String> tags, bool isPublic, bool isPhpEnabled) async {
     final Response<dynamic> response;
     try {
-      response = await _dio.post('/api/sites', data: {'tags': tags});
+      response = await _dio.post('/api/sites', data: {
+        'tags': tags,
+        'isPublic': isPublic,
+        'isPhpEnabled': isPhpEnabled
+      });
     } on DioException catch (e) {
       return Err(apiErrorMessage(e));
     }
@@ -73,7 +73,6 @@ class SitesService {
     final saved = data is Map<String, dynamic> ? _parseSite(data) : null;
     if (saved == null) return const Err('Nem sikerült feldolgozni a választ.');
 
-    mySiteNotifier.value = saved;
     clearCache();
     return Ok(saved);
   }
@@ -84,14 +83,8 @@ class SitesService {
     } on DioException catch (e) {
       return Err(apiErrorMessage(e));
     }
-    mySiteNotifier.value = null;
     clearCache();
     return const Ok(null);
-  }
-
-  Ok<UserSite?> _setMySite(UserSite? site) {
-    mySiteNotifier.value = site;
-    return Ok(site);
   }
 
   UserSite? _parseSite(Map<String, dynamic> json) {
@@ -113,15 +106,5 @@ class SitesService {
       sites.add(site);
     }
     return sites;
-  }
-
-  Future<List<UserSite>> _fetchLegacySites() async {
-    try {
-      final response = await Dio().get(_legacyWikiUrl);
-      return _parseSites(response.data) ?? const [];
-    } on DioException catch (e) {
-      debugPrint('[SitesService] legacy wiki unavailable: ${e.message}');
-      return const [];
-    }
   }
 }

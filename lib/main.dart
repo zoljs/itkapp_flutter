@@ -2,6 +2,7 @@ import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/services/onboarding_service.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/data/services/theme_service.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
@@ -24,6 +25,7 @@ Future<void> main() async {
   }
 
   await ThemeService.instance.loadFromDisk();
+  await OnboardingService.instance.loadFromDisk();
 
   initializeDateFormatting().then(
     (_) => runApp(

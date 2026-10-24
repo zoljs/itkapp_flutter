@@ -9,15 +9,12 @@ import 'package:itk_app/utils/open_link.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:itk_app/data/services/auth_service.dart';
-import 'package:itk_app/data/services/sites_service.dart';
 import 'package:itk_app/data/services/theme_service.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
-import 'package:itk_app/ui/core/widgets/my_site_card.dart';
 import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
-import 'package:itk_app/ui/wiki/my_site_screen.dart';
 import 'package:itk_app/utils/auth_actions.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -40,13 +37,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _packageInfoFuture = PackageInfo.fromPlatform();
   }
 
-  Future<void> _openMySite() async {
-    await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => const MySiteScreen()),
-    );
-  }
-
   Future<void> _reportBug() => openLink(context,
       'https://github.com/zoljs/itkapp_flutter/issues/new?title=${Uri.encodeComponent('[App] ')}&labels=${Uri.encodeComponent('bug,mobile-app')}');
 
@@ -65,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final login = _currentUser?.login ?? '';
+    final LdapUser? currentUser = _currentUser;
 
     return Scaffold(
       body: CustomScrollView(
@@ -84,10 +74,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
               child: CircleAvatar(
                 backgroundColor: scheme.primary,
                 radius: 45,
-                child: Text(
-                  login.isEmpty ? '?' : login[0].toUpperCase(),
-                  style: const TextStyle(
-                      fontSize: 28, fontWeight: FontWeight.w900),
+                child: const Text(
+                  'XD',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
                 ),
               ),
             ),
@@ -102,27 +91,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliver: SliverList.list(
               children: [
                 // Account
-                SettingsGroup(
-                  header: 'Fiók',
-                  footer:
-                      'A felhasználónév a bejelentkezett fiókodhoz tartozik, nem módosítható.',
-                  children: [
-                    SettingsTile(
-                      title: 'Felhasználónév',
-                      value: login,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(AppSpacing.md),
-                      child: ValueListenableBuilder(
-                        valueListenable: SitesService.instance.mySiteNotifier,
-                        builder: (context, mySite, _) => MySiteCard(
-                          mySite: mySite,
-                          openMySite: _openMySite,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                if (currentUser != null) _buildAccountGroup(currentUser),
 
                 // Notifications
                 SettingsGroup(
@@ -367,6 +336,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildAccountGroup(LdapUser currentUser) {
+    return SettingsGroup(
+      header: 'Fiók',
+      footer:
+          'A felhasználónév a bejelentkezett fiókodhoz tartozik, nem módosítható.',
+      children: [
+        SettingsTile(
+          title: 'Név',
+          value: currentUser.name,
+        ),
+        SettingsTile(
+          title: 'Email',
+          value: currentUser.email,
+        ),
+        SettingsTile(
+          title: 'Shibboleth azonosító',
+          value: currentUser.login,
+        ),
+        SettingsTile(
+          title: 'Évfolyamfelelős',
+          value: currentUser.canModerateMidterms ? 'Igen' : 'Nem',
+        ),
+        SettingsTile(
+          title: 'Admin',
+          value: currentUser.isAdmin ? 'Igen' : 'Nem',
+        ),
+      ],
     );
   }
 }

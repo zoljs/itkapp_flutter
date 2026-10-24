@@ -3,6 +3,7 @@ import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
 import 'package:itk_app/ui/midterms/midterms_screen.dart';
 import 'package:itk_app/ui/online_videos/online_videos.dart';
+import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
 import 'package:itk_app/ui/wiki/wiki_files_screen.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:itk_app/utils/result.dart';
@@ -157,7 +158,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const WikiFilesScreen(),
+                            builder: (_) => WikiFilesScreen(
+                              viewModel: WikiFilesViewModel.forDir(''),
+                            ),
                           ),
                         ),
                       ),

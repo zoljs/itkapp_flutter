@@ -1,5 +1,7 @@
+import 'package:itk_app/data/services/onboarding_service.dart';
 import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/ui/onboarding/onboarding_screen.dart';
 import '../../data/services/auth_service.dart';
 import 'login_screen.dart';
 
@@ -26,10 +28,18 @@ class _AuthGateState extends State<AuthGate> {
     final user = await _authService.getSessionUser();
     if (!mounted) return;
 
+    final Widget next;
+    if (user == null) {
+      next = const LoginScreen();
+    } else if (OnboardingService.instance.hasSeenOnboarding.value) {
+      next = const OnboardingScreen();
+    } else {
+      next = const AppScaffold();
+    }
+
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) =>
-            user != null ? const AppScaffold() : const LoginScreen(),
+        builder: (_) => next,
       ),
     );
   }

@@ -63,6 +63,8 @@ class _MySiteScreenState extends State<MySiteScreen> {
         setState(() {
           tags = List.of(site.tags);
           _hasExistingSite = true;
+          isPublic = site.isPublic;
+          isPhpEnabled = site.isPhpEnabled;
           _loading = false;
         });
       case Ok(value: null):
@@ -80,7 +82,8 @@ class _MySiteScreenState extends State<MySiteScreen> {
     final user = _currentUser;
     if (user == null) return;
 
-    final result = await SitesService.instance.saveMySite(tags);
+    final result =
+        await SitesService.instance.saveMySite(tags, isPublic, isPhpEnabled);
     if (!mounted) return;
 
     switch (result) {
@@ -226,9 +229,10 @@ class _MySiteScreenState extends State<MySiteScreen> {
                   title: 'PHP Fájlkezelő engedélyezése',
                   trailing: Switch.adaptive(
                     value: isPhpEnabled,
-                    onChanged: (value) => setState(() => isPhpEnabled = value),
+                    //onChanged: (value) => setState(() => isPhpEnabled = value),
+                    onChanged: null,
                   ),
-                  onTap: () => setState(() => isPhpEnabled = !isPhpEnabled),
+                  //onTap: () => setState(() => isPhpEnabled = !isPhpEnabled),
                 ),
               ]),
 
