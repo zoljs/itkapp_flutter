@@ -7,40 +7,29 @@ import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class WikiFilesScreen extends StatefulWidget {
+class WikiFilesScreen extends StatelessWidget {
   const WikiFilesScreen({super.key, required this.viewModel});
 
   final WikiFilesViewModel viewModel;
 
-  @override
-  State<WikiFilesScreen> createState() => _WikiFilesScreenState();
-}
-
-class _WikiFilesScreenState extends State<WikiFilesScreen> {
-  @override
-  void initState() {
-    super.initState();
-    widget.viewModel.load();
-  }
-
-  void _openItem(WikiFile item) {
+  void _openItem(BuildContext context, WikiFile item) {
     if (item.isDir) {
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => WikiFilesScreen(
-            viewModel: WikiFilesViewModel.forDir(
-                widget.viewModel.childPath(item.name)),
+            viewModel:
+                WikiFilesViewModel.forDir(viewModel.childPath(item.name)),
           ),
         ),
       );
     } else {
-      _openFile(item.name);
+      _openFile(context, item.name);
     }
   }
 
-  Future<void> _openFile(String name) async {
-    final path = widget.viewModel.childPath(name);
+  Future<void> _openFile(BuildContext context, String name) async {
+    final path = viewModel.childPath(name);
     final url =
         Uri.encodeFull('https://test.app.itk.ppke.hu/perpa4/files/$path');
     final uri = Uri.tryParse(url);
@@ -49,24 +38,24 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
         uri.hasScheme &&
         await launchUrl(uri, mode: LaunchMode.inAppWebView);
 
-    if (!ok && mounted) {
+    if (!ok && context.mounted) {
       context.showMessage('Nem sikerült megnyitni az oldalt.');
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final title = widget.viewModel.title;
+    final title = viewModel.title;
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: buildBrandAppBar(title: title, context: context),
       body: ListenableBuilder(
-        listenable: widget.viewModel,
+        listenable: Listenable.merge([viewModel, viewModel.load]),
         builder: (context, _) {
-          final loading = widget.viewModel.loading;
-          final error = widget.viewModel.error;
-          final items = widget.viewModel.items;
+          final loading = viewModel.load.running;
+          final error = viewModel.load.errorMessage;
+          final items = viewModel.items;
 
           if (loading) {
             return const Center(child: CircularProgressIndicator.adaptive());
@@ -76,7 +65,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
             return StateMessage(
               icon: Icons.cloud_off_rounded,
               message: error,
-              onRetry: widget.viewModel.load,
+              onRetry: viewModel.load.execute,
             );
           }
 
@@ -104,7 +93,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
                 trailing: Icon(file.isDir
                     ? Icons.chevron_right_rounded
                     : Icons.open_in_new_rounded),
-                onTap: () => _openItem(file),
+                onTap: () => _openItem(context, file),
               );
             },
           );

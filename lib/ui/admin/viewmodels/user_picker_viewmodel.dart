@@ -3,11 +3,14 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/services/admin/users_service.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
+import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class UserPickerViewModel extends ChangeNotifier {
   UserPickerViewModel({required AdminUsersService service})
-      : _service = service;
+      : _service = service {
+    load = Command0<void>(_load)..execute();
+  }
 
   factory UserPickerViewModel.create() =>
       UserPickerViewModel(service: AdminUsersService.instance);
@@ -16,14 +19,11 @@ class UserPickerViewModel extends ChangeNotifier {
 
   // State
   List<UserSummary> _users = [];
-  bool _loading = true;
-  String? _error;
+  late final Command0<void> load;
   String _query = '';
 
   // Getters
   UnmodifiableListView<UserSummary> get users => UnmodifiableListView(_users);
-  bool get loading => _loading;
-  String? get error => _error;
   String get query => _query;
 
   List<UserSummary> get filteredUsers {
@@ -37,21 +37,17 @@ class UserPickerViewModel extends ChangeNotifier {
   }
 
   // Methods
-  Future<void> load() async {
-    _loading = true;
-    _error = null;
-    notifyListeners();
-
+  Future<Result<void>> _load() async {
     final result = await _service.getUsers();
 
     switch (result) {
       case Ok(:final value):
         _users = value;
+        notifyListeners();
+        return const Ok(null);
       case Err(:final message):
-        _error = message;
+        return Err(message);
     }
-    _loading = false;
-    notifyListeners();
   }
 
   void setQuery(String value) {

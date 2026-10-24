@@ -27,13 +27,13 @@ class WikiScreen extends StatefulWidget {
 
 class _WikiScreenState extends State<WikiScreen> {
   final _searchController = TextEditingController();
-  late final _viewModel = WikiViewModel.create()..load();
+  late final _viewModel = WikiViewModel.create();
 
   Future<void> _openMySite() async {
     await Navigator.push(
         context, MaterialPageRoute(builder: (context) => const MySiteScreen()));
 
-    _viewModel.load();
+    _viewModel.load.execute(true);
   }
 
   Future<void> _openSite(String url) async {
@@ -138,10 +138,10 @@ class _WikiScreenState extends State<WikiScreen> {
 
     return Scaffold(
       body: ListenableBuilder(
-          listenable: _viewModel,
+          listenable: Listenable.merge([_viewModel, _viewModel.load]),
           builder: (context, _) {
             return RefreshIndicator(
-              onRefresh: () => _viewModel.load(forceReload: true),
+              onRefresh: () => _viewModel.load.execute(true),
               child: CustomScrollView(
                 // ios bounce physics even if the list does NOT overflow
                 physics: const AlwaysScrollableScrollPhysics(
@@ -189,7 +189,7 @@ class _WikiScreenState extends State<WikiScreen> {
                     centeredWidget: Padding(
                       padding:
                           const EdgeInsets.all(AppSpacing.screenHorizontal),
-                      child: _viewModel.loading
+                      child: _viewModel.load.running
                           ? UserSiteCard(
                               height: 80,
                               color: scheme.surfaceContainerHigh,
@@ -205,7 +205,8 @@ class _WikiScreenState extends State<WikiScreen> {
                   ),
                   Builder(
                     builder: (context) {
-                      final displaySites = _viewModel.loading
+                      final displaySites = _viewModel.load.running &&
+                              _viewModel.sites.isEmpty
                           ? List.filled(
                               4,
                               UserSite(
@@ -220,12 +221,16 @@ class _WikiScreenState extends State<WikiScreen> {
                             )
                           : _viewModel.filteredSites;
 
-                      if (!_viewModel.loading &&
-                          (_viewModel.error != null || displaySites.isEmpty)) {
+                      if (!_viewModel.load.running &&
+                          _viewModel.sites.isEmpty &&
+                          (_viewModel.load.errorMessage != null ||
+                              displaySites.isEmpty)) {
                         final query = _searchController.text.trim();
 
-                        final (icon, message) =
-                            switch ((_viewModel.error, query.isEmpty)) {
+                        final (icon, message) = switch ((
+                          _viewModel.load.errorMessage,
+                          query.isEmpty
+                        )) {
                           (final String error, _) => (
                               Icons.cloud_off_rounded,
                               error
@@ -253,8 +258,8 @@ class _WikiScreenState extends State<WikiScreen> {
                             child: StateMessage(
                               icon: icon,
                               message: message,
-                              onRetry: _viewModel.error != null
-                                  ? () => _viewModel.load(forceReload: true)
+                              onRetry: _viewModel.load.errorMessage != null
+                                  ? () => _viewModel.load.execute(true)
                                   : null,
                             ),
                           ),
@@ -268,7 +273,8 @@ class _WikiScreenState extends State<WikiScreen> {
                             AppSpacing.screenHorizontal,
                             AppSpacing.bottomNavClearance),
                         sliver: Skeletonizer.sliver(
-                          enabled: _viewModel.loading,
+                          enabled: _viewModel.load.running &&
+                              _viewModel.sites.isEmpty,
                           child: SliverList.separated(
                             itemCount: displaySites.length,
                             itemBuilder: (context, index) =>

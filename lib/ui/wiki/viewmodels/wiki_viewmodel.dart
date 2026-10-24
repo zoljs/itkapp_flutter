@@ -3,14 +3,16 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/services/sites_service.dart';
 import 'package:itk_app/domain/models/user_site.dart';
+import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class WikiViewModel extends ChangeNotifier {
   WikiViewModel({
     required SitesService service,
   })  : _service = service,
-        _sites = service.cachedSites,
-        _loading = !service.hasCachedSites;
+        _sites = service.cachedSites {
+    load = Command1<void, bool>(_load)..execute(false);
+  }
 
   factory WikiViewModel.create() =>
       WikiViewModel(service: SitesService.instance);
@@ -19,16 +21,13 @@ class WikiViewModel extends ChangeNotifier {
 
   // State
   List<UserSite> _sites;
+  late final Command1<void, bool> load;
   UserSite? _mySite;
-  bool _loading;
-  String? _error;
   String _query = '';
 
   // Getters
   UnmodifiableListView<UserSite> get sites => UnmodifiableListView(_sites);
   UserSite? get mySite => _mySite;
-  bool get loading => _loading;
-  String? get error => _error;
   String get query => _query;
 
   List<UserSite> get filteredSites {
@@ -45,25 +44,23 @@ class WikiViewModel extends ChangeNotifier {
   }
 
   // Methods
-  Future<void> load({bool forceReload = false}) async {
-    _error = null;
-    if (!_service.hasCachedSites || forceReload) _loading = true;
-    notifyListeners();
-
+  Future<Result<void>> _load(bool forceReload) async {
     final (sitesResult, mySiteResult) = await (
       _service.getAllSites(forceReload: forceReload),
       _service.getMySite(),
     ).wait;
 
+    // mySite
+    if (mySiteResult case Ok(:final value)) _mySite = value;
+
     switch (sitesResult) {
       case Ok(:final value):
         _sites = value;
+        notifyListeners();
+        return const Ok(null);
       case Err(:final message):
-        _error = message;
+        return Err(message);
     }
-    if (mySiteResult case Ok(:final value)) _mySite = value;
-    _loading = false;
-    notifyListeners();
   }
 
   void setQuery(String value) {

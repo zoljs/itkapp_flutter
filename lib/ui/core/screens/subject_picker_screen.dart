@@ -20,7 +20,7 @@ class SubjectPickerScreen extends StatefulWidget {
 
 class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
   final _searchController = TextEditingController();
-  late final _viewModel = SubjectPickerViewModel.create()..load();
+  late final _viewModel = SubjectPickerViewModel.create();
 
   @override
   void dispose() {
@@ -29,14 +29,14 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
   }
 
   Widget _buildList(BuildContext context) {
-    if (_viewModel.loading) {
+    if (_viewModel.load.running) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
-    if (_viewModel.error != null) {
+    if (_viewModel.load.errorMessage != null) {
       return StateMessage(
         icon: Icons.cloud_off_rounded,
-        message: _viewModel.error!,
-        onRetry: _viewModel.load,
+        message: _viewModel.load.errorMessage!,
+        onRetry: _viewModel.load.execute,
       );
     }
 
@@ -106,7 +106,7 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
         children: [
           Positioned.fill(
               child: ListenableBuilder(
-                  listenable: _viewModel,
+                  listenable: Listenable.merge([_viewModel, _viewModel.load]),
                   builder: (context, _) {
                     return _buildList(context);
                   })),

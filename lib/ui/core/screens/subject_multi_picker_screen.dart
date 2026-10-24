@@ -27,8 +27,8 @@ class SubjectMultiPickerScreen extends StatefulWidget {
 
 class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   final _searchController = TextEditingController();
-  late final _viewModel = SubjectMultiPickerViewModel.create(widget.currentTags)
-    ..load();
+  late final _viewModel =
+      SubjectMultiPickerViewModel.create(widget.currentTags);
 
   @override
   void dispose() {
@@ -42,14 +42,14 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   }
 
   Widget _buildList(BuildContext context) {
-    if (_viewModel.loading) {
+    if (_viewModel.load.running) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
-    if (_viewModel.error != null) {
+    if (_viewModel.load.errorMessage != null) {
       return StateMessage(
         icon: Icons.cloud_off_rounded,
-        message: _viewModel.error!,
-        onRetry: _viewModel.load,
+        message: _viewModel.load.errorMessage!,
+        onRetry: _viewModel.load.execute,
       );
     }
 
