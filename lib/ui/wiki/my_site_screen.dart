@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/auth_service.dart';
-import 'package:itk_app/data/services/sites_service.dart';
-import 'package:itk_app/domain/models/user.dart';
-import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
@@ -10,8 +6,8 @@ import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/screens/subject_multi_picker_screen.dart';
+import 'package:itk_app/ui/wiki/viewmodels/my_site_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
-import 'package:itk_app/utils/result.dart';
 
 class MySiteScreen extends StatefulWidget {
   const MySiteScreen({super.key});
@@ -21,14 +17,7 @@ class MySiteScreen extends StatefulWidget {
 }
 
 class _MySiteScreenState extends State<MySiteScreen> {
-  LdapUser? _currentUser;
-
-  List<String> tags = [];
-  bool isPublic = true;
-  bool isPhpEnabled = false;
-
-  bool _loading = true;
-  bool _hasExistingSite = false;
+  late final _viewModel = MySiteViewModel.create();
 
   // static const List<Color> _colors = [
   //   itkPrimary,
@@ -41,61 +30,18 @@ class _MySiteScreenState extends State<MySiteScreen> {
   // ];
   // int _selectedIndex = 0;
 
-  @override
-  void initState() {
-    super.initState();
-    _loadCurrentUser();
-    _loadExistingSite();
-  }
-
-  Future<void> _loadCurrentUser() async {
-    final user = await AuthService.instance.getSessionUser();
-    if (!mounted) return;
-    setState(() => _currentUser = user);
-  }
-
-  Future<void> _loadExistingSite() async {
-    final result = await SitesService.instance.getMySite();
-    if (!mounted) return;
-
-    switch (result) {
-      case Ok(value: final UserSite site):
-        setState(() {
-          tags = List.of(site.tags);
-          _hasExistingSite = true;
-          isPublic = site.isPublic;
-          isPhpEnabled = site.isPhpEnabled;
-          _loading = false;
-        });
-      case Ok(value: null):
-        setState(() {
-          _hasExistingSite = false;
-          _loading = false;
-        });
-      case Err(:final message):
-        setState(() => _loading = false);
-        context.showMessage(message);
-    }
-  }
-
   Future<void> _submit() async {
-    final user = _currentUser;
-    if (user == null) return;
-
-    final result =
-        await SitesService.instance.saveMySite(tags, isPublic, isPhpEnabled);
+    await _viewModel.save.execute();
     if (!mounted) return;
 
-    switch (result) {
-      case Ok():
-        setState(() => _hasExistingSite = true);
-        context.showMessage('Elmentve!');
-      case Err(:final message):
-        context.showMessage(message);
+    if (_viewModel.save.completed) {
+      context.showMessage('Elmentve!');
+    } else if (_viewModel.save.errorMessage case final message?) {
+      context.showMessage(message);
     }
   }
 
-  Future<void> _delete() async {
+  Future<void> _deleteSite() async {
     final confirmed = await showConfirmDialog(
       context,
       title: 'Profil törlése',
@@ -105,14 +51,14 @@ class _MySiteScreenState extends State<MySiteScreen> {
     );
     if (confirmed != true) return;
 
-    final result = await SitesService.instance.deleteMySite();
+    await _viewModel.delete.execute();
     if (!mounted) return;
 
-    switch (result) {
-      case Ok():
-        Navigator.pop(context);
-      case Err(:final message):
-        context.showMessage(message);
+    if (_viewModel.delete.completed) {
+      context.showMessage('Saját oldalad törölve lett.');
+      Navigator.pop(context);
+    } else if (_viewModel.delete.errorMessage case final message?) {
+      context.showMessage(message);
     }
   }
 
@@ -121,8 +67,8 @@ class _MySiteScreenState extends State<MySiteScreen> {
       context: context,
       builder: (context, controller) => SubjectMultiPickerScreen(
         scrollController: controller,
-        currentTags: tags,
-        onSave: (result) => setState(() => tags = result),
+        currentTags: _viewModel.tags,
+        onSave: (result) => _viewModel.setTags(result),
       ),
     );
   }
@@ -147,7 +93,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
             children: [
               SettingsTile(
                 title: 'Név és URL',
-                value: _currentUser?.login ?? '',
+                value: _viewModel.login ?? '',
               ),
             ],
           ),
@@ -220,19 +166,19 @@ class _MySiteScreenState extends State<MySiteScreen> {
                 SettingsTile(
                   title: 'Oldal publikussá tétele',
                   trailing: Switch.adaptive(
-                    value: isPublic,
-                    onChanged: (value) => setState(() => isPublic = value),
+                    value: _viewModel.isPublic,
+                    onChanged: (value) => _viewModel.setPublic(value),
                   ),
-                  onTap: () => setState(() => isPublic = !isPublic),
+                  onTap: () => _viewModel.setPublic(!_viewModel.isPublic),
                 ),
                 SettingsTile(
                   title: 'PHP Fájlkezelő engedélyezése',
                   trailing: Switch.adaptive(
-                    value: isPhpEnabled,
-                    //onChanged: (value) => setState(() => isPhpEnabled = value),
-                    onChanged: null,
+                    value: _viewModel.isPhpEnabled,
+                    onChanged: (value) => _viewModel.setPhpEnabled(value),
                   ),
-                  //onTap: () => setState(() => isPhpEnabled = !isPhpEnabled),
+                  onTap: () =>
+                      _viewModel.setPhpEnabled(!_viewModel.isPhpEnabled),
                 ),
               ]),
 
@@ -245,14 +191,14 @@ class _MySiteScreenState extends State<MySiteScreen> {
                 title: 'Új címke hozzáadása',
                 onTap: _openTagPicker,
               ),
-              ...tags.map((tag) {
+              ..._viewModel.tags.map((tag) {
                 return buildTagRow(tag);
               }),
             ],
           ),
-          if (_hasExistingSite) ...[
+          if (_viewModel.hasExistingSite) ...[
             BrandButton(
-              onTap: _delete,
+              onTap: _deleteSite,
               height: 52,
               backgroundColor: scheme.errorContainer,
               child: Center(
@@ -277,7 +223,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
     final scheme = Theme.of(context).colorScheme;
 
     return Dismissible(
-      key: ValueKey(tag.hashCode),
+      key: ValueKey(tag),
       direction: DismissDirection.endToStart,
       background: Container(
         color: scheme.error,
@@ -291,28 +237,43 @@ class _MySiteScreenState extends State<MySiteScreen> {
           title: tag,
         ),
       ),
-      onDismissed: (_) => setState(() {
-        tags.remove(tag);
-      }),
+      confirmDismiss: (_) async =>
+          await showConfirmDialog(
+            context,
+            title: 'Címke törlése',
+            message: 'Biztosan törlöd a "$tag" címkét?',
+            confirmLabel: 'Törlés',
+            isDestructive: true,
+          ) ==
+          true,
+      onDismissed: (_) {
+        _viewModel.setTags(_viewModel.tags.where((t) => t != tag).toList());
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: buildBrandAppBar(
-        context: context,
-        title: _hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása',
-        onAction: () async {
-          await _submit();
-          if (!context.mounted) return;
-          Navigator.pop(context);
-        },
-      ),
-      body: _loading
-          ? const Center(child: RefreshProgressIndicator())
-          : _buildForm(context),
-    );
+    return ListenableBuilder(
+        listenable: Listenable.merge([_viewModel, _viewModel.load]),
+        builder: (context, _) {
+          return Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: buildBrandAppBar(
+              context: context,
+              title: _viewModel.hasExistingSite
+                  ? 'Saját oldalam'
+                  : 'Oldal létrehozása',
+              onAction: () async {
+                await _submit();
+                if (!context.mounted) return;
+                if (_viewModel.save.completed) Navigator.pop(context);
+              },
+            ),
+            body: _viewModel.load.running
+                ? const Center(child: RefreshProgressIndicator())
+                : _buildForm(context),
+          );
+        });
   }
 }

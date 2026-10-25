@@ -1,0 +1,100 @@
+import 'dart:collection';
+
+import 'package:flutter/foundation.dart';
+import 'package:itk_app/data/services/auth_service.dart';
+import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/domain/models/user_site.dart';
+import 'package:itk_app/utils/command.dart';
+import 'package:itk_app/utils/result.dart';
+
+class MySiteViewModel extends ChangeNotifier {
+  MySiteViewModel({
+    required SitesService service,
+    required AuthService authService,
+  })  : _sitesService = service,
+        _authService = authService {
+    load = Command0<void>(_load)..execute();
+    save = Command0<void>(_save);
+    delete = Command0<void>(_delete);
+  }
+
+  factory MySiteViewModel.create() => MySiteViewModel(
+      service: SitesService.instance, authService: AuthService.instance);
+
+  final SitesService _sitesService;
+  final AuthService _authService;
+  late final Command0<void> load;
+  late final Command0<void> save;
+  late final Command0<void> delete;
+
+  // State
+  List<String> _tags = [];
+  bool _isPublic = true;
+  bool _isPhpEnabled = false;
+  bool _hasExistingSite = false;
+
+  // Getters
+  UnmodifiableListView<String> get tags => UnmodifiableListView(_tags);
+  void setTags(List<String> value) {
+    _tags = value;
+    notifyListeners();
+  }
+
+  bool get hasExistingSite => _hasExistingSite;
+  void setExistingSite(bool value) {
+    _hasExistingSite = value;
+    notifyListeners();
+  }
+
+  String? get login => _authService.cachedUser?.login;
+
+  bool get isPublic => _isPublic;
+  void setPublic(bool value) {
+    _isPublic = value;
+    notifyListeners();
+  }
+
+  bool get isPhpEnabled => _isPhpEnabled;
+  void setPhpEnabled(bool value) {
+    _isPhpEnabled = value;
+    notifyListeners();
+  }
+
+  // Methods
+  Future<Result<void>> _load() async {
+    // Mysite
+    final result = await _sitesService.getMySite();
+
+    switch (result) {
+      case Ok(value: final UserSite site):
+        _tags = List.of(site.tags);
+        _hasExistingSite = true;
+        _isPublic = site.isPublic;
+        _isPhpEnabled = site.isPhpEnabled;
+        notifyListeners();
+        return const Ok(null);
+      case Ok(value: null):
+        _hasExistingSite = false;
+        notifyListeners();
+        return const Ok(null);
+      case Err(:final message):
+        return Err(message);
+    }
+  }
+
+  Future<Result<void>> _save() async {
+    if (_authService.cachedUser == null) {
+      return const Err('Nincs bejelentkezett felhasználó.');
+    }
+
+    final result =
+        await _sitesService.saveMySite(_tags, _isPublic, _isPhpEnabled);
+
+    return result;
+  }
+
+  Future<Result<void>> _delete() async {
+    final result = await _sitesService.deleteMySite();
+    return result;
+  }
+}

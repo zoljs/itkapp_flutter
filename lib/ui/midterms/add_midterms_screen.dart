@@ -57,7 +57,7 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
     if (picked != null) _viewModel.setTime(picked);
   }
 
-  Future<void> _save() async {
+  Future<void> _submit() async {
     await _viewModel.save.execute();
     if (!mounted) return;
 
@@ -147,8 +147,9 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
               title: 'Új ZH',
               closesSheet: true,
               actionIcon: Icons.check,
-              onAction:
-                  _viewModel.canSave && !_viewModel.save.running ? _save : null,
+              onAction: _viewModel.canSave && !_viewModel.save.running
+                  ? _submit
+                  : null,
             ),
             body: _buildForm(context),
           );

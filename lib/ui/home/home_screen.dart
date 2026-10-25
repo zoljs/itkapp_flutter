@@ -202,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       );
     } else if (!_loadingEvents && _nextEvent == null) {
-      content = Text('Nincs közelgő órád.', style: muted);
+      content = Expanded(child: Text('Nincs közelgő órád.', style: muted));
     } else {
       // While loading, show mock data
       final e = _nextEvent ??
