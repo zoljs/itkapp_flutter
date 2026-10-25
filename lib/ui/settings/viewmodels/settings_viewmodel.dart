@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/data/services/auth_service.dart';
+import 'package:itk_app/data/services/onboarding_service.dart';
 import 'package:itk_app/data/services/theme_service.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/utils/auth_actions.dart';
@@ -9,14 +10,17 @@ class SettingsViewModel extends ChangeNotifier {
   final AuthService _authService;
   final ThemeService _themeService;
   final ApiClient _apiClient;
+  final OnboardingService _onboardingService;
 
   SettingsViewModel({
     required AuthService authService,
     required ThemeService themeService,
     required ApiClient apiClient,
+    required OnboardingService onboardingService,
   })  : _authService = authService,
         _themeService = themeService,
-        _apiClient = apiClient {
+        _apiClient = apiClient,
+        _onboardingService = onboardingService {
     _themeService.oledMode.addListener(notifyListeners);
     _themeService.actionButtonAsFab.addListener(notifyListeners);
   }
@@ -25,6 +29,7 @@ class SettingsViewModel extends ChangeNotifier {
         authService: AuthService.instance,
         themeService: ThemeService.instance,
         apiClient: ApiClient.instance,
+        onboardingService: OnboardingService.instance,
       );
 
   // Getters
@@ -47,4 +52,6 @@ class SettingsViewModel extends ChangeNotifier {
     _themeService.actionButtonAsFab.removeListener(notifyListeners);
     super.dispose();
   }
+
+  Future<void> resetOnboarding() => _onboardingService.resetOnboarding();
 }

@@ -19,4 +19,10 @@ class OnboardingService {
     await prefs.setBool(_hasSeenOnboarding, true);
     hasSeenOnboarding.value = true;
   }
+
+  Future<void> resetOnboarding() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.remove(_hasSeenOnboarding);
+    hasSeenOnboarding.value = false;
+  }
 }

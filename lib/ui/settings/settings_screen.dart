@@ -257,6 +257,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             'Cookie törölve, most frissíts valamit.');
                       },
                     ),
+                    SettingsTile(
+                      icon: Icons.bug_report_rounded,
+                      iconColor: Colors.orange,
+                      title: 'Onboarding reset',
+                      onTap: () async {
+                        await _viewModel.resetOnboarding();
+                        if (!context.mounted) return;
+                        context.showMessage('Onboarding visszaállítva.');
+                      },
+                    ),
                   ],
                 ),
 

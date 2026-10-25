@@ -31,7 +31,7 @@ class _AuthGateState extends State<AuthGate> {
     final Widget next;
     if (user == null) {
       next = const LoginScreen();
-    } else if (OnboardingService.instance.hasSeenOnboarding.value) {
+    } else if (!OnboardingService.instance.hasSeenOnboarding.value) {
       next = const OnboardingScreen();
     } else {
       next = const AppScaffold();
