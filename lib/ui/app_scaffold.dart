@@ -1,4 +1,4 @@
-import 'package:itk_app/ui/calendar/calendar_screen_test.dart';
+import 'package:itk_app/ui/calendar/calendar_screen.dart';
 import 'package:itk_app/ui/home/home_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/ui/wiki/wiki_screen.dart';
