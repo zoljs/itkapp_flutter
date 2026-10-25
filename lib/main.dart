@@ -1,9 +1,7 @@
-import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/services/onboarding_service.dart';
-import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/data/services/theme_service.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
@@ -33,8 +31,6 @@ Future<void> main() async {
     ),
   );
 }
-
-final _calendarController = EventController<CalendarEvent>();
 
 const _seedColor = itkDark;
 
@@ -104,16 +100,13 @@ class ITKApp extends StatelessWidget {
       builder: (context, isOled, child) {
         final darkScheme = _darkSchemeFor(baseDarkScheme, isOled: isOled);
 
-        return CalendarControllerProvider(
-          controller: _calendarController,
-          child: MaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: 'ITK App',
-            themeMode: ThemeMode.dark,
-            darkTheme: _buildTheme(darkScheme),
-            home: const AuthGate(),
-            navigatorKey: navigatorKey,
-          ),
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'ITK App',
+          themeMode: ThemeMode.dark,
+          darkTheme: _buildTheme(darkScheme),
+          home: const AuthGate(),
+          navigatorKey: navigatorKey,
         );
       },
     );

@@ -3,7 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
 import 'package:itk_app/domain/models/calendar_event.dart';
-import 'package:itk_app/data/services/calendar_service.dart';
+import 'package:itk_app/ui/calendar/viewmodels/calendar_viewmodel.dart';
 
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
@@ -12,7 +12,6 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
 import 'package:itk_app/ui/core/widgets/brand_icon_button.dart';
-import 'package:itk_app/utils/result.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -22,58 +21,10 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  late final _viewModel = CalendarViewModel.create();
   final _dayViewKey = GlobalKey<DayViewState<CalendarEvent>>();
 
   DateTime _visibleDate = DateTime.now();
-
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadEvents();
-  }
-
-  //correct approach
-  Future<void> _loadEvents({bool forceReload = false}) async {
-    setState(() => _error = null);
-
-    final result =
-        await CalendarService.instance.getCalendar(forceReload: forceReload);
-    if (!mounted) return;
-
-    final List<CalendarEvent> events;
-    switch (result) {
-      case Ok(:final value):
-        events = value;
-      case Err(:final message):
-        setState(() => _error = message);
-        return;
-    }
-
-    final eventData = events.map((e) {
-      final start = e.start.toLocal();
-      final end = e.end.toLocal();
-      final isInstant = end.isAtSameMomentAs(start);
-      final displayEnd =
-          isInstant ? start.add(const Duration(minutes: 15)) : end;
-
-      return CalendarEventData<CalendarEvent>(
-        date: start,
-        startTime: start,
-        endTime: displayEnd,
-        title: e.title,
-        event: e,
-      );
-    }).toList();
-
-    if (!mounted) return;
-    final controller =
-        CalendarControllerProvider.of<CalendarEvent>(context).controller;
-
-    controller.removeWhere((_) => true);
-    controller.addAll(eventData);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -94,6 +45,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               },
               safeAreaOption: const SafeAreaOption(bottom: false),
               key: _dayViewKey,
+              controller: _viewModel.eventController,
               heightPerMinute: 2,
               backgroundColor: scheme.surface,
               showHalfHours: true,
@@ -146,13 +98,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
                                   .headlineSmall
                                   ?.merge(topBarTitleStyle),
                             ),
-                            if (_error != null) ...[
-                              Text(
-                                _error!,
-                                style: TextStyle(
-                                    fontSize: 12, color: scheme.error),
-                              ),
-                            ],
+                            // Error message
+                            ListenableBuilder(
+                              listenable: _viewModel.load,
+                              builder: (context, _) =>
+                                  switch (_viewModel.load.errorMessage) {
+                                null => const SizedBox.shrink(),
+                                final message => Text(
+                                    message,
+                                    style: TextStyle(
+                                        fontSize: 12, color: scheme.error),
+                                  ),
+                              },
+                            ),
                           ],
                         ),
                       ),
@@ -163,7 +121,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         children: [
                           BrandIconButton(
                             icon: Icons.refresh_rounded,
-                            onPressed: () => _loadEvents(forceReload: true),
+                            onPressed: () => _viewModel.load.running
+                                ? null
+                                : _viewModel.load.execute(true),
                             semanticLabel: 'Frissítés',
                           ),
                           BrandIconButton(
@@ -326,6 +286,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       context: context,
       firstDate: DateTime(now.year - 1),
       lastDate: DateTime(2050, 12, 31),
+      initialDate: current,
     );
 
     if (picked != null) _dayViewKey.currentState?.jumpToDate(picked);
