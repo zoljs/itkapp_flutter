@@ -12,7 +12,7 @@ import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:flutter/services.dart';
 import 'package:itk_app/utils/auth_actions.dart';
 import 'data/services/api_client.dart';
-import 'ui/auth/auth_gate.dart';
+import 'ui/login/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {

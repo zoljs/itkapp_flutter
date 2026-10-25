@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/services/calendar_service.dart';
 import 'package:itk_app/data/services/subjects_service.dart';
-import 'package:itk_app/ui/auth/login_screen.dart';
+import 'package:itk_app/ui/login/login_screen.dart';
 import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/data/services/sites_service.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';

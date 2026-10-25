@@ -5,9 +5,8 @@ import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
+import 'package:itk_app/ui/login/viewmodels/login_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
-import 'package:itk_app/utils/result.dart';
-import '../../data/services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,12 +16,12 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _viewModel = LoginViewModel.create();
+
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService.instance;
 
-  bool _loading = false;
   bool _obscurePassword = true;
 
   @override
@@ -35,25 +34,19 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _loading = true;
-    });
-
-    final result = await _authService.login(
-      _usernameController.text.trim(),
-      _passwordController.text,
-    );
+    await _viewModel.login.execute((
+      username: _usernameController.text.trim(),
+      password: _passwordController.text,
+    ));
     if (!mounted) return;
-    setState(() => _loading = false);
 
-    switch (result) {
-      case Ok():
-        TextInput.finishAutofillContext();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const AppScaffold()),
-        );
-      case Err(:final message):
-        context.showMessage(message);
+    if (_viewModel.login.completed) {
+      TextInput.finishAutofillContext();
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => const AppScaffold()),
+      );
+    } else if (_viewModel.login.errorMessage case final message?) {
+      context.showMessage(message);
     }
   }
 
@@ -235,32 +228,38 @@ class _LoginScreenState extends State<LoginScreen> {
                                     : null,
                           ),
                           const SizedBox(height: AppSpacing.xxxl),
-                          BrandButton(
-                            height: 56,
-                            onTap: _loading ? null : _submit,
-                            backgroundColor: itkPrimary,
-                            child: Center(
-                              child: _loading
-                                  ? SizedBox(
-                                      height: 24,
-                                      width: 24,
-                                      child: CircularProgressIndicator(
-                                        valueColor: AlwaysStoppedAnimation(
-                                            scheme.onPrimary),
-                                        strokeWidth: 3,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Bejelentkezés',
-                                      style: TextStyle(
-                                        color: itkDark,
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w600,
-                                        letterSpacing: 0.2,
-                                      ),
-                                    ),
-                            ),
-                          ),
+                          ListenableBuilder(
+                              listenable: _viewModel.login,
+                              builder: (context, _) {
+                                return BrandButton(
+                                  height: 56,
+                                  onTap:
+                                      _viewModel.login.running ? null : _submit,
+                                  backgroundColor: itkPrimary,
+                                  child: Center(
+                                    child: _viewModel.login.running
+                                        ? SizedBox(
+                                            height: 24,
+                                            width: 24,
+                                            child: CircularProgressIndicator(
+                                              valueColor:
+                                                  AlwaysStoppedAnimation(
+                                                      scheme.onPrimary),
+                                              strokeWidth: 3,
+                                            ),
+                                          )
+                                        : const Text(
+                                            'Bejelentkezés',
+                                            style: TextStyle(
+                                              color: itkDark,
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w600,
+                                              letterSpacing: 0.2,
+                                            ),
+                                          ),
+                                  ),
+                                );
+                              }),
                         ],
                       ),
                     ),
