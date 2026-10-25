@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/ui/admin/admin_roles_screen.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
+import 'package:itk_app/ui/settings/viewmodels/settings_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'package:itk_app/data/services/auth_service.dart';
-import 'package:itk_app/data/services/theme_service.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
@@ -25,16 +23,19 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final LdapUser? _currentUser = AuthService.instance.cachedUser;
+  final _viewModel = SettingsViewModel.create();
   late final Future<PackageInfo> _packageInfoFuture;
-
-  // For now, these live in memory as they are mostly placeholders until some good ideas appear in my head.
-  bool _midtermReminders = true;
 
   @override
   void initState() {
     super.initState();
     _packageInfoFuture = PackageInfo.fromPlatform();
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
   }
 
   Future<void> _reportBug() => openLink(context,
@@ -55,7 +56,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final LdapUser? currentUser = _currentUser;
 
     return Scaffold(
       body: CustomScrollView(
@@ -91,34 +91,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliver: SliverList.list(
               children: [
                 // Account
-                if (currentUser != null) _buildAccountGroup(currentUser),
-
-                // Notifications
-                SettingsGroup(
-                  header: 'Értesítések',
-                  children: [
-                    SettingsTile(
-                      icon: Icons.notifications_rounded,
-                      iconColor: scheme.error,
-                      title: 'ZH-emlékeztetők',
-                      trailing: Switch.adaptive(
-                        activeTrackColor: itkPrimary,
-                        value: _midtermReminders,
-                        onChanged: (v) => setState(() => _midtermReminders = v),
-                      ),
-                      onTap: () {
-                        setState(() => _midtermReminders = !_midtermReminders);
-                      },
-                    ),
-                    SettingsTile(
-                      icon: Icons.schedule_rounded,
-                      iconColor: scheme.error,
-                      title: 'Emlékeztető ideje',
-                      value: '1 nappal előtte',
-                      onTap: _midtermReminders ? () {} : null,
-                    ),
-                  ],
-                ),
+                if (_viewModel.currentUser != null)
+                  _buildAccountGroup(_viewModel.currentUser!),
 
                 // Calendar
                 SettingsGroup(
@@ -141,46 +115,44 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
 
                 // Display
-                SettingsGroup(
-                  header: 'Megjelenés',
-                  footer:
-                      'Az új elem hozzáadása gomb a képernyő alján jelenik meg, egy kézzel könnyebben elérhető.',
-                  children: [
-                    SettingsTile(
-                      icon: Icons.add_rounded,
-                      iconColor: scheme.tertiary,
-                      title: 'Akció gombok lent',
-                      onTap: () => ThemeService.instance
-                          .toggleActionButtonAsFab(
-                              !ThemeService.instance.actionButtonAsFab.value),
-                      trailing: ValueListenableBuilder<bool>(
-                        valueListenable:
-                            ThemeService.instance.actionButtonAsFab,
-                        builder: (context, asFab, _) => Switch.adaptive(
-                          activeTrackColor: itkPrimary,
-                          value: asFab,
-                          onChanged:
-                              ThemeService.instance.toggleActionButtonAsFab,
-                        ),
-                      ),
-                    ),
-                    SettingsTile(
-                      icon: Icons.dark_mode_rounded,
-                      iconColor: scheme.tertiary,
-                      title: 'OLED mód',
-                      onTap: () => ThemeService.instance.toggleOledMode(
-                          !ThemeService.instance.oledMode.value),
-                      trailing: ValueListenableBuilder<bool>(
-                        valueListenable: ThemeService.instance.oledMode,
-                        builder: (context, isOled, _) => Switch.adaptive(
-                          activeTrackColor: itkPrimary,
-                          value: isOled,
-                          onChanged: ThemeService.instance.toggleOledMode,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                ListenableBuilder(
+                    listenable: Listenable.merge([_viewModel]),
+                    builder: (context, _) {
+                      return SettingsGroup(
+                        header: 'Megjelenés',
+                        footer:
+                            'Az új elem hozzáadása gomb a képernyő alján jelenik meg, egy kézzel könnyebben elérhető.',
+                        children: [
+                          SettingsTile(
+                            icon: Icons.add_rounded,
+                            iconColor: scheme.tertiary,
+                            title: 'Akció gombok lent',
+                            onTap: () => _viewModel.toggleActionButtonAsFab(
+                                !_viewModel.isActionButtonAsFab),
+                            trailing: Switch.adaptive(
+                              activeTrackColor: itkPrimary,
+                              value: _viewModel.isActionButtonAsFab,
+                              onChanged: (value) =>
+                                  _viewModel.toggleActionButtonAsFab(
+                                      !_viewModel.isActionButtonAsFab),
+                            ),
+                          ),
+                          SettingsTile(
+                            icon: Icons.dark_mode_rounded,
+                            iconColor: scheme.tertiary,
+                            title: 'OLED mód',
+                            onTap: () => _viewModel
+                                .toggleOledMode(!_viewModel.isOledMode),
+                            trailing: Switch.adaptive(
+                              activeTrackColor: itkPrimary,
+                              value: _viewModel.isOledMode,
+                              onChanged: (value) => _viewModel
+                                  .toggleOledMode(!_viewModel.isOledMode),
+                            ),
+                          ),
+                        ],
+                      );
+                    }),
 
                 // Privacy
                 SettingsGroup(
@@ -191,7 +163,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       iconColor: scheme.secondary,
                       title: 'Gyorsítótár törlése',
                       onTap: () {
-                        clearAllCaches();
+                        _viewModel.clearCaches();
                         context.showMessage("Gyorsítótárak törölve!");
                       },
                     ),
@@ -205,7 +177,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
 
                 // Admin
-                if (_currentUser?.isAdmin ?? false)
+                if (_viewModel.currentUser?.isAdmin ?? false)
                   SettingsGroup(
                     header: 'Adminisztrátor',
                     footer: 'Évfolyamfelelősök kinevezése és visszavonása.',
@@ -279,7 +251,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       iconColor: Colors.orange,
                       title: 'Session törlése',
                       onTap: () async {
-                        await ApiClient.instance.clearCookies();
+                        await _viewModel.clearCookies();
                         if (!context.mounted) return;
                         context.showMessage(
                             'Cookie törölve, most frissíts valamit.');
@@ -304,33 +276,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   )),
                 ),
-
-                // FittedBox(
-                //   fit: BoxFit.contain,
-                //   child: SizedBox(
-                //     width: 356,
-                //     height: 412,
-                //     child: Stack(
-                //       children: [
-                //         Positioned(
-                //           left: 0,
-                //           right: 0,
-                //           bottom: 0,
-                //           child: Center(
-                //             child: Image.network(
-                //                 width: 356,
-                //                 'https://freepngimg.com/thumb/trampoline/132588-trampoline.png'),
-                //           ),
-                //         ),
-                //         Center(
-                //           child: Image.network(
-                //               width: 167,
-                //               'https://media.tenor.com/h_jy2s28rlYAAAAj/spinning-cat.gif'),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // )
               ],
             ),
           ),

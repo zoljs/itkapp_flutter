@@ -14,14 +14,14 @@ import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
 import 'package:itk_app/ui/core/widgets/brand_icon_button.dart';
 import 'package:itk_app/utils/result.dart';
 
-class CalendarScreenTest extends StatefulWidget {
-  const CalendarScreenTest({super.key});
+class CalendarScreen extends StatefulWidget {
+  const CalendarScreen({super.key});
 
   @override
-  State<CalendarScreenTest> createState() => _CalendarScreenTestState();
+  State<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenTestState extends State<CalendarScreenTest> {
+class _CalendarScreenState extends State<CalendarScreen> {
   final _dayViewKey = GlobalKey<DayViewState<CalendarEvent>>();
 
   DateTime _visibleDate = DateTime.now();

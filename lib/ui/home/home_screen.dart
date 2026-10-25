@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/viewmodels/home_viewmodel.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
-import 'package:itk_app/ui/home/widgets/fading_logo.dart';
+import 'package:itk_app/ui/home/widgets/home_screen_app_bar.dart';
 import 'package:itk_app/ui/home/widgets/quick_links_grid.dart';
 import 'package:itk_app/ui/midterms/midterms_screen.dart';
 import 'package:itk_app/ui/online_videos/online_videos.dart';
@@ -52,24 +52,7 @@ class _HomeScreenState extends State<HomeScreen> {
             parent: BouncingScrollPhysics(),
           ),
           slivers: [
-            SliverAppBar(
-              stretch: true,
-              stretchTriggerOffset: 100.0,
-              pinned: true,
-              expandedHeight: 150,
-              collapsedHeight: 60,
-              scrolledUnderElevation: 0,
-              backgroundColor: scheme.surface,
-              title: const FadingLogo(showWhenCollapsed: true, height: 30),
-              flexibleSpace: FlexibleSpaceBar(
-                collapseMode: CollapseMode.pin,
-                background: Container(
-                  color: scheme.primaryContainer,
-                  alignment: Alignment.center,
-                  child: const FadingLogo(showWhenCollapsed: false, height: 45),
-                ),
-              ),
-            ),
+            const HomeScreenAppBar(),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(
                 AppSpacing.screenHorizontal,

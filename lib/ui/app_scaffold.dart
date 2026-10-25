@@ -24,7 +24,7 @@ class _AppScaffoldState extends State<AppScaffold> {
 
   final List<Widget> navItems = [
     const HomeScreen(),
-    const CalendarScreenTest(),
+    const CalendarScreen(),
     const WikiScreen(),
     // const OnlineVideos(),
     const SettingsScreen(),
