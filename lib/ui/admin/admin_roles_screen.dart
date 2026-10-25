@@ -79,7 +79,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (_viewModel.load.running && _viewModel.roleHolders.isEmpty) {
+    if (_viewModel.initialLoading) {
       return const Center(child: CircularProgressIndicator.adaptive());
     }
     if (_viewModel.load.errorMessage != null) {

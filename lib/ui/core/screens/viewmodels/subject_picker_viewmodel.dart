@@ -24,7 +24,12 @@ class SubjectPickerViewModel extends ChangeNotifier {
 
   // Getters
   UnmodifiableListView<Subject> get subjects => UnmodifiableListView(_subjects);
+
   String get query => _query;
+  void setQuery(String value) {
+    _query = value;
+    notifyListeners();
+  }
 
   List<Subject> get filteredSubjects {
     final q = _query.trim().toLowerCase();
@@ -48,10 +53,5 @@ class SubjectPickerViewModel extends ChangeNotifier {
       case Err(:final message):
         return Err(message);
     }
-  }
-
-  void setQuery(String value) {
-    _query = value;
-    notifyListeners();
   }
 }

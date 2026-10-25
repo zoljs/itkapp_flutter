@@ -29,6 +29,8 @@ class AdminRolesViewModel extends ChangeNotifier {
   UnmodifiableListView<UserSummary> get roleHolders =>
       UnmodifiableListView(_roleHolders);
 
+  bool get initialLoading => load.running && _roleHolders.isEmpty;
+
   // Methods
   Future<Result<void>> _load() async {
     final result = await _service.getRoleHolders();

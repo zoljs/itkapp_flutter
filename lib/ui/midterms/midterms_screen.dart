@@ -2,8 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:itk_app/data/services/auth_service.dart';
-import 'package:itk_app/data/services/midterms_service.dart';
 import 'package:itk_app/data/services/theme_service.dart';
 import 'package:itk_app/domain/models/midterm_date.dart';
 import 'package:itk_app/domain/models/subject.dart';
@@ -16,10 +14,10 @@ import 'package:itk_app/ui/core/widgets/circles_painter.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/midterms/add_midterms_screen.dart';
+import 'package:itk_app/ui/midterms/viewmodels/midterms_viewmodel.dart';
 import 'package:itk_app/ui/midterms/widgets/midterm_card.dart';
 import 'package:itk_app/ui/midterms/widgets/weekstrip.dart';
 import 'package:itk_app/utils/context_extensions.dart';
-import 'package:itk_app/utils/result.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class MidtermsScreen extends StatefulWidget {
@@ -30,59 +28,13 @@ class MidtermsScreen extends StatefulWidget {
 }
 
 class _MidtermsScreenState extends State<MidtermsScreen> {
-  final bool _canModerate =
-      AuthService.instance.cachedUser?.canModerateMidterms ?? false;
   final _searchController = TextEditingController();
-
-  List<MidtermDate> _midterms = const [];
-  bool _loading = true;
-  String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
+  late final _viewModel = MidtermsViewModel.create();
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
-  }
-
-  Future<void> _load() async {
-    //await Completer().future;
-    setState(() {
-      _error = null;
-      if (_midterms.isEmpty) _loading = true;
-    });
-
-    final result = await MidtermsService.instance.getMidterms();
-    if (!mounted) return;
-
-    switch (result) {
-      case Ok(:final value):
-        setState(() {
-          _midterms = value;
-          _loading = false;
-        });
-      case Err(:final message):
-        setState(() {
-          _error = message;
-          _loading = false;
-        });
-    }
-  }
-
-  List<MidtermDate> get _filtered {
-    final q = _searchController.text.trim().toLowerCase();
-    if (q.isEmpty) return _midterms;
-    return _midterms
-        .where((m) =>
-            m.subject.name.toLowerCase().contains(q) ||
-            m.subject.code.toLowerCase().contains(q) ||
-            (m.location?.toLowerCase().contains(q) ?? false))
-        .toList();
   }
 
   String get _todayLabel {
@@ -110,30 +62,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
       builder: (context, controller) =>
           AddMidtermScreen(scrollController: controller),
     );
-    _load();
-  }
-
-  Future<bool> _confirmAndDelete(MidtermDate m) async {
-    final confirmed = await showConfirmDialog(
-      context,
-      title: 'ZH törlése',
-      message: 'A ZH időpont mindenki számára törlődik. (${m.subject.name})',
-      confirmLabel: 'Törlés',
-      isDestructive: true,
-    );
-    if (confirmed != true) return false;
-
-    final result =
-        await MidtermsService.instance.deleteMidterm(midtermId: m.id);
-    if (!mounted) return false;
-
-    switch (result) {
-      case Ok():
-        return true;
-      case Err(:final message):
-        context.showMessage(message);
-        return false;
-    }
+    _viewModel.load.execute();
   }
 
   Widget _buildHeader(BuildContext context, {required bool asFab}) {
@@ -151,7 +80,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
       leadingWidth: AppSpacing.minimumAndroid + 2 * AppSpacing.sm,
       actionsPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       actions: [
-        if (_canModerate && !asFab)
+        if (_viewModel.canModerate && !asFab)
           buildBrandAction(
             actionIcon: Icons.add_rounded,
             label: 'Új ZH felvétele',
@@ -216,7 +145,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
             textAlignVertical: TextAlignVertical.center,
             textInputAction: TextInputAction.search,
             controller: _searchController,
-            onChanged: (_) => setState(() {}),
+            onChanged: _viewModel.setQuery,
             decoration: InputDecoration(
               contentPadding: EdgeInsets.zero,
               hintText: 'Tárgy neve vagy kódja...',
@@ -225,7 +154,10 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
                   ? null
                   : IconButton(
                       icon: const Icon(Icons.close_rounded),
-                      onPressed: () => setState(_searchController.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                        _viewModel.setQuery('');
+                      },
                     ),
             ),
           ),
@@ -238,7 +170,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
     final card = MidtermCard(midterm: m);
     final scheme = Theme.of(context).colorScheme;
 
-    final content = (!_canModerate || _loading)
+    final content = (!_viewModel.canModerate || _viewModel.initialLoading)
         ? card
         : Dismissible(
             key: ValueKey(m.id),
@@ -252,10 +184,24 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
               child: Icon(Icons.delete_rounded, color: scheme.onError),
             ),
-            confirmDismiss: (_) => _confirmAndDelete(m),
-            onDismissed: (_) => setState(() {
-              _midterms = _midterms.where((x) => x.id != m.id).toList();
-            }),
+            confirmDismiss: (_) async =>
+                await showConfirmDialog(
+                  context,
+                  title: 'ZH törlése',
+                  message:
+                      'A ZH időpont mindenki számára törlődik. (${m.subject.name})',
+                  confirmLabel: 'Törlés',
+                  isDestructive: true,
+                ) ==
+                true,
+            onDismissed: (_) async {
+              await _viewModel.delete.execute(m.id);
+              if (!mounted) return;
+              final error = _viewModel.delete.errorMessage;
+              if (error != null) {
+                context.showMessage(error);
+              }
+            },
             child: card,
           );
 
@@ -276,14 +222,18 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
   }
 
   Widget _buildListSliver(BuildContext context) {
-    if (!_loading && _error != null) {
-      return _buildMessage(Icons.cloud_off_rounded, _error!, onRetry: _load);
+    if (!_viewModel.initialLoading && _viewModel.load.errorMessage != null) {
+      return _buildMessage(
+          Icons.cloud_off_rounded, _viewModel.load.errorMessage!,
+          onRetry: _viewModel.load.execute);
     }
 
-    final items = _loading ? _skeletonItems : _filtered;
-    final query = _searchController.text.trim();
+    final items = _viewModel.initialLoading
+        ? _skeletonItems
+        : _viewModel.filteredMidterms;
+    final query = _viewModel.query.trim();
 
-    if (!_loading && items.isEmpty) {
+    if (!_viewModel.initialLoading && items.isEmpty) {
       return query.isEmpty
           ? _buildMessage(Icons.event_available_rounded, 'Nincs közelgő ZH.')
           : _buildMessage(
@@ -298,7 +248,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
         MediaQuery.paddingOf(context).bottom + 120,
       ),
       sliver: Skeletonizer.sliver(
-        enabled: _loading,
+        enabled: _viewModel.initialLoading,
         child: SliverList.separated(
           itemCount: items.length,
           itemBuilder: (context, index) => _buildCard(items[index]),
@@ -313,27 +263,31 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
       valueListenable: ThemeService.instance.actionButtonAsFab,
-      builder: (context, asFab, _) => Scaffold(
-        body: RefreshIndicator(
-          onRefresh: _load,
-          child: CustomScrollView(
-            physics: const AlwaysScrollableScrollPhysics(
-              parent: BouncingScrollPhysics(),
-            ),
-            slivers: [
-              _buildHeader(context, asFab: asFab),
-              _buildListSliver(context),
-            ],
-          ),
-        ),
-        floatingActionButton: _canModerate && asFab
-            ? buildBrandFab(
-                icon: Icons.add_rounded,
-                semanticLabel: "Új ZH felvétele",
-                onPressed: _openAddMidterm,
-              )
-            : null,
-      ),
+      builder: (context, asFab, _) => ListenableBuilder(
+          listenable: Listenable.merge([_viewModel, _viewModel.load]),
+          builder: (context, _) {
+            return Scaffold(
+              body: RefreshIndicator(
+                onRefresh: _viewModel.load.execute,
+                child: CustomScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(
+                    parent: BouncingScrollPhysics(),
+                  ),
+                  slivers: [
+                    _buildHeader(context, asFab: asFab),
+                    _buildListSliver(context),
+                  ],
+                ),
+              ),
+              floatingActionButton: _viewModel.canModerate && asFab
+                  ? buildBrandFab(
+                      icon: Icons.add_rounded,
+                      semanticLabel: "Új ZH felvétele",
+                      onPressed: _openAddMidterm,
+                    )
+                  : null,
+            );
+          }),
     );
   }
 }
