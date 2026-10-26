@@ -36,6 +36,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
           builder: (_) => WikiFilesScreen(
             viewModel: WikiFilesViewModel(
                 repository: repository,
+                siteUrl: widget.viewModel.siteUrl,
                 dir: widget.viewModel.childPath(item.name)),
           ),
         ),
@@ -46,9 +47,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
   }
 
   Future<void> _openFile(BuildContext context, String name) async {
-    final path = widget.viewModel.childPath(name);
-    final url =
-        Uri.encodeFull('https://test.app.itk.ppke.hu/perpa4/files/$path');
+    final url = widget.viewModel.fileUrl(name);
     final uri = Uri.tryParse(url);
 
     final ok = uri != null &&
