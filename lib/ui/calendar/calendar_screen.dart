@@ -1,6 +1,7 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
 
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/ui/calendar/viewmodels/calendar_viewmodel.dart';
@@ -12,6 +13,7 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
 import 'package:itk_app/ui/core/widgets/brand_icon_button.dart';
+import 'package:provider/provider.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -21,10 +23,17 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  late final _viewModel = CalendarViewModel.create();
+  late final CalendarViewModel _viewModel;
   final _dayViewKey = GlobalKey<DayViewState<CalendarEvent>>();
 
   DateTime _visibleDate = DateTime.now();
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel =
+        CalendarViewModel(repository: context.read<CalendarRepository>());
+  }
 
   @override
   Widget build(BuildContext context) {

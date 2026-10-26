@@ -1,33 +1,56 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/admin/admin_roles_repository.dart';
+import 'package:itk_app/data/repositories/admin/admin_users_repository.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
+import 'package:itk_app/data/repositories/midterms_repository.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:flutter/services.dart';
 import 'package:itk_app/utils/auth_actions.dart';
+import 'package:provider/provider.dart';
 import 'data/services/api_client.dart';
 import 'ui/login/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ApiClient.instance.init();
-  ApiClient.instance.onUnauthorized = handleSessionExpired;
+  final apiClient = ApiClient.instance;
+  final themeRepository = ThemeRepository.instance;
+  final onboardingRepository = OnboardingRepository.instance;
 
-  if (kDebugMode) {
-    //debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-  }
-
-  await ThemeRepository.instance.loadFromDisk();
-  await OnboardingRepository.instance.loadFromDisk();
+  await apiClient.init();
+  apiClient.onUnauthorized = handleSessionExpired;
+  await themeRepository.loadFromDisk();
+  await onboardingRepository.loadFromDisk();
 
   initializeDateFormatting().then(
     (_) => runApp(
-      const ITKApp(),
+      MultiProvider(
+        providers: [
+          Provider.value(value: apiClient),
+          Provider.value(value: themeRepository),
+          Provider.value(value: onboardingRepository),
+          ChangeNotifierProvider.value(value: AuthRepository.instance),
+          Provider.value(value: CalendarRepository.instance),
+          Provider.value(value: MidtermsRepository.instance),
+          Provider.value(value: SitesRepository.instance),
+          Provider.value(value: SubjectsRepository.instance),
+          Provider.value(value: WikiFilesRepository.instance),
+          Provider.value(value: AdminRolesRepository.instance),
+          Provider.value(value: AdminUsersRepository.instance),
+        ],
+        child: const ITKApp(),
+      ),
     ),
   );
 }

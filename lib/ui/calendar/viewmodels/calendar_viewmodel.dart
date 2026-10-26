@@ -15,10 +15,6 @@ class CalendarViewModel extends ChangeNotifier {
     load = Command1<void, bool>(_load)..execute(false);
   }
 
-  factory CalendarViewModel.create() => CalendarViewModel(
-        repository: CalendarRepository.instance,
-      );
-
   late final Command1<void, bool> load;
 
   // Methods
