@@ -1,4 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
+import 'package:itk_app/data/repositories/onboarding_repository.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/subjects_repository.dart';
+import 'package:itk_app/data/repositories/theme_repository.dart';
+import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/ui/admin/admin_roles_screen.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
@@ -14,6 +21,7 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
 import 'package:itk_app/utils/auth_actions.dart';
+import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -23,13 +31,22 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  final _viewModel = SettingsViewModel.create();
+  late final SettingsViewModel _viewModel;
   late final Future<PackageInfo> _packageInfoFuture;
 
   @override
   void initState() {
     super.initState();
     _packageInfoFuture = PackageInfo.fromPlatform();
+    _viewModel = SettingsViewModel(
+      authRepository: context.read<AuthRepository>(),
+      themeRepository: context.read<ThemeRepository>(),
+      subjectsRepository: context.read<SubjectsRepository>(),
+      sitesRepository: context.read<SitesRepository>(),
+      calendarRepository: context.read<CalendarRepository>(),
+      apiClient: context.read<ApiClient>(),
+      onboardingRepository: context.read<OnboardingRepository>(),
+    );
   }
 
   @override

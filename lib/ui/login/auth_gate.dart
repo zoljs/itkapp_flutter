@@ -3,6 +3,7 @@ import 'package:itk_app/data/repositories/onboarding_repository.dart';
 import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/onboarding/onboarding_screen.dart';
+import 'package:provider/provider.dart';
 import 'login_screen.dart';
 
 /// Shown on app start. Calls GET /api/auth/me to see if a valid session
@@ -16,8 +17,6 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
-  final _authRepository = AuthRepository.instance;
-
   @override
   void initState() {
     super.initState();
@@ -25,13 +24,13 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _checkSession() async {
-    final user = await _authRepository.getSessionUser();
+    final user = await context.read<AuthRepository>().getSessionUser();
     if (!mounted) return;
 
     final Widget next;
     if (user == null) {
       next = const LoginScreen();
-    } else if (!OnboardingRepository.instance.hasSeenOnboarding.value) {
+    } else if (!context.read<OnboardingRepository>().hasSeenOnboarding.value) {
       next = const OnboardingScreen();
     } else {
       next = const AppScaffold();

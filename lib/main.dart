@@ -1,33 +1,73 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/admin/admin_roles_repository.dart';
+import 'package:itk_app/data/repositories/admin/admin_users_repository.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
+import 'package:itk_app/data/repositories/midterms_repository.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:flutter/services.dart';
 import 'package:itk_app/utils/auth_actions.dart';
+import 'package:provider/provider.dart';
 import 'data/services/api_client.dart';
 import 'ui/login/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await ApiClient.instance.init();
-  ApiClient.instance.onUnauthorized = handleSessionExpired;
+  final apiClient = ApiClient.instance;
+  final themeRepository = ThemeRepository();
+  final onboardingRepository = OnboardingRepository();
 
-  if (kDebugMode) {
-    //debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-  }
-
-  await ThemeRepository.instance.loadFromDisk();
-  await OnboardingRepository.instance.loadFromDisk();
+  await apiClient.init();
+  apiClient.onUnauthorized = handleSessionExpired;
+  await themeRepository.loadFromDisk();
+  await onboardingRepository.loadFromDisk();
 
   initializeDateFormatting().then(
     (_) => runApp(
-      const ITKApp(),
+      MultiProvider(
+        providers: [
+          Provider.value(value: apiClient),
+          Provider.value(value: themeRepository),
+          Provider.value(value: onboardingRepository),
+          ChangeNotifierProvider(
+              create: (context) =>
+                  AuthRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  CalendarRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  MidtermsRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+            create: (context) =>
+                SitesRepository(apiClient: context.read<ApiClient>()),
+          ),
+          Provider(
+              create: (context) =>
+                  SubjectsRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  WikiFilesRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  AdminRolesRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  AdminUsersRepository(apiClient: context.read<ApiClient>())),
+        ],
+        child: const ITKApp(),
+      ),
     ),
   );
 }
@@ -96,7 +136,7 @@ class ITKApp extends StatelessWidget {
     );
 
     return ValueListenableBuilder<bool>(
-      valueListenable: ThemeRepository.instance.oledMode,
+      valueListenable: context.watch<ThemeRepository>().oledMode,
       builder: (context, isOled, child) {
         final darkScheme = _darkSchemeFor(baseDarkScheme, isOled: isOled);
 

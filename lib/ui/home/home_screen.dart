@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/viewmodels/home_viewmodel.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
@@ -9,6 +12,7 @@ import 'package:itk_app/ui/online_videos/online_videos.dart';
 import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
 import 'package:itk_app/ui/wiki/wiki_files_screen.dart';
 import 'package:itk_app/utils/open_link.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -24,7 +28,22 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  final _viewModel = HomeViewModel.create();
+  late final HomeViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = HomeViewModel(
+      authRepository: context.read<AuthRepository>(),
+      calendarRepository: context.read<CalendarRepository>(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
 
   Future<void> _refresh() async {
     await _viewModel.load.execute(true);
@@ -97,14 +116,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.event_available_rounded,
                         iconColor: scheme.primary,
                         title: 'Perpa',
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => WikiFilesScreen(
-                              viewModel: WikiFilesViewModel.forDir(''),
+                        onTap: () {
+                          final repository =
+                              context.read<WikiFilesRepository>();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => WikiFilesScreen(
+                                viewModel: WikiFilesViewModel(
+                                    repository: repository, dir: ''),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ],
                   ),

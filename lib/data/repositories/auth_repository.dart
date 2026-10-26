@@ -15,7 +15,6 @@ class AuthRepository extends ChangeNotifier {
         _dio = apiClient.dio;
 
   // Until there is no provider, temporary instance
-  static final instance = AuthRepository(apiClient: ApiClient.instance);
   static const _cacheKey = 'cached_user';
 
   final ApiClient _apiClient;

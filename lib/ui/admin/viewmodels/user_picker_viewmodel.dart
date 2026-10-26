@@ -12,10 +12,13 @@ class UserPickerViewModel extends ChangeNotifier {
     load = Command0<void>(_load)..execute();
   }
 
-  factory UserPickerViewModel.create() =>
-      UserPickerViewModel(repository: AdminUsersRepository.instance);
-
   final AdminUsersRepository _repository;
+
+  @override
+  void dispose() {
+    load.dispose();
+    super.dispose();
+  }
 
   // State
   List<UserSummary> _users = [];

@@ -9,7 +9,6 @@ class MidtermsRepository {
     required ApiClient apiClient,
   }) : _dio = apiClient.dio;
 
-  static final instance = MidtermsRepository(apiClient: ApiClient.instance);
   final Dio _dio;
 
   Future<Result<List<MidtermDate>>> getMidterms() async {

@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
@@ -7,6 +8,7 @@ import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/login/viewmodels/login_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -16,7 +18,7 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _viewModel = LoginViewModel.create();
+  late final LoginViewModel _viewModel;
 
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
@@ -25,9 +27,16 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
 
   @override
+  void initState() {
+    super.initState();
+    _viewModel = LoginViewModel(authRepository: context.read<AuthRepository>());
+  }
+
+  @override
   void dispose() {
     _usernameController.dispose();
     _passwordController.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 

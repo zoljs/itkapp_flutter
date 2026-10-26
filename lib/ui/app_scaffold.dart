@@ -5,6 +5,7 @@ import 'package:itk_app/ui/wiki/wiki_screen.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/widgets/navbar.dart';
+import 'package:provider/provider.dart';
 
 class AppScaffold extends StatefulWidget {
   const AppScaffold({super.key});
@@ -17,7 +18,7 @@ class _AppScaffoldState extends State<AppScaffold> {
   @override
   void initState() {
     super.initState();
-    SitesRepository.instance.getMySite();
+    context.read<SitesRepository>().getMySite();
   }
 
   int _selectedIndex = 0;

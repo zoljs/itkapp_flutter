@@ -6,8 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ApiClient {
-  ApiClient._internal();
-  static final ApiClient instance = ApiClient._internal();
+  ApiClient();
+  static final ApiClient instance = ApiClient();
 
   static const String baseUrl = 'https://test.app.itk.ppke.hu';
 

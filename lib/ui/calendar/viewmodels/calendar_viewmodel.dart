@@ -15,11 +15,14 @@ class CalendarViewModel extends ChangeNotifier {
     load = Command1<void, bool>(_load)..execute(false);
   }
 
-  factory CalendarViewModel.create() => CalendarViewModel(
-        repository: CalendarRepository.instance,
-      );
-
   late final Command1<void, bool> load;
+
+  @override
+  void dispose() {
+    load.dispose();
+    eventController.dispose();
+    super.dispose();
+  }
 
   // Methods
   Future<Result<void>> _load(bool forceReload) async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/midterms_repository.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
@@ -8,6 +9,7 @@ import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/screens/subject_picker_screen.dart';
 import 'package:itk_app/ui/midterms/viewmodels/add_midterm_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
+import 'package:provider/provider.dart';
 
 class AddMidtermScreen extends StatefulWidget {
   const AddMidtermScreen({super.key, this.scrollController});
@@ -20,11 +22,19 @@ class AddMidtermScreen extends StatefulWidget {
 
 class _AddMidtermScreenState extends State<AddMidtermScreen> {
   final _locationController = TextEditingController();
-  late final _viewModel = AddMidtermViewModel.create();
+  late final AddMidtermViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel =
+        AddMidtermViewModel(repository: context.read<MidtermsRepository>());
+  }
 
   @override
   void dispose() {
     _locationController.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 

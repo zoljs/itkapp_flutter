@@ -11,21 +11,24 @@ class MidtermsViewModel extends ChangeNotifier {
   MidtermsViewModel({
     required MidtermsRepository midtermRepository,
     required AuthRepository authRepository,
+    repository,
   })  : _authRepository = authRepository,
         _midtermRepository = midtermRepository {
     load = Command0<void>(_load)..execute();
     delete = Command1<void, int>(_delete);
   }
 
-  factory MidtermsViewModel.create() => MidtermsViewModel(
-        midtermRepository: MidtermsRepository.instance,
-        authRepository: AuthRepository.instance,
-      );
-
   final MidtermsRepository _midtermRepository;
   final AuthRepository _authRepository;
   late final Command0<void> load;
   late final Command1<void, int> delete;
+
+  @override
+  void dispose() {
+    load.dispose();
+    delete.dispose();
+    super.dispose();
+  }
 
   // State
   String _query = '';

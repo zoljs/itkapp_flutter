@@ -9,7 +9,6 @@ class WikiFilesRepository {
     required ApiClient apiClient,
   }) : _dio = apiClient.dio;
 
-  static final instance = WikiFilesRepository(apiClient: ApiClient.instance);
   final Dio _dio;
 
   Future<Result<List<WikiFile>>> listDir(String dir) async {

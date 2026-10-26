@@ -14,12 +14,14 @@ class HomeViewModel extends ChangeNotifier {
     load = Command1<void, bool>(_load)..execute(false);
   }
 
-  factory HomeViewModel.create() => HomeViewModel(
-      authRepository: AuthRepository.instance,
-      calendarRepository: CalendarRepository.instance);
-
   final AuthRepository _authRepository;
   final CalendarRepository _calendarRepository;
+
+  @override
+  void dispose() {
+    load.dispose();
+    super.dispose();
+  }
 
   late final Command1<void, bool> load;
 

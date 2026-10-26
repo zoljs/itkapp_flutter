@@ -18,15 +18,19 @@ class MySiteViewModel extends ChangeNotifier {
     delete = Command0<void>(_delete);
   }
 
-  factory MySiteViewModel.create() => MySiteViewModel(
-      sitesRepository: SitesRepository.instance,
-      authRepository: AuthRepository.instance);
-
   final SitesRepository _sitesRepository;
   final AuthRepository _authRepository;
   late final Command0<void> load;
   late final Command0<void> save;
   late final Command0<void> delete;
+
+  @override
+  void dispose() {
+    load.dispose();
+    save.dispose();
+    delete.dispose();
+    super.dispose();
+  }
 
   // State
   List<String> _tags = [];

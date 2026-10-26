@@ -9,7 +9,6 @@ class SubjectsRepository {
     required ApiClient apiClient,
   }) : _dio = apiClient.dio;
 
-  static final instance = SubjectsRepository(apiClient: ApiClient.instance);
   final Dio _dio;
 
   List<Subject>? _cached;

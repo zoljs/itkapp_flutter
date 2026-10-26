@@ -7,6 +7,7 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
+import 'package:provider/provider.dart';
 
 class _OnboardingPage {
   final IconData icon;
@@ -51,7 +52,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool get _isLastPage => _page == 3;
 
   Future<void> _finish() async {
-    await OnboardingRepository.instance.markSeenOnboarding();
+    await context.read<OnboardingRepository>().markSeenOnboarding();
     if (!mounted) return;
 
     Navigator.of(context).pushReplacement(
@@ -173,6 +174,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildSettingPage(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final themeRepository = context.watch<ThemeRepository>();
 
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.xxl),
@@ -186,7 +188,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: AppSpacing.lg),
           ValueListenableBuilder<bool>(
-            valueListenable: ThemeRepository.instance.actionButtonAsFab,
+            valueListenable: context.watch<ThemeRepository>().actionButtonAsFab,
             builder: (context, asFab, _) {
               return Container(
                   height: 350,
@@ -224,14 +226,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 icon: Icons.add_rounded,
                 iconColor: scheme.tertiary,
                 title: 'Akció gombok lent',
-                onTap: () => ThemeRepository.instance.toggleActionButtonAsFab(
-                    !ThemeRepository.instance.actionButtonAsFab.value),
+                onTap: () {
+                  themeRepository.toggleActionButtonAsFab(
+                      !themeRepository.actionButtonAsFab.value);
+                },
                 trailing: ValueListenableBuilder<bool>(
-                  valueListenable: ThemeRepository.instance.actionButtonAsFab,
+                  valueListenable: themeRepository.actionButtonAsFab,
                   builder: (context, asFab, _) => Switch.adaptive(
                     activeTrackColor: itkPrimary,
                     value: asFab,
-                    onChanged: ThemeRepository.instance.toggleActionButtonAsFab,
+                    onChanged: themeRepository.toggleActionButtonAsFab,
                   ),
                 ),
               ),

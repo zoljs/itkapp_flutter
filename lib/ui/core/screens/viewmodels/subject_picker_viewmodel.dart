@@ -12,10 +12,13 @@ class SubjectPickerViewModel extends ChangeNotifier {
     load = Command0<void>(_load)..execute();
   }
 
-  factory SubjectPickerViewModel.create() =>
-      SubjectPickerViewModel(repository: SubjectsRepository.instance);
-
   final SubjectsRepository _repository;
+
+  @override
+  void dispose() {
+    load.dispose();
+    super.dispose();
+  }
 
   // State
   List<Subject> _subjects = [];
