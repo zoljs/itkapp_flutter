@@ -1,29 +1,30 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/utils/result.dart';
-import 'api_client.dart';
-import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class AuthResult {
-  final bool success;
-  final String? errorMessage;
-  const AuthResult({required this.success, this.errorMessage});
-}
+class AuthRepository extends ChangeNotifier {
+  AuthRepository({required ApiClient apiClient})
+      : _apiClient = apiClient,
+        _dio = apiClient.dio;
 
-class AuthService {
-  AuthService.internal();
-  static final AuthService instance = AuthService.internal();
-
+  // Until there is no provider, temporary instance
+  static final instance = AuthRepository(apiClient: ApiClient.instance);
   static const _cacheKey = 'cached_user';
 
-  final Dio _dio = ApiClient.instance.dio;
+  final ApiClient _apiClient;
+  final Dio _dio;
   LdapUser? _cachedUser;
+
+  // Getters
   LdapUser? get cachedUser => _cachedUser;
+  bool get isAuthenticated => _cachedUser != null;
 
   Future<Result<void>> login(String username, String password) async {
     try {
@@ -50,6 +51,8 @@ class AuthService {
     // If disk has valid user, set cache
     if (fromDisk != null) {
       _cachedUser = fromDisk;
+      notifyListeners();
+
       unawaited(_fetchUserFromNetwork());
       return fromDisk;
     }
@@ -62,10 +65,12 @@ class AuthService {
     try {
       await _dio.post('/api/auth/logout');
     } on DioException catch (e) {
-      debugPrint('[AuthService] logout request failed: ${e.message}');
+      debugPrint('[AuthRepository] logout request failed: ${e.message}');
     } finally {
-      await ApiClient.instance.clearCookies();
+      await _apiClient.clearCookies();
       _cachedUser = null;
+      notifyListeners();
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove(_cacheKey);
     }
@@ -76,7 +81,7 @@ class AuthService {
     try {
       response = await _dio.get('/api/auth/me');
     } on DioException catch (e) {
-      debugPrint('[AuthService] /me failed: ${apiErrorMessage(e)}');
+      debugPrint('[AuthRepository] /me failed: ${apiErrorMessage(e)}');
       return null;
     }
 
@@ -84,6 +89,8 @@ class AuthService {
     if (user == null) return null;
 
     _cachedUser = user;
+    notifyListeners();
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_cacheKey, jsonEncode(user.toJson()));
     return user;
@@ -112,7 +119,7 @@ class AuthService {
     try {
       return LdapUser.fromJson(data);
     } catch (e) {
-      debugPrint('[AuthService] bad user json: $e');
+      debugPrint('[AuthRepository] bad user json: $e');
       return null;
     }
   }

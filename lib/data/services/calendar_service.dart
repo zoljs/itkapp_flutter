@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/utils/result.dart';
 
 class CalendarService {
@@ -17,7 +17,7 @@ class CalendarService {
   Future<Result<List<CalendarEvent>>> getCalendar({
     bool forceReload = false,
   }) async {
-    final username = AuthService.instance.cachedUser?.login;
+    final username = AuthRepository.instance.cachedUser?.login;
     if (username == null) return const Ok([]);
 
     final cached = _cached;

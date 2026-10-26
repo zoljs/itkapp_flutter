@@ -1,4 +1,4 @@
-import 'package:itk_app/data/services/auth_service.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/services/onboarding_service.dart';
 import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
-  final _authService = AuthService.instance;
+  final _authRepository = AuthRepository.instance;
 
   @override
   void initState() {
@@ -25,7 +25,7 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _checkSession() async {
-    final user = await _authService.getSessionUser();
+    final user = await _authRepository.getSessionUser();
     if (!mounted) return;
 
     final Widget next;

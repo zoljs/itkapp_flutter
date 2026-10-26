@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/services/auth_service.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/services/sites_service.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/command.dart';
@@ -10,19 +10,19 @@ import 'package:itk_app/utils/result.dart';
 class MySiteViewModel extends ChangeNotifier {
   MySiteViewModel({
     required SitesService service,
-    required AuthService authService,
+    required AuthRepository authRepository,
   })  : _sitesService = service,
-        _authService = authService {
+        _authRepository = authRepository {
     load = Command0<void>(_load)..execute();
     save = Command0<void>(_save);
     delete = Command0<void>(_delete);
   }
 
   factory MySiteViewModel.create() => MySiteViewModel(
-      service: SitesService.instance, authService: AuthService.instance);
+      service: SitesService.instance, authRepository: AuthRepository.instance);
 
   final SitesService _sitesService;
-  final AuthService _authService;
+  final AuthRepository _authRepository;
   late final Command0<void> load;
   late final Command0<void> save;
   late final Command0<void> delete;
@@ -46,7 +46,7 @@ class MySiteViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  String? get login => _authService.cachedUser?.login;
+  String? get login => _authRepository.cachedUser?.login;
 
   bool get isPublic => _isPublic;
   void setPublic(bool value) {
@@ -83,7 +83,7 @@ class MySiteViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _save() async {
-    if (_authService.cachedUser == null) {
+    if (_authRepository.cachedUser == null) {
       return const Err('Nincs bejelentkezett felhasználó.');
     }
 

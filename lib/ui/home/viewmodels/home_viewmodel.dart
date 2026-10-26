@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/services/auth_service.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
@@ -7,18 +7,18 @@ import 'package:itk_app/data/services/calendar_service.dart';
 
 class HomeViewModel extends ChangeNotifier {
   HomeViewModel(
-      {required AuthService authService,
+      {required AuthRepository authRepository,
       required CalendarService calendarService})
-      : _authService = authService,
+      : _authRepository = authRepository,
         _calendarService = calendarService {
     load = Command1<void, bool>(_load)..execute(false);
   }
 
   factory HomeViewModel.create() => HomeViewModel(
-      authService: AuthService.instance,
+      authRepository: AuthRepository.instance,
       calendarService: CalendarService.instance);
 
-  final AuthService _authService;
+  final AuthRepository _authRepository;
   final CalendarService _calendarService;
 
   late final Command1<void, bool> load;
@@ -27,7 +27,7 @@ class HomeViewModel extends ChangeNotifier {
   CalendarEvent? _nextEvent;
 
   // Getters
-  String? get firstName => _authService.cachedUser?.firstName;
+  String? get firstName => _authRepository.cachedUser?.firstName;
   CalendarEvent? get nextEvent => _nextEvent;
 
   Future<Result<void>> _load(bool forceReload) async {

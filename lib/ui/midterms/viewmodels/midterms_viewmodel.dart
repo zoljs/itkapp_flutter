@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/services/auth_service.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/services/midterms_service.dart';
 import 'package:itk_app/domain/models/midterm_date.dart';
 import 'package:itk_app/utils/command.dart';
@@ -10,8 +10,8 @@ import 'package:itk_app/utils/result.dart';
 class MidtermsViewModel extends ChangeNotifier {
   MidtermsViewModel({
     required MidtermsService midtermService,
-    required AuthService authService,
-  })  : _authService = authService,
+    required AuthRepository authRepository,
+  })  : _authRepository = authRepository,
         _midtermService = midtermService {
     load = Command0<void>(_load)..execute();
     delete = Command1<void, int>(_delete);
@@ -19,18 +19,19 @@ class MidtermsViewModel extends ChangeNotifier {
 
   factory MidtermsViewModel.create() => MidtermsViewModel(
         midtermService: MidtermsService.instance,
-        authService: AuthService.instance,
+        authRepository: AuthRepository.instance,
       );
 
   final MidtermsService _midtermService;
-  final AuthService _authService;
+  final AuthRepository _authRepository;
   late final Command0<void> load;
   late final Command1<void, int> delete;
 
   // State
   String _query = '';
   List<MidtermDate> _midterms = [];
-  bool get canModerate => _authService.cachedUser?.canModerateMidterms ?? false;
+  bool get canModerate =>
+      _authRepository.cachedUser?.canModerateMidterms ?? false;
 
   // Getters
   UnmodifiableListView<MidtermDate> get midterms =>

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/services/calendar_service.dart';
 import 'package:itk_app/data/services/subjects_service.dart';
 import 'package:itk_app/ui/login/login_screen.dart';
-import 'package:itk_app/data/services/auth_service.dart';
 import 'package:itk_app/data/services/sites_service.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 
 Future<void> performLogout(BuildContext context) async {
-  await AuthService.instance.logout();
+  await AuthRepository.instance.logout();
   SubjectsService.instance.clearCache();
   SitesService.instance.clearCache();
   CalendarService.instance.clearCache();
@@ -25,7 +25,7 @@ Future<void> handleSessionExpired() async {
   final navigator = navigatorKey.currentState;
   if (navigator == null) return;
 
-  await AuthService.instance.logout();
+  await AuthRepository.instance.logout();
   SitesService.instance.clearCache();
   CalendarService.instance.clearCache();
 
