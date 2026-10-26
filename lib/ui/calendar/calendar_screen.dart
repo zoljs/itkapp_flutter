@@ -23,7 +23,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  late final CalendarViewModel _viewModel;
+  late final _viewModel;
   final _dayViewKey = GlobalKey<DayViewState<CalendarEvent>>();
 
   DateTime _visibleDate = DateTime.now();
