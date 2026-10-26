@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
-import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/viewmodels/home_viewmodel.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
@@ -9,8 +8,6 @@ import 'package:itk_app/ui/home/widgets/home_screen_app_bar.dart';
 import 'package:itk_app/ui/home/widgets/quick_links_grid.dart';
 import 'package:itk_app/ui/midterms/midterms_screen.dart';
 import 'package:itk_app/ui/online_videos/online_videos.dart';
-import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
-import 'package:itk_app/ui/wiki/wiki_files_screen.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -111,24 +108,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           MaterialPageRoute(
                               builder: (_) => const MidtermsScreen()),
                         ),
-                      ),
-                      SettingsTile(
-                        icon: Icons.event_available_rounded,
-                        iconColor: scheme.primary,
-                        title: 'Perpa',
-                        onTap: () {
-                          final repository =
-                              context.read<WikiFilesRepository>();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => WikiFilesScreen(
-                                viewModel: WikiFilesViewModel(
-                                    repository: repository, dir: ''),
-                              ),
-                            ),
-                          );
-                        },
                       ),
                     ],
                   ),

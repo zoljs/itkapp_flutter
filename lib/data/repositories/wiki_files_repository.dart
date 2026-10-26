@@ -11,10 +11,10 @@ class WikiFilesRepository {
 
   final Dio _dio;
 
-  Future<Result<List<WikiFile>>> listDir(String dir) async {
+  Future<Result<List<WikiFile>>> listDir(String dir, String siteUrl) async {
     try {
       final response = await _dio.get(
-        '/perpa4/files.php',
+        '$siteUrl/files_wiki.php',
         queryParameters: {'dir': dir},
       );
       return Ok(parseFiles(response.data));

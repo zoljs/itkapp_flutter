@@ -10,13 +10,16 @@ class WikiFilesViewModel extends ChangeNotifier {
   WikiFilesViewModel({
     required WikiFilesRepository repository,
     required String dir,
+    required String siteUrl,
   })  : _repository = repository,
-        _dir = dir {
+        _dir = dir,
+        _siteUrl = siteUrl {
     load = Command0<void>(_load)..execute();
   }
 
   final WikiFilesRepository _repository;
   final String _dir;
+  final String _siteUrl;
 
   // State
   List<WikiFile> _items = [];
@@ -31,11 +34,17 @@ class WikiFilesViewModel extends ChangeNotifier {
   // Getters
   UnmodifiableListView<WikiFile> get items => UnmodifiableListView(_items);
   String get title => _dir.isEmpty ? 'Fájlok' : _dir.split('/').last;
+  String get siteUrl => _siteUrl.endsWith('/')
+      ? _siteUrl.substring(0, _siteUrl.length - 1)
+      : _siteUrl;
+  String fileUrl(String name) =>
+      Uri.encodeFull('$siteUrl/files/${childPath(name)}');
+
   String childPath(String name) => _dir.isEmpty ? name : '$_dir/$name';
 
   // Methods
   Future<Result<void>> _load() async {
-    final result = await _repository.listDir(_dir);
+    final result = await _repository.listDir(_dir, siteUrl);
 
     switch (result) {
       case Ok(:final value):

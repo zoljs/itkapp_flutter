@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
+import 'package:itk_app/ui/wiki/wiki_files_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -65,7 +68,7 @@ class _WikiScreenState extends State<WikiScreen> {
   Widget _buildSiteCard(UserSite site, int index) {
     return UserSiteCard(
       color: site.claimed ? itkPrimary : Colors.grey,
-      onTap: () => _openSite(site.url),
+      onTap: () => _onSiteTap(site),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -139,6 +142,26 @@ class _WikiScreenState extends State<WikiScreen> {
         ],
       ),
     );
+  }
+
+  void _onSiteTap(UserSite site) {
+    if (site.isPhpEnabled) {
+      final repository = context.read<WikiFilesRepository>();
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => WikiFilesScreen(
+            viewModel: WikiFilesViewModel(
+              repository: repository,
+              dir: '',
+              siteUrl: site.url,
+            ),
+          ),
+        ),
+      );
+    } else {
+      _openSite(site.url);
+    }
   }
 
   @override
