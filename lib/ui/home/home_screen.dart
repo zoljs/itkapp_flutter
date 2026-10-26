@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/viewmodels/home_viewmodel.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
@@ -36,6 +37,12 @@ class _HomeScreenState extends State<HomeScreen> {
       authRepository: context.read<AuthRepository>(),
       calendarRepository: context.read<CalendarRepository>(),
     );
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
   }
 
   Future<void> _refresh() async {
@@ -109,14 +116,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.event_available_rounded,
                         iconColor: scheme.primary,
                         title: 'Perpa',
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => WikiFilesScreen(
-                              viewModel: WikiFilesViewModel.forDir(''),
+                        onTap: () {
+                          final repository =
+                              context.read<WikiFilesRepository>();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => WikiFilesScreen(
+                                viewModel: WikiFilesViewModel(
+                                    repository: repository, dir: ''),
+                              ),
                             ),
-                          ),
-                        ),
+                          );
+                        },
                       ),
                     ],
                   ),

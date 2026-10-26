@@ -16,9 +16,11 @@ class LoginViewModel extends ChangeNotifier {
     login = Command1<void, Credentials>(_login);
   }
 
-  factory LoginViewModel.create() => LoginViewModel(
-        authRepository: AuthRepository.instance,
-      );
+  @override
+  void dispose() {
+    login.dispose();
+    super.dispose();
+  }
 
   Future<Result<void>> _login(Credentials credentials) async {
     return await _authRepository.login(

@@ -9,7 +9,6 @@ class AdminUsersRepository {
     required ApiClient apiClient,
   }) : _dio = apiClient.dio;
 
-  static final instance = AdminUsersRepository(apiClient: ApiClient.instance);
   final Dio _dio;
 
   Future<Result<List<UserSummary>>> getUsers() async {

@@ -6,7 +6,6 @@ class ThemeRepository {
   static const _fabKey = 'actionButtonAsFab';
 
   ThemeRepository();
-  static final instance = ThemeRepository();
 
   final ValueNotifier<bool> oledMode = ValueNotifier(false);
   final ValueNotifier<bool> actionButtonAsFab = ValueNotifier(false);

@@ -10,8 +10,6 @@ class SitesRepository {
     required ApiClient apiClient,
   }) : _dio = apiClient.dio;
 
-  static final instance = SitesRepository(apiClient: ApiClient.instance);
-
   final Dio _dio;
 
   List<UserSite>? _cachedSites;

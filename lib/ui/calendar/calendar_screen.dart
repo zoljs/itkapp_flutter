@@ -23,7 +23,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  late final _viewModel;
+  late final CalendarViewModel _viewModel;
   final _dayViewKey = GlobalKey<DayViewState<CalendarEvent>>();
 
   DateTime _visibleDate = DateTime.now();
@@ -33,6 +33,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.initState();
     _viewModel =
         CalendarViewModel(repository: context.read<CalendarRepository>());
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
   }
 
   @override

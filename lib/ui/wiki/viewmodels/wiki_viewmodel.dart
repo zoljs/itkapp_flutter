@@ -8,22 +8,25 @@ import 'package:itk_app/utils/result.dart';
 
 class WikiViewModel extends ChangeNotifier {
   WikiViewModel({
-    required SitesRepository service,
-  })  : _service = service,
-        _sites = service.cachedSites {
+    required SitesRepository repository,
+  })  : _repository = repository,
+        _sites = repository.cachedSites {
     load = Command1<void, bool>(_load)..execute(false);
   }
 
-  factory WikiViewModel.create() =>
-      WikiViewModel(service: SitesRepository.instance);
-
-  final SitesRepository _service;
+  final SitesRepository _repository;
 
   // State
   List<UserSite> _sites;
   late final Command1<void, bool> load;
   UserSite? _mySite;
   String _query = '';
+
+  @override
+  void dispose() {
+    load.dispose();
+    super.dispose();
+  }
 
   // Getters
   UnmodifiableListView<UserSite> get sites => UnmodifiableListView(_sites);
@@ -46,8 +49,8 @@ class WikiViewModel extends ChangeNotifier {
   // Methods
   Future<Result<void>> _load(bool forceReload) async {
     final (sitesResult, mySiteResult) = await (
-      _service.getAllSites(forceReload: forceReload),
-      _service.getMySite(),
+      _repository.getAllSites(forceReload: forceReload),
+      _repository.getMySite(),
     ).wait;
 
     // mySite

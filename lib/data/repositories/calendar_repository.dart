@@ -11,7 +11,6 @@ class CalendarRepository {
     required ApiClient apiClient,
   }) : _dio = apiClient.dio;
 
-  static final instance = CalendarRepository(apiClient: ApiClient.instance);
   final Dio _dio;
 
   List<CalendarEvent>? _cached;

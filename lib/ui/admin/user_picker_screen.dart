@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/admin/admin_users_repository.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/ui/admin/viewmodels/user_picker_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
@@ -6,6 +7,7 @@ import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
+import 'package:provider/provider.dart';
 
 class UserPickerScreen extends StatefulWidget {
   const UserPickerScreen({
@@ -25,11 +27,20 @@ class UserPickerScreen extends StatefulWidget {
 
 class _UserPickerScreenState extends State<UserPickerScreen> {
   final _searchController = TextEditingController();
-  late final _viewModel = UserPickerViewModel.create();
+  late final UserPickerViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = UserPickerViewModel(
+      repository: context.read<AdminUsersRepository>(),
+    );
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 

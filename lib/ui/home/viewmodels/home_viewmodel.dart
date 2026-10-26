@@ -17,6 +17,12 @@ class HomeViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
   final CalendarRepository _calendarRepository;
 
+  @override
+  void dispose() {
+    load.dispose();
+    super.dispose();
+  }
+
   late final Command1<void, bool> load;
 
   // State

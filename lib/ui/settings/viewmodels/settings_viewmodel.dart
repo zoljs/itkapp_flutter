@@ -1,36 +1,41 @@
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/user.dart';
-import 'package:itk_app/utils/auth_actions.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
   final ThemeRepository _themeRepository;
+  final SubjectsRepository _subjectsRepository;
+  final SitesRepository _sitesRepository;
+  final CalendarRepository _calendarRepository;
+
   final ApiClient _apiClient;
   final OnboardingRepository _onboardingRepository;
 
   SettingsViewModel({
     required AuthRepository authRepository,
     required ThemeRepository themeRepository,
+    required SubjectsRepository subjectsRepository,
+    required SitesRepository sitesRepository,
+    required CalendarRepository calendarRepository,
     required ApiClient apiClient,
     required OnboardingRepository onboardingRepository,
   })  : _authRepository = authRepository,
         _themeRepository = themeRepository,
+        _subjectsRepository = subjectsRepository,
+        _sitesRepository = sitesRepository,
+        _calendarRepository = calendarRepository,
         _apiClient = apiClient,
         _onboardingRepository = onboardingRepository {
     _themeRepository.oledMode.addListener(notifyListeners);
     _themeRepository.actionButtonAsFab.addListener(notifyListeners);
   }
-
-  factory SettingsViewModel.create() => SettingsViewModel(
-        authRepository: AuthRepository.instance,
-        themeRepository: ThemeRepository.instance,
-        apiClient: ApiClient.instance,
-        onboardingRepository: OnboardingRepository.instance,
-      );
 
   // Getters
   bool get isOledMode => _themeRepository.oledMode.value;
@@ -42,8 +47,6 @@ class SettingsViewModel extends ChangeNotifier {
   void toggleActionButtonAsFab(bool value) =>
       _themeRepository.toggleActionButtonAsFab(value);
 
-  void clearCaches() => clearAllCaches();
-
   Future<void> clearCookies() => _apiClient.clearCookies();
 
   @override
@@ -54,4 +57,10 @@ class SettingsViewModel extends ChangeNotifier {
   }
 
   Future<void> resetOnboarding() => _onboardingRepository.resetOnboarding();
+
+  void clearCaches() {
+    _subjectsRepository.clearCache();
+    _sitesRepository.clearCache();
+    _calendarRepository.clearCache();
+  }
 }

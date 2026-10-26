@@ -15,17 +15,18 @@ class WikiFilesViewModel extends ChangeNotifier {
     load = Command0<void>(_load)..execute();
   }
 
-  factory WikiFilesViewModel.forDir(String dir) => WikiFilesViewModel(
-        repository: WikiFilesRepository.instance,
-        dir: dir,
-      );
-
   final WikiFilesRepository _repository;
   final String _dir;
 
   // State
   List<WikiFile> _items = [];
   late final Command0<void> load;
+
+  @override
+  void dispose() {
+    load.dispose();
+    super.dispose();
+  }
 
   // Getters
   UnmodifiableListView<WikiFile> get items => UnmodifiableListView(_items);

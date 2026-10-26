@@ -1,25 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class WikiFilesScreen extends StatelessWidget {
+class WikiFilesScreen extends StatefulWidget {
   const WikiFilesScreen({super.key, required this.viewModel});
 
   final WikiFilesViewModel viewModel;
 
+  @override
+  State<WikiFilesScreen> createState() => _WikiFilesScreenState();
+}
+
+class _WikiFilesScreenState extends State<WikiFilesScreen> {
+  @override
+  void dispose() {
+    widget.viewModel.dispose();
+    super.dispose();
+  }
+
   void _openItem(BuildContext context, WikiFile item) {
     if (item.isDir) {
+      // read repo before materialpageroute cuz it might throw
+      final repository = context.read<WikiFilesRepository>();
+
       Navigator.push(
         context,
         MaterialPageRoute(
           builder: (_) => WikiFilesScreen(
-            viewModel:
-                WikiFilesViewModel.forDir(viewModel.childPath(item.name)),
+            viewModel: WikiFilesViewModel(
+                repository: repository,
+                dir: widget.viewModel.childPath(item.name)),
           ),
         ),
       );
@@ -29,7 +46,7 @@ class WikiFilesScreen extends StatelessWidget {
   }
 
   Future<void> _openFile(BuildContext context, String name) async {
-    final path = viewModel.childPath(name);
+    final path = widget.viewModel.childPath(name);
     final url =
         Uri.encodeFull('https://test.app.itk.ppke.hu/perpa4/files/$path');
     final uri = Uri.tryParse(url);
@@ -45,17 +62,17 @@ class WikiFilesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = viewModel.title;
+    final title = widget.viewModel.title;
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
       appBar: buildBrandAppBar(title: title, context: context),
       body: ListenableBuilder(
-        listenable: Listenable.merge([viewModel, viewModel.load]),
+        listenable: Listenable.merge([widget.viewModel, widget.viewModel.load]),
         builder: (context, _) {
-          final loading = viewModel.load.running;
-          final error = viewModel.load.errorMessage;
-          final items = viewModel.items;
+          final loading = widget.viewModel.load.running;
+          final error = widget.viewModel.load.errorMessage;
+          final items = widget.viewModel.items;
 
           if (loading) {
             return const Center(child: CircularProgressIndicator.adaptive());
@@ -65,7 +82,7 @@ class WikiFilesScreen extends StatelessWidget {
             return StateMessage(
               icon: Icons.cloud_off_rounded,
               message: error,
-              onRetry: viewModel.load.execute,
+              onRetry: widget.viewModel.load.execute,
             );
           }
 

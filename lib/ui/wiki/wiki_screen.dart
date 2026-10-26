@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -27,7 +29,7 @@ class WikiScreen extends StatefulWidget {
 
 class _WikiScreenState extends State<WikiScreen> {
   final _searchController = TextEditingController();
-  late final _viewModel = WikiViewModel.create();
+  late final WikiViewModel _viewModel;
 
   Future<void> _openMySite() async {
     await Navigator.push(
@@ -48,8 +50,15 @@ class _WikiScreenState extends State<WikiScreen> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _viewModel = WikiViewModel(repository: context.read<SitesRepository>());
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
@@ -7,6 +8,7 @@ import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/core/screens/viewmodels/subject_multi_picker_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 class SubjectMultiPickerScreen extends StatefulWidget {
   final List<String> currentTags;
@@ -27,12 +29,20 @@ class SubjectMultiPickerScreen extends StatefulWidget {
 
 class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   final _searchController = TextEditingController();
-  late final _viewModel =
-      SubjectMultiPickerViewModel.create(widget.currentTags);
+  late final SubjectMultiPickerViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = SubjectMultiPickerViewModel(
+        repository: context.read<SubjectsRepository>(),
+        initialSubjects: widget.currentTags);
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 

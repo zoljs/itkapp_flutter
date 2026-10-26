@@ -17,6 +17,13 @@ class CalendarViewModel extends ChangeNotifier {
 
   late final Command1<void, bool> load;
 
+  @override
+  void dispose() {
+    load.dispose();
+    eventController.dispose();
+    super.dispose();
+  }
+
   // Methods
   Future<Result<void>> _load(bool forceReload) async {
     final result = await _repository.getCalendar(forceReload: forceReload);

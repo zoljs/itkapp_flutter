@@ -14,10 +14,15 @@ class AdminRolesViewModel extends ChangeNotifier {
     revoke = Command1<void, int>(_revoke);
   }
 
-  factory AdminRolesViewModel.create() =>
-      AdminRolesViewModel(repository: AdminRolesRepository.instance);
-
   final AdminRolesRepository _repository;
+
+  @override
+  void dispose() {
+    load.dispose();
+    assign.dispose();
+    revoke.dispose();
+    super.dispose();
+  }
 
   // State
   List<UserSummary> _roleHolders = [];

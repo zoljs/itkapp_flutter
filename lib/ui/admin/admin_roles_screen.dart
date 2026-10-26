@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/admin/admin_roles_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/ui/admin/user_picker_screen.dart';
@@ -10,6 +11,7 @@ import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/utils/context_extensions.dart';
+import 'package:provider/provider.dart';
 
 class AdminRolesScreen extends StatefulWidget {
   const AdminRolesScreen({super.key});
@@ -19,7 +21,21 @@ class AdminRolesScreen extends StatefulWidget {
 }
 
 class _AdminRolesScreenState extends State<AdminRolesScreen> {
-  late final _viewModel = AdminRolesViewModel.create();
+  late final AdminRolesViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = AdminRolesViewModel(
+      repository: context.read<AdminRolesRepository>(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
 
   Future<void> _openUserPicker() async {
     UserSummary? picked;
@@ -128,7 +144,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable: ThemeRepository.instance.actionButtonAsFab,
+      valueListenable: context.watch<ThemeRepository>().actionButtonAsFab,
       builder: (context, asFab, _) => Scaffold(
         appBar: buildBrandAppBar(
           context: context,

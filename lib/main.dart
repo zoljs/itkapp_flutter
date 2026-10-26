@@ -25,8 +25,8 @@ import 'package:intl/date_symbol_data_local.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final apiClient = ApiClient.instance;
-  final themeRepository = ThemeRepository.instance;
-  final onboardingRepository = OnboardingRepository.instance;
+  final themeRepository = ThemeRepository();
+  final onboardingRepository = OnboardingRepository();
 
   await apiClient.init();
   apiClient.onUnauthorized = handleSessionExpired;
@@ -40,14 +40,31 @@ Future<void> main() async {
           Provider.value(value: apiClient),
           Provider.value(value: themeRepository),
           Provider.value(value: onboardingRepository),
-          ChangeNotifierProvider.value(value: AuthRepository.instance),
-          Provider.value(value: CalendarRepository.instance),
-          Provider.value(value: MidtermsRepository.instance),
-          Provider.value(value: SitesRepository.instance),
-          Provider.value(value: SubjectsRepository.instance),
-          Provider.value(value: WikiFilesRepository.instance),
-          Provider.value(value: AdminRolesRepository.instance),
-          Provider.value(value: AdminUsersRepository.instance),
+          ChangeNotifierProvider(
+              create: (context) =>
+                  AuthRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  CalendarRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  MidtermsRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+            create: (context) =>
+                SitesRepository(apiClient: context.read<ApiClient>()),
+          ),
+          Provider(
+              create: (context) =>
+                  SubjectsRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  WikiFilesRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  AdminRolesRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  AdminUsersRepository(apiClient: context.read<ApiClient>())),
         ],
         child: const ITKApp(),
       ),
@@ -119,7 +136,7 @@ class ITKApp extends StatelessWidget {
     );
 
     return ValueListenableBuilder<bool>(
-      valueListenable: ThemeRepository.instance.oledMode,
+      valueListenable: context.watch<ThemeRepository>().oledMode,
       builder: (context, isOled, child) {
         final darkScheme = _darkSchemeFor(baseDarkScheme, isOled: isOled);
 

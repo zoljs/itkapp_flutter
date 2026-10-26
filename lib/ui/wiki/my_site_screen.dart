@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
@@ -8,6 +10,7 @@ import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/screens/subject_multi_picker_screen.dart';
 import 'package:itk_app/ui/wiki/viewmodels/my_site_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
+import 'package:provider/provider.dart';
 
 class MySiteScreen extends StatefulWidget {
   const MySiteScreen({super.key});
@@ -17,7 +20,22 @@ class MySiteScreen extends StatefulWidget {
 }
 
 class _MySiteScreenState extends State<MySiteScreen> {
-  late final _viewModel = MySiteViewModel.create();
+  late final MySiteViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = MySiteViewModel(
+      sitesRepository: context.read<SitesRepository>(),
+      authRepository: context.read<AuthRepository>(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _viewModel.dispose();
+    super.dispose();
+  }
 
   // static const List<Color> _colors = [
   //   itkPrimary,

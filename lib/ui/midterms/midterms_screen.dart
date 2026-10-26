@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/midterms_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/midterm_date.dart';
 import 'package:itk_app/domain/models/subject.dart';
@@ -18,6 +20,7 @@ import 'package:itk_app/ui/midterms/viewmodels/midterms_viewmodel.dart';
 import 'package:itk_app/ui/midterms/widgets/midterm_card.dart';
 import 'package:itk_app/ui/midterms/widgets/weekstrip.dart';
 import 'package:itk_app/utils/context_extensions.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class MidtermsScreen extends StatefulWidget {
@@ -29,11 +32,20 @@ class MidtermsScreen extends StatefulWidget {
 
 class _MidtermsScreenState extends State<MidtermsScreen> {
   final _searchController = TextEditingController();
-  late final _viewModel = MidtermsViewModel.create();
+  late final MidtermsViewModel _viewModel;
+
+  @override
+  void initState() {
+    super.initState();
+    _viewModel = MidtermsViewModel(
+        midtermRepository: context.read<MidtermsRepository>(),
+        authRepository: context.read<AuthRepository>());
+  }
 
   @override
   void dispose() {
     _searchController.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 
@@ -262,7 +274,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable: ThemeRepository.instance.actionButtonAsFab,
+      valueListenable: context.watch<ThemeRepository>().actionButtonAsFab,
       builder: (context, asFab, _) => ListenableBuilder(
           listenable: Listenable.merge([_viewModel, _viewModel.load]),
           builder: (context, _) {

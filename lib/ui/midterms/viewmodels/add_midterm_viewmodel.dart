@@ -10,9 +10,6 @@ class AddMidtermViewModel extends ChangeNotifier {
     save = Command0<void>(_save);
   }
 
-  factory AddMidtermViewModel.create() =>
-      AddMidtermViewModel(repository: MidtermsRepository.instance);
-
   // State
   final MidtermsRepository _repository;
   late final Command0<void> save;
@@ -21,6 +18,12 @@ class AddMidtermViewModel extends ChangeNotifier {
   DateTime? _date;
   TimeOfDay? _time;
   String _location = '';
+
+  @override
+  void dispose() {
+    save.dispose();
+    super.dispose();
+  }
 
   // Getters
   Subject? get subject => _subject;
