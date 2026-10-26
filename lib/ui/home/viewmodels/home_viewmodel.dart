@@ -3,23 +3,23 @@ import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
-import 'package:itk_app/data/services/calendar_service.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
 
 class HomeViewModel extends ChangeNotifier {
   HomeViewModel(
       {required AuthRepository authRepository,
-      required CalendarService calendarService})
+      required CalendarRepository calendarRepository})
       : _authRepository = authRepository,
-        _calendarService = calendarService {
+        _calendarRepository = calendarRepository {
     load = Command1<void, bool>(_load)..execute(false);
   }
 
   factory HomeViewModel.create() => HomeViewModel(
       authRepository: AuthRepository.instance,
-      calendarService: CalendarService.instance);
+      calendarRepository: CalendarRepository.instance);
 
   final AuthRepository _authRepository;
-  final CalendarService _calendarService;
+  final CalendarRepository _calendarRepository;
 
   late final Command1<void, bool> load;
 
@@ -31,7 +31,8 @@ class HomeViewModel extends ChangeNotifier {
   CalendarEvent? get nextEvent => _nextEvent;
 
   Future<Result<void>> _load(bool forceReload) async {
-    final result = await _calendarService.getCalendar(forceReload: forceReload);
+    final result =
+        await _calendarRepository.getCalendar(forceReload: forceReload);
 
     switch (result) {
       case Ok(:final value):

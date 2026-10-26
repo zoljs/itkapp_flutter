@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/onboarding_service.dart';
-import 'package:itk_app/data/services/theme_service.dart';
+import 'package:itk_app/data/repositories/onboarding_repository.dart';
+import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
@@ -22,8 +22,8 @@ Future<void> main() async {
     //debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
   }
 
-  await ThemeService.instance.loadFromDisk();
-  await OnboardingService.instance.loadFromDisk();
+  await ThemeRepository.instance.loadFromDisk();
+  await OnboardingRepository.instance.loadFromDisk();
 
   initializeDateFormatting().then(
     (_) => runApp(
@@ -96,7 +96,7 @@ class ITKApp extends StatelessWidget {
     );
 
     return ValueListenableBuilder<bool>(
-      valueListenable: ThemeService.instance.oledMode,
+      valueListenable: ThemeRepository.instance.oledMode,
       builder: (context, isOled, child) {
         final darkScheme = _darkSchemeFor(baseDarkScheme, isOled: isOled);
 

@@ -5,12 +5,14 @@ import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/result.dart';
 
-class SitesService {
-  SitesService.internal();
+class SitesRepository {
+  SitesRepository({
+    required ApiClient apiClient,
+  }) : _dio = apiClient.dio;
 
-  static final SitesService instance = SitesService.internal();
+  static final instance = SitesRepository(apiClient: ApiClient.instance);
 
-  final Dio _dio = ApiClient.instance.dio;
+  final Dio _dio;
 
   List<UserSite>? _cachedSites;
 
@@ -91,7 +93,7 @@ class SitesService {
     try {
       return UserSite.fromJson(json);
     } catch (e) {
-      debugPrint('[SitesService] bad site json: $e');
+      debugPrint('[SitesRepository] bad site json: $e');
       return null;
     }
   }

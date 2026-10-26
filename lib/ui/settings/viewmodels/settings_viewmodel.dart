@@ -1,46 +1,46 @@
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/onboarding_service.dart';
-import 'package:itk_app/data/services/theme_service.dart';
+import 'package:itk_app/data/repositories/onboarding_repository.dart';
+import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/utils/auth_actions.dart';
 
 class SettingsViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
-  final ThemeService _themeService;
+  final ThemeRepository _themeRepository;
   final ApiClient _apiClient;
-  final OnboardingService _onboardingService;
+  final OnboardingRepository _onboardingRepository;
 
   SettingsViewModel({
     required AuthRepository authRepository,
-    required ThemeService themeService,
+    required ThemeRepository themeRepository,
     required ApiClient apiClient,
-    required OnboardingService onboardingService,
+    required OnboardingRepository onboardingRepository,
   })  : _authRepository = authRepository,
-        _themeService = themeService,
+        _themeRepository = themeRepository,
         _apiClient = apiClient,
-        _onboardingService = onboardingService {
-    _themeService.oledMode.addListener(notifyListeners);
-    _themeService.actionButtonAsFab.addListener(notifyListeners);
+        _onboardingRepository = onboardingRepository {
+    _themeRepository.oledMode.addListener(notifyListeners);
+    _themeRepository.actionButtonAsFab.addListener(notifyListeners);
   }
 
   factory SettingsViewModel.create() => SettingsViewModel(
         authRepository: AuthRepository.instance,
-        themeService: ThemeService.instance,
+        themeRepository: ThemeRepository.instance,
         apiClient: ApiClient.instance,
-        onboardingService: OnboardingService.instance,
+        onboardingRepository: OnboardingRepository.instance,
       );
 
   // Getters
-  bool get isOledMode => _themeService.oledMode.value;
-  bool get isActionButtonAsFab => _themeService.actionButtonAsFab.value;
+  bool get isOledMode => _themeRepository.oledMode.value;
+  bool get isActionButtonAsFab => _themeRepository.actionButtonAsFab.value;
   LdapUser? get currentUser => _authRepository.cachedUser;
 
   // Methods
-  void toggleOledMode(bool value) => _themeService.toggleOledMode(value);
+  void toggleOledMode(bool value) => _themeRepository.toggleOledMode(value);
   void toggleActionButtonAsFab(bool value) =>
-      _themeService.toggleActionButtonAsFab(value);
+      _themeRepository.toggleActionButtonAsFab(value);
 
   void clearCaches() => clearAllCaches();
 
@@ -48,10 +48,10 @@ class SettingsViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
-    _themeService.oledMode.removeListener(notifyListeners);
-    _themeService.actionButtonAsFab.removeListener(notifyListeners);
+    _themeRepository.oledMode.removeListener(notifyListeners);
+    _themeRepository.actionButtonAsFab.removeListener(notifyListeners);
     super.dispose();
   }
 
-  Future<void> resetOnboarding() => _onboardingService.resetOnboarding();
+  Future<void> resetOnboarding() => _onboardingRepository.resetOnboarding();
 }

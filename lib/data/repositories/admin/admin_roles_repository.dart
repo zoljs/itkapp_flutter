@@ -4,10 +4,13 @@ import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/utils/result.dart';
 
-class AdminRolesService {
-  AdminRolesService._();
-  static final AdminRolesService instance = AdminRolesService._();
-  final Dio _dio = ApiClient.instance.dio;
+class AdminRolesRepository {
+  AdminRolesRepository({
+    required ApiClient apiClient,
+  }) : _dio = apiClient.dio;
+
+  static final instance = AdminRolesRepository(apiClient: ApiClient.instance);
+  final Dio _dio;
 
   Future<Result<List<UserSummary>>> getRoleHolders() async {
     try {

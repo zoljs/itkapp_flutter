@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ThemeService {
+class ThemeRepository {
   static const _oledKey = 'oledMode';
   static const _fabKey = 'actionButtonAsFab';
 
-  ThemeService.internal();
-  static final ThemeService instance = ThemeService.internal();
+  ThemeRepository();
+  static final instance = ThemeRepository();
 
   final ValueNotifier<bool> oledMode = ValueNotifier(false);
   final ValueNotifier<bool> actionButtonAsFab = ValueNotifier(false);

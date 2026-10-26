@@ -2,16 +2,16 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
-import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class MySiteViewModel extends ChangeNotifier {
   MySiteViewModel({
-    required SitesService service,
+    required SitesRepository sitesRepository,
     required AuthRepository authRepository,
-  })  : _sitesService = service,
+  })  : _sitesRepository = sitesRepository,
         _authRepository = authRepository {
     load = Command0<void>(_load)..execute();
     save = Command0<void>(_save);
@@ -19,9 +19,10 @@ class MySiteViewModel extends ChangeNotifier {
   }
 
   factory MySiteViewModel.create() => MySiteViewModel(
-      service: SitesService.instance, authRepository: AuthRepository.instance);
+      sitesRepository: SitesRepository.instance,
+      authRepository: AuthRepository.instance);
 
-  final SitesService _sitesService;
+  final SitesRepository _sitesRepository;
   final AuthRepository _authRepository;
   late final Command0<void> load;
   late final Command0<void> save;
@@ -63,7 +64,7 @@ class MySiteViewModel extends ChangeNotifier {
   // Methods
   Future<Result<void>> _load() async {
     // Mysite
-    final result = await _sitesService.getMySite();
+    final result = await _sitesRepository.getMySite();
 
     switch (result) {
       case Ok(value: final UserSite site):
@@ -88,13 +89,13 @@ class MySiteViewModel extends ChangeNotifier {
     }
 
     final result =
-        await _sitesService.saveMySite(_tags, _isPublic, _isPhpEnabled);
+        await _sitesRepository.saveMySite(_tags, _isPublic, _isPhpEnabled);
 
     return result;
   }
 
   Future<Result<void>> _delete() async {
-    final result = await _sitesService.deleteMySite();
+    final result = await _sitesRepository.deleteMySite();
     return result;
   }
 }

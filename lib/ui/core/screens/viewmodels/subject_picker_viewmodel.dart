@@ -1,21 +1,21 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/services/subjects_service.dart';
+import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class SubjectPickerViewModel extends ChangeNotifier {
-  SubjectPickerViewModel({required SubjectsService service})
-      : _service = service {
+  SubjectPickerViewModel({required SubjectsRepository repository})
+      : _repository = repository {
     load = Command0<void>(_load)..execute();
   }
 
   factory SubjectPickerViewModel.create() =>
-      SubjectPickerViewModel(service: SubjectsService.instance);
+      SubjectPickerViewModel(repository: SubjectsRepository.instance);
 
-  final SubjectsService _service;
+  final SubjectsRepository _repository;
 
   // State
   List<Subject> _subjects = [];
@@ -43,7 +43,7 @@ class SubjectPickerViewModel extends ChangeNotifier {
 
   // Methods
   Future<Result<void>> _load() async {
-    final result = await _service.getSubjects();
+    final result = await _repository.getSubjects();
 
     switch (result) {
       case Ok(:final value):

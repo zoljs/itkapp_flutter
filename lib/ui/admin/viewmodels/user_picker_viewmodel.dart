@@ -1,21 +1,21 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/services/admin/users_service.dart';
+import 'package:itk_app/data/repositories/admin/admin_users_repository.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class UserPickerViewModel extends ChangeNotifier {
-  UserPickerViewModel({required AdminUsersService service})
-      : _service = service {
+  UserPickerViewModel({required AdminUsersRepository repository})
+      : _repository = repository {
     load = Command0<void>(_load)..execute();
   }
 
   factory UserPickerViewModel.create() =>
-      UserPickerViewModel(service: AdminUsersService.instance);
+      UserPickerViewModel(repository: AdminUsersRepository.instance);
 
-  final AdminUsersService _service;
+  final AdminUsersRepository _repository;
 
   // State
   List<UserSummary> _users = [];
@@ -38,7 +38,7 @@ class UserPickerViewModel extends ChangeNotifier {
 
   // Methods
   Future<Result<void>> _load() async {
-    final result = await _service.getUsers();
+    final result = await _repository.getUsers();
 
     switch (result) {
       case Ok(:final value):

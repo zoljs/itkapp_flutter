@@ -1,25 +1,24 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
-import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/utils/result.dart';
 
-class CalendarService {
-  CalendarService.internal();
-  static final CalendarService instance = CalendarService.internal();
-  final Dio _dio = ApiClient.instance.dio;
+class CalendarRepository {
+  CalendarRepository({
+    required ApiClient apiClient,
+  }) : _dio = apiClient.dio;
+
+  static final instance = CalendarRepository(apiClient: ApiClient.instance);
+  final Dio _dio;
 
   List<CalendarEvent>? _cached;
 
   Future<Result<List<CalendarEvent>>> getCalendar({
     bool forceReload = false,
   }) async {
-    final username = AuthRepository.instance.cachedUser?.login;
-    if (username == null) return const Ok([]);
-
     final cached = _cached;
     if (cached != null && !forceReload) return Ok(cached);
 
@@ -53,7 +52,7 @@ class CalendarService {
       _cached = events;
       return Ok(events);
     } catch (e) {
-      debugPrint('[CalendarService] parse error: $e');
+      debugPrint('[CalendarRepository] parse error: $e');
       return const Err('Nem sikerült feldolgozni a naptárat.');
     }
   }

@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/midterms_service.dart';
+import 'package:itk_app/data/repositories/midterms_repository.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AddMidtermViewModel extends ChangeNotifier {
-  AddMidtermViewModel({required MidtermsService service}) : _service = service {
+  AddMidtermViewModel({required MidtermsRepository repository})
+      : _repository = repository {
     save = Command0<void>(_save);
   }
 
   factory AddMidtermViewModel.create() =>
-      AddMidtermViewModel(service: MidtermsService.instance);
+      AddMidtermViewModel(repository: MidtermsRepository.instance);
 
   // State
-  final MidtermsService _service;
+  final MidtermsRepository _repository;
   late final Command0<void> save;
 
   Subject? _subject;
@@ -63,7 +64,7 @@ class AddMidtermViewModel extends ChangeNotifier {
     }
 
     final location = _location.trim();
-    final result = await _service.addMidterm(
+    final result = await _repository.addMidterm(
       subjectId: subject.id,
       startsAt: startsAt,
       location: location.isEmpty ? null : location,

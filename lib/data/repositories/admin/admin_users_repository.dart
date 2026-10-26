@@ -4,10 +4,13 @@ import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/utils/result.dart';
 
-class AdminUsersService {
-  AdminUsersService._();
-  static final AdminUsersService instance = AdminUsersService._();
-  final Dio _dio = ApiClient.instance.dio;
+class AdminUsersRepository {
+  AdminUsersRepository({
+    required ApiClient apiClient,
+  }) : _dio = apiClient.dio;
+
+  static final instance = AdminUsersRepository(apiClient: ApiClient.instance);
+  final Dio _dio;
 
   Future<Result<List<UserSummary>>> getUsers() async {
     try {

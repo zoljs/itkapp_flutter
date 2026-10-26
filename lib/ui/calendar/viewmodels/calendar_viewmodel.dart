@@ -1,29 +1,29 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/services/calendar_service.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class CalendarViewModel extends ChangeNotifier {
-  final CalendarService _calendarService;
+  final CalendarRepository _repository;
   final eventController = EventController<CalendarEvent>();
 
   CalendarViewModel({
-    required CalendarService calendarService,
-  }) : _calendarService = calendarService {
+    required CalendarRepository repository,
+  }) : _repository = repository {
     load = Command1<void, bool>(_load)..execute(false);
   }
 
   factory CalendarViewModel.create() => CalendarViewModel(
-        calendarService: CalendarService.instance,
+        repository: CalendarRepository.instance,
       );
 
   late final Command1<void, bool> load;
 
   // Methods
   Future<Result<void>> _load(bool forceReload) async {
-    final result = await _calendarService.getCalendar(forceReload: forceReload);
+    final result = await _repository.getCalendar(forceReload: forceReload);
     final List<CalendarEvent> events;
 
     switch (result) {

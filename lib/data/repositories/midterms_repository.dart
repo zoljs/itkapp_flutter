@@ -4,11 +4,13 @@ import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/midterm_date.dart';
 import 'package:itk_app/utils/result.dart';
 
-class MidtermsService {
-  MidtermsService._();
+class MidtermsRepository {
+  MidtermsRepository({
+    required ApiClient apiClient,
+  }) : _dio = apiClient.dio;
 
-  static final MidtermsService instance = MidtermsService._();
-  final Dio _dio = ApiClient.instance.dio;
+  static final instance = MidtermsRepository(apiClient: ApiClient.instance);
+  final Dio _dio;
 
   Future<Result<List<MidtermDate>>> getMidterms() async {
     try {

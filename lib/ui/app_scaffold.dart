@@ -2,7 +2,7 @@ import 'package:itk_app/ui/calendar/calendar_screen.dart';
 import 'package:itk_app/ui/home/home_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/ui/wiki/wiki_screen.dart';
-import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/widgets/navbar.dart';
 
@@ -17,7 +17,7 @@ class _AppScaffoldState extends State<AppScaffold> {
   @override
   void initState() {
     super.initState();
-    SitesService.instance.getMySite();
+    SitesRepository.instance.getMySite();
   }
 
   int _selectedIndex = 0;

@@ -1,23 +1,23 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/services/admin/roles_service.dart';
+import 'package:itk_app/data/repositories/admin/admin_roles_repository.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AdminRolesViewModel extends ChangeNotifier {
-  AdminRolesViewModel({required AdminRolesService service})
-      : _service = service {
+  AdminRolesViewModel({required AdminRolesRepository repository})
+      : _repository = repository {
     load = Command0<void>(_load)..execute();
     assign = Command1<void, int>(_assign);
     revoke = Command1<void, int>(_revoke);
   }
 
   factory AdminRolesViewModel.create() =>
-      AdminRolesViewModel(service: AdminRolesService.instance);
+      AdminRolesViewModel(repository: AdminRolesRepository.instance);
 
-  final AdminRolesService _service;
+  final AdminRolesRepository _repository;
 
   // State
   List<UserSummary> _roleHolders = [];
@@ -33,7 +33,7 @@ class AdminRolesViewModel extends ChangeNotifier {
 
   // Methods
   Future<Result<void>> _load() async {
-    final result = await _service.getRoleHolders();
+    final result = await _repository.getRoleHolders();
 
     switch (result) {
       case Ok(:final value):
@@ -46,7 +46,7 @@ class AdminRolesViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _assign(int id) async {
-    final result = await _service.assignCohortRep(id);
+    final result = await _repository.assignCohortRep(id);
     if (result is Ok) await _load();
     return result;
   }
@@ -54,7 +54,7 @@ class AdminRolesViewModel extends ChangeNotifier {
   Future<Result<void>> _revoke(int id) async {
     _roleHolders = _roleHolders.where((u) => u.userId != id).toList();
     notifyListeners();
-    final result = await _service.revokeRole(id);
+    final result = await _repository.revokeRole(id);
     if (result is Err) await _load();
     return result;
   }

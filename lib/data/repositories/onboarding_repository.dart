@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class OnboardingService {
+class OnboardingRepository {
   static const _hasSeenOnboarding = 'hasSeenOnboarding';
 
-  OnboardingService.internal();
-  static final OnboardingService instance = OnboardingService.internal();
+  OnboardingRepository();
+  static final OnboardingRepository instance = OnboardingRepository();
 
   final ValueNotifier<bool> hasSeenOnboarding = ValueNotifier(false);
 

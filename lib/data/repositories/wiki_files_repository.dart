@@ -4,10 +4,13 @@ import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/utils/result.dart';
 
-class WikiFilesService {
-  WikiFilesService._();
-  static final WikiFilesService instance = WikiFilesService._();
-  final Dio _dio = ApiClient.instance.dio;
+class WikiFilesRepository {
+  WikiFilesRepository({
+    required ApiClient apiClient,
+  }) : _dio = apiClient.dio;
+
+  static final instance = WikiFilesRepository(apiClient: ApiClient.instance);
+  final Dio _dio;
 
   Future<Result<List<WikiFile>>> listDir(String dir) async {
     try {

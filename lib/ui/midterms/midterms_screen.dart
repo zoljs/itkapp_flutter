@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:itk_app/data/services/theme_service.dart';
+import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/midterm_date.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
@@ -262,7 +262,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable: ThemeService.instance.actionButtonAsFab,
+      valueListenable: ThemeRepository.instance.actionButtonAsFab,
       builder: (context, asFab, _) => ListenableBuilder(
           listenable: Listenable.merge([_viewModel, _viewModel.load]),
           builder: (context, _) {

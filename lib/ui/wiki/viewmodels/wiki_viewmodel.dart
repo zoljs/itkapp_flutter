@@ -1,23 +1,23 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class WikiViewModel extends ChangeNotifier {
   WikiViewModel({
-    required SitesService service,
+    required SitesRepository service,
   })  : _service = service,
         _sites = service.cachedSites {
     load = Command1<void, bool>(_load)..execute(false);
   }
 
   factory WikiViewModel.create() =>
-      WikiViewModel(service: SitesService.instance);
+      WikiViewModel(service: SitesRepository.instance);
 
-  final SitesService _service;
+  final SitesRepository _service;
 
   // State
   List<UserSite> _sites;

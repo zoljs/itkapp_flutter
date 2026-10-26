@@ -1,8 +1,8 @@
-import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/result.dart';
 
-class FakeSitesService implements SitesService {
+class FakeSitesService implements SitesRepository {
   Result<List<UserSite>> sitesResult = const Ok([]);
   Result<UserSite?> mySiteResult = const Ok(null);
 

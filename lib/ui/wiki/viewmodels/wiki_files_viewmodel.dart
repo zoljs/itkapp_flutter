@@ -1,26 +1,26 @@
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/services/wiki_files_service.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class WikiFilesViewModel extends ChangeNotifier {
   WikiFilesViewModel({
-    required WikiFilesService service,
+    required WikiFilesRepository repository,
     required String dir,
-  })  : _service = service,
+  })  : _repository = repository,
         _dir = dir {
     load = Command0<void>(_load)..execute();
   }
 
   factory WikiFilesViewModel.forDir(String dir) => WikiFilesViewModel(
-        service: WikiFilesService.instance,
+        repository: WikiFilesRepository.instance,
         dir: dir,
       );
 
-  final WikiFilesService _service;
+  final WikiFilesRepository _repository;
   final String _dir;
 
   // State
@@ -34,7 +34,7 @@ class WikiFilesViewModel extends ChangeNotifier {
 
   // Methods
   Future<Result<void>> _load() async {
-    final result = await _service.listDir(_dir);
+    final result = await _repository.listDir(_dir);
 
     switch (result) {
       case Ok(:final value):

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:itk_app/data/services/onboarding_service.dart';
-import 'package:itk_app/data/services/theme_service.dart';
+import 'package:itk_app/data/repositories/onboarding_repository.dart';
+import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
@@ -51,7 +51,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool get _isLastPage => _page == 3;
 
   Future<void> _finish() async {
-    await OnboardingService.instance.markSeenOnboarding();
+    await OnboardingRepository.instance.markSeenOnboarding();
     if (!mounted) return;
 
     Navigator.of(context).pushReplacement(
@@ -186,7 +186,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: AppSpacing.lg),
           ValueListenableBuilder<bool>(
-            valueListenable: ThemeService.instance.actionButtonAsFab,
+            valueListenable: ThemeRepository.instance.actionButtonAsFab,
             builder: (context, asFab, _) {
               return Container(
                   height: 350,
@@ -224,14 +224,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 icon: Icons.add_rounded,
                 iconColor: scheme.tertiary,
                 title: 'Akció gombok lent',
-                onTap: () => ThemeService.instance.toggleActionButtonAsFab(
-                    !ThemeService.instance.actionButtonAsFab.value),
+                onTap: () => ThemeRepository.instance.toggleActionButtonAsFab(
+                    !ThemeRepository.instance.actionButtonAsFab.value),
                 trailing: ValueListenableBuilder<bool>(
-                  valueListenable: ThemeService.instance.actionButtonAsFab,
+                  valueListenable: ThemeRepository.instance.actionButtonAsFab,
                   builder: (context, asFab, _) => Switch.adaptive(
                     activeTrackColor: itkPrimary,
                     value: asFab,
-                    onChanged: ThemeService.instance.toggleActionButtonAsFab,
+                    onChanged: ThemeRepository.instance.toggleActionButtonAsFab,
                   ),
                 ),
               ),

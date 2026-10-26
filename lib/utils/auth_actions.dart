@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
-import 'package:itk_app/data/services/calendar_service.dart';
-import 'package:itk_app/data/services/subjects_service.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
+import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/ui/login/login_screen.dart';
-import 'package:itk_app/data/services/sites_service.dart';
+import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 
 Future<void> performLogout(BuildContext context) async {
   await AuthRepository.instance.logout();
-  SubjectsService.instance.clearCache();
-  SitesService.instance.clearCache();
-  CalendarService.instance.clearCache();
+  SubjectsRepository.instance.clearCache();
+  SitesRepository.instance.clearCache();
+  CalendarRepository.instance.clearCache();
 
   if (!context.mounted) return;
 
@@ -26,8 +26,8 @@ Future<void> handleSessionExpired() async {
   if (navigator == null) return;
 
   await AuthRepository.instance.logout();
-  SitesService.instance.clearCache();
-  CalendarService.instance.clearCache();
+  SitesRepository.instance.clearCache();
+  CalendarRepository.instance.clearCache();
 
   if (!navigator.mounted) return;
 
@@ -40,7 +40,7 @@ Future<void> handleSessionExpired() async {
 }
 
 void clearAllCaches() {
-  SubjectsService.instance.clearCache();
-  SitesService.instance.clearCache();
-  CalendarService.instance.clearCache();
+  SubjectsRepository.instance.clearCache();
+  SitesRepository.instance.clearCache();
+  CalendarRepository.instance.clearCache();
 }

@@ -2,27 +2,27 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
-import 'package:itk_app/data/services/midterms_service.dart';
+import 'package:itk_app/data/repositories/midterms_repository.dart';
 import 'package:itk_app/domain/models/midterm_date.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class MidtermsViewModel extends ChangeNotifier {
   MidtermsViewModel({
-    required MidtermsService midtermService,
+    required MidtermsRepository midtermRepository,
     required AuthRepository authRepository,
   })  : _authRepository = authRepository,
-        _midtermService = midtermService {
+        _midtermRepository = midtermRepository {
     load = Command0<void>(_load)..execute();
     delete = Command1<void, int>(_delete);
   }
 
   factory MidtermsViewModel.create() => MidtermsViewModel(
-        midtermService: MidtermsService.instance,
+        midtermRepository: MidtermsRepository.instance,
         authRepository: AuthRepository.instance,
       );
 
-  final MidtermsService _midtermService;
+  final MidtermsRepository _midtermRepository;
   final AuthRepository _authRepository;
   late final Command0<void> load;
   late final Command1<void, int> delete;
@@ -57,7 +57,7 @@ class MidtermsViewModel extends ChangeNotifier {
   bool get initialLoading => load.running && _midterms.isEmpty;
 
   Future<Result<void>> _load() async {
-    final result = await _midtermService.getMidterms();
+    final result = await _midtermRepository.getMidterms();
 
     switch (result) {
       case Ok(:final value):
@@ -72,7 +72,7 @@ class MidtermsViewModel extends ChangeNotifier {
   Future<Result<void>> _delete(int id) async {
     _midterms = _midterms.where((m) => m.id != id).toList();
     notifyListeners();
-    final result = await _midtermService.deleteMidterm(midtermId: id);
+    final result = await _midtermRepository.deleteMidterm(midtermId: id);
     if (result is Err) await _load();
     return result;
   }

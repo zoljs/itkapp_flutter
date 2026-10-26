@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/admin/roles_service.dart';
-import 'package:itk_app/data/services/theme_service.dart';
+import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/ui/admin/user_picker_screen.dart';
 import 'package:itk_app/ui/admin/viewmodels/admin_roles_viewmodel.dart';
@@ -20,8 +19,7 @@ class AdminRolesScreen extends StatefulWidget {
 }
 
 class _AdminRolesScreenState extends State<AdminRolesScreen> {
-  late final _viewModel =
-      AdminRolesViewModel(service: AdminRolesService.instance);
+  late final _viewModel = AdminRolesViewModel.create();
 
   Future<void> _openUserPicker() async {
     UserSummary? picked;
@@ -130,7 +128,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
-      valueListenable: ThemeService.instance.actionButtonAsFab,
+      valueListenable: ThemeRepository.instance.actionButtonAsFab,
       builder: (context, asFab, _) => Scaffold(
         appBar: buildBrandAppBar(
           context: context,
