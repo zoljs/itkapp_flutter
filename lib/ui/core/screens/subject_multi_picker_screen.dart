@@ -98,9 +98,22 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  subject.name,
-                  style: TextStyle(fontSize: 15, color: scheme.onSurface),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      subject.name,
+                      style: TextStyle(fontSize: 15, color: scheme.onSurface),
+                    ),
+                    Text(
+                      subject.code,
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: scheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               if (isIOS)

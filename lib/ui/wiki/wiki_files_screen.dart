@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:go_router/go_router.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
+import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WikiFilesScreen extends StatefulWidget {
@@ -27,20 +27,13 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
 
   void _openItem(BuildContext context, WikiFile item) {
     if (item.isDir) {
-      // read repo before materialpageroute cuz it might throw
-      final repository = context.read<WikiFilesRepository>();
+      final user = GoRouterState.of(context).pathParameters['user'];
+      final dir = widget.viewModel.childPath(item.name);
+      final uri =
+          Uri(path: Routes.wikiFilesFor(user!), queryParameters: {'dir': dir})
+              .toString();
 
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => WikiFilesScreen(
-            viewModel: WikiFilesViewModel(
-                repository: repository,
-                siteUrl: widget.viewModel.siteUrl,
-                dir: widget.viewModel.childPath(item.name)),
-          ),
-        ),
-      );
+      context.push(uri);
     } else {
       _openFile(context, item.name);
     }

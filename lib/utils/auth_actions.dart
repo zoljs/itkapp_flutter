@@ -25,20 +25,12 @@ Future<void> performLogout(BuildContext context) async {
 Future<void> handleSessionExpired() async {
   final navigator = navigatorKey.currentState;
   if (navigator == null) return;
-
   final context = navigator.context;
+
+  navigator.context.showMessage('A munkameneted lejárt, jelentkezz be újra.');
 
   context.read<SubjectsRepository>().clearCache();
   context.read<SitesRepository>().clearCache();
   context.read<CalendarRepository>().clearCache();
   await context.read<AuthRepository>().logout();
-
-  if (!navigator.mounted) return;
-
-  navigator.pushAndRemoveUntil(
-    MaterialPageRoute(builder: (_) => const LoginScreen()),
-    (_) => false,
-  );
-
-  navigator.context.showMessage('A munkameneted lejárt, jelentkezz be újra.');
 }

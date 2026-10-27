@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
-import 'package:itk_app/data/repositories/wiki_files_repository.dart';
-import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
-import 'package:itk_app/ui/wiki/wiki_files_screen.dart';
+import 'package:itk_app/routing/routes.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,7 +18,6 @@ import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
 import 'package:itk_app/ui/core/widgets/my_site_card.dart';
 
-import 'package:itk_app/ui/wiki/my_site_screen.dart';
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 
@@ -35,9 +33,7 @@ class _WikiScreenState extends State<WikiScreen> {
   late final WikiViewModel _viewModel;
 
   Future<void> _openMySite() async {
-    await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => const MySiteScreen()));
-
+    await context.push(Routes.wikiEdit);
     _viewModel.load.execute(true);
   }
 
@@ -145,20 +141,9 @@ class _WikiScreenState extends State<WikiScreen> {
   }
 
   void _onSiteTap(UserSite site) {
-    if (site.isPhpEnabled) {
-      final repository = context.read<WikiFilesRepository>();
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (_) => WikiFilesScreen(
-            viewModel: WikiFilesViewModel(
-              repository: repository,
-              dir: '',
-              siteUrl: site.url,
-            ),
-          ),
-        ),
-      );
+    final login = site.login;
+    if (site.isPhpEnabled && login != null) {
+      context.push(Routes.wikiFilesFor(login));
     } else {
       _openSite(site.url);
     }
