@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
@@ -57,7 +59,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   void _next() {
     if (_isLastPage) {
-      _finish();
+      unawaited(_finish());
     } else {
       _controller.nextPage(
         duration: const Duration(milliseconds: 300),
@@ -217,9 +219,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 icon: Icons.add_rounded,
                 iconColor: scheme.tertiary,
                 title: 'Akció gombok lent',
-                onTap: () {
-                  themeRepository.toggleActionButtonAsFab(!themeRepository.actionButtonAsFab.value);
-                },
+                onTap: () => themeRepository.toggleActionButtonAsFab(!themeRepository.actionButtonAsFab.value),
                 trailing: ValueListenableBuilder<bool>(
                   valueListenable: themeRepository.actionButtonAsFab,
                   builder: (context, asFab, _) => Switch.adaptive(

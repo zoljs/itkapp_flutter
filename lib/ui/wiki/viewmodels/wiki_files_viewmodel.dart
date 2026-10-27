@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
@@ -15,7 +16,8 @@ class WikiFilesViewModel extends ChangeNotifier {
   })  : _repository = repository,
         _dir = dir,
         _user = user {
-    load = Command0<void>(_load)..execute();
+    load = Command0<void>(_load);
+    unawaited(load.execute());
   }
 
   final WikiFilesRepository _repository;

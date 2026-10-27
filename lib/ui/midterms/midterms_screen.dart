@@ -71,7 +71,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
       context: context,
       builder: (context, controller) => AddMidtermScreen(scrollController: controller),
     );
-    _viewModel.load.execute(true);
+    await _viewModel.load.execute(true);
   }
 
   Widget _buildHeader(BuildContext context, {required bool asFab}) {

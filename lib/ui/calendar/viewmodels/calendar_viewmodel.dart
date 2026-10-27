@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
@@ -12,7 +14,8 @@ class CalendarViewModel extends ChangeNotifier {
   CalendarViewModel({
     required CalendarRepository repository,
   }) : _repository = repository {
-    load = Command1<void, bool>(_load)..execute(false);
+    load = Command1<void, bool>(_load);
+    unawaited(load.execute(false));
   }
 
   late final Command1<void, bool> load;

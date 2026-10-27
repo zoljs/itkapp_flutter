@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
@@ -11,7 +12,8 @@ class WikiViewModel extends ChangeNotifier {
     required SitesRepository repository,
   })  : _repository = repository,
         _sites = repository.cached {
-    load = Command1<void, bool>(_load)..execute(false);
+    load = Command1<void, bool>(_load);
+    unawaited(load.execute(false));
   }
 
   final SitesRepository _repository;

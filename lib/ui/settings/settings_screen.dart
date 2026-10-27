@@ -60,7 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       confirmLabel: 'Kijelentkezés',
       isDestructive: true,
     );
-    if (confirmed == true && mounted) performLogout(context);
+    if (confirmed == true && mounted) await performLogout(context);
   }
 
   @override
@@ -164,9 +164,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         icon: Icons.shield_rounded,
                         iconColor: Colors.lightBlue,
                         title: 'Jogosultságok',
-                        onTap: () {
-                          context.push(Routes.adminRoles);
-                        },
+                        onTap: () => context.push(Routes.adminRoles),
                       ),
                     ],
                   ),

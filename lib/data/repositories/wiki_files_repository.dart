@@ -9,7 +9,7 @@ class WikiFilesRepository {
 
   final UsersClient _usersClient;
 
-  Future<Result<List<WikiFile>>> listDir(String dir, String user) async => await _usersClient.getJson('/~$user/files_wiki.php', parse: parseFiles, queryParameters: {'dir': dir});
+  Future<Result<List<WikiFile>>> listDir(String dir, String user) async => _usersClient.getJson('/~$user/files_wiki.php', parse: parseFiles, queryParameters: {'dir': dir});
 
   static List<WikiFile> parseFiles(Object? data) {
     if (data is! List) {

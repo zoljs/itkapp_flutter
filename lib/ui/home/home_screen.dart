@@ -102,9 +102,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.event_note_rounded,
                         iconColor: scheme.error,
                         title: 'ZH időpontok',
-                        onTap: () {
-                          context.push(Routes.midterms);
-                        },
+                        onTap: () => context.push(Routes.midterms),
                       ),
                     ],
                   ),
@@ -116,9 +114,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.video_chat_outlined,
                         iconColor: itkPrimary,
                         title: 'Online Videók',
-                        onTap: () {
-                          context.push(Routes.videos);
-                        },
+                        onTap: () => context.push(Routes.videos),
                       )
                     ],
                   ),

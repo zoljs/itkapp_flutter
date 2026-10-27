@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
@@ -34,7 +36,7 @@ class _WikiScreenState extends State<WikiScreen> {
 
   Future<void> _openMySite() async {
     await context.push(Routes.wikiEdit);
-    _viewModel.load.execute(true);
+    await _viewModel.load.execute(true);
   }
 
   @override
@@ -131,9 +133,9 @@ class _WikiScreenState extends State<WikiScreen> {
   void _onSiteTap(UserSite site) {
     final login = site.login;
     if (site.isPhpEnabled && login != null) {
-      context.push(Routes.wikiFilesFor(login));
+      unawaited(context.push(Routes.wikiFilesFor(login)));
     } else {
-      openLink(context, site.url, mode: LaunchMode.inAppWebView);
+      unawaited(openLink(context, site.url, mode: LaunchMode.inAppWebView));
     }
   }
 

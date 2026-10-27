@@ -23,6 +23,6 @@ class LoginViewModel extends ChangeNotifier {
   }
 
   Future<Result<void>> _login(Credentials credentials) async {
-    return await _authRepository.login(credentials.username, credentials.password);
+    return _authRepository.login(credentials.username, credentials.password);
   }
 }

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
@@ -13,7 +14,8 @@ class MySiteViewModel extends ChangeNotifier {
     required AuthRepository authRepository,
   })  : _sitesRepository = sitesRepository,
         _authRepository = authRepository {
-    load = Command0<void>(_load)..execute();
+    load = Command0<void>(_load);
+    unawaited(load.execute());
     save = Command0<void>(_save);
     delete = Command0<void>(_delete);
   }

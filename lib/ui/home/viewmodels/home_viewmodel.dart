@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
@@ -9,7 +11,8 @@ class HomeViewModel extends ChangeNotifier {
   HomeViewModel({required AuthRepository authRepository, required CalendarRepository calendarRepository})
       : _authRepository = authRepository,
         _calendarRepository = calendarRepository {
-    load = Command1<void, bool>(_load)..execute(false);
+    load = Command1<void, bool>(_load);
+    unawaited(load.execute(false));
   }
 
   final AuthRepository _authRepository;

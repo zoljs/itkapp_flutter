@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
@@ -14,7 +15,8 @@ class MidtermsViewModel extends ChangeNotifier {
     repository,
   })  : _authRepository = authRepository,
         _midtermRepository = midtermRepository {
-    load = Command1<void, bool>(_load)..execute(false);
+    load = Command1<void, bool>(_load);
+    unawaited(load.execute(false));
     delete = Command1<void, int>(_delete);
   }
 

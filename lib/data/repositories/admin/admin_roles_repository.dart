@@ -13,7 +13,7 @@ class AdminRolesRepository {
   final Dio _dio;
   final ApiClient _apiClient;
 
-  Future<Result<List<UserSummary>>> getRoleHolders() async => await _apiClient.getJson('/api/admin/roles', parse: UserSummary.parseUsers);
+  Future<Result<List<UserSummary>>> getRoleHolders() async => _apiClient.getJson('/api/admin/roles', parse: UserSummary.parseUsers);
 
   Future<Result<void>> assignCohortRep(int userId) async {
     final result = await sendRequest(

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
@@ -8,7 +9,8 @@ import 'package:itk_app/utils/result.dart';
 
 class AdminRolesViewModel extends ChangeNotifier {
   AdminRolesViewModel({required AdminRolesRepository repository}) : _repository = repository {
-    load = Command0<void>(_load)..execute();
+    load = Command0<void>(_load);
+    unawaited(load.execute());
     assign = Command1<void, int>(_assign);
     revoke = Command1<void, int>(_revoke);
   }

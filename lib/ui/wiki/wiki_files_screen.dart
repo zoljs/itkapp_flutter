@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
@@ -30,15 +32,13 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
       final dir = widget.viewModel.childPath(item.name);
       final uri = Uri(path: Routes.wikiFilesFor(widget.viewModel.user), queryParameters: {'dir': dir}).toString();
 
-      context.push(uri);
+      unawaited(context.push(uri));
     } else {
-      _openFile(context, item.name);
+      unawaited(_openFile(context, item.name));
     }
   }
 
-  Future<void> _openFile(BuildContext context, String name) async {
-    openLink(context, widget.viewModel.fileUrl(name), mode: LaunchMode.inAppWebView);
-  }
+  Future<void> _openFile(BuildContext context, String name) async => openLink(context, widget.viewModel.fileUrl(name), mode: LaunchMode.inAppWebView);
 
   @override
   Widget build(BuildContext context) {

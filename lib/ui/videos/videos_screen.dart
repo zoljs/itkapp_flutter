@@ -1,3 +1,6 @@
+// ignore_for_file: discarded_futures
+// TODO(RICSI): fix after migrating to a ViewModel
+
 import 'dart:async';
 
 import 'package:dio/dio.dart';

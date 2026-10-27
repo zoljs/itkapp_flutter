@@ -41,7 +41,12 @@ Future<void> main() async {
 
   final appRouter = router(authRepository, onboardingRepository);
 
-  initializeDateFormatting().then(
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
+
+  await initializeDateFormatting().then(
     (_) => runApp(
       MultiProvider(
         providers: [
@@ -124,11 +129,6 @@ class ITKApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-
     final baseDarkScheme = ColorScheme.fromSeed(
       seedColor: _seedColor,
       brightness: Brightness.dark,

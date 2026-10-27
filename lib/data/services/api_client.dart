@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -11,7 +13,7 @@ class ApiClient {
     dio.interceptors.add(InterceptorsWrapper(
       onError: (error, handler) {
         if (isSessionExpired(error.requestOptions.uri, error.response?.statusCode)) {
-          _handleUnauthorized();
+          unawaited(_handleUnauthorized());
         }
         handler.next(error);
       },
@@ -21,7 +23,7 @@ class ApiClient {
     dio.interceptors.add(InterceptorsWrapper(
       onResponse: (response, handler) {
         if (isSessionExpired(response.requestOptions.uri, response.statusCode)) {
-          _handleUnauthorized();
+          unawaited(_handleUnauthorized());
           return handler.reject(DioException.badResponse(
             statusCode: 401,
             requestOptions: response.requestOptions,
