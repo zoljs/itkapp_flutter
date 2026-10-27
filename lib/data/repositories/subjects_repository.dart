@@ -17,8 +17,7 @@ class SubjectsRepository {
     final cached = _cached;
     if (cached != null && !forceReload) return Ok(cached);
 
-    final result =
-        await _apiClient.getJson('/api/subjects', parse: parseSubjects);
+    final result = await _apiClient.getJson('/api/subjects', parse: parseSubjects);
     if (result case Ok(:final value)) _cached = value;
     return result;
   }

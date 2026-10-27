@@ -33,8 +33,7 @@ class CalendarViewModel extends ChangeNotifier {
         final start = e.start.toLocal();
         final end = e.end.toLocal();
         final isInstant = end.isAtSameMomentAs(start);
-        final displayEnd =
-            isInstant ? start.add(const Duration(minutes: 15)) : end;
+        final displayEnd = isInstant ? start.add(const Duration(minutes: 15)) : end;
 
         return CalendarEventData<CalendarEvent>(
           date: start,

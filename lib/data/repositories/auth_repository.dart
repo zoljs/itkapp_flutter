@@ -10,8 +10,7 @@ import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AuthRepository extends ChangeNotifier {
-  AuthRepository(
-      {required ApiClient apiClient, required SharedPreferencesService prefs})
+  AuthRepository({required ApiClient apiClient, required SharedPreferencesService prefs})
       : _apiClient = apiClient,
         _dio = apiClient.dio,
         _prefs = prefs {

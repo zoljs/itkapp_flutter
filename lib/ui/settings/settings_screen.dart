@@ -50,15 +50,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.dispose();
   }
 
-  Future<void> _reportBug() => openLink(context,
-      'https://github.com/zoljs/itkapp_flutter/issues/new?title=${Uri.encodeComponent('[App] ')}&labels=${Uri.encodeComponent('bug,mobile-app')}');
+  Future<void> _reportBug() => openLink(context, 'https://github.com/zoljs/itkapp_flutter/issues/new?title=${Uri.encodeComponent('[App] ')}&labels=${Uri.encodeComponent('bug,mobile-app')}');
 
   Future<void> _confirmLogout() async {
     final confirmed = await showConfirmDialog(
       context,
       title: 'Kijelentkezel?',
-      message:
-          'A naptárad és a beállításaid újra bejelentkezés után érhetők el.',
+      message: 'A naptárad és a beállításaid újra bejelentkezés után érhetők el.',
       confirmLabel: 'Kijelentkezés',
       isDestructive: true,
     );
@@ -75,10 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ShrinkingSliverAppBar(
             flexibleSpaceBarTitle: Text(
               'Beállítások',
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.merge(topBarTitleStyle),
+              style: Theme.of(context).textTheme.headlineSmall?.merge(topBarTitleStyle),
             ),
             centeredWidget: CircleAvatar(
               backgroundColor: scheme.surface,
@@ -103,8 +98,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             sliver: SliverList.list(
               children: [
                 // Account
-                if (_viewModel.currentUser != null)
-                  _buildAccountGroup(_viewModel.currentUser!),
+                if (_viewModel.currentUser != null) _buildAccountGroup(_viewModel.currentUser!),
 
                 // Calendar
                 SettingsGroup(
@@ -132,34 +126,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     builder: (context, _) {
                       return SettingsGroup(
                         header: 'Megjelenés',
-                        footer:
-                            'Az új elem hozzáadása gomb a képernyő alján jelenik meg, egy kézzel könnyebben elérhető.',
+                        footer: 'Az új elem hozzáadása gomb a képernyő alján jelenik meg, egy kézzel könnyebben elérhető.',
                         children: [
                           SettingsTile(
                             icon: Icons.add_rounded,
                             iconColor: scheme.tertiary,
                             title: 'Akció gombok lent',
-                            onTap: () => _viewModel.toggleActionButtonAsFab(
-                                !_viewModel.isActionButtonAsFab),
+                            onTap: () => _viewModel.toggleActionButtonAsFab(!_viewModel.isActionButtonAsFab),
                             trailing: Switch.adaptive(
                               activeTrackColor: itkPrimary,
                               value: _viewModel.isActionButtonAsFab,
-                              onChanged: (value) =>
-                                  _viewModel.toggleActionButtonAsFab(
-                                      !_viewModel.isActionButtonAsFab),
+                              onChanged: (value) => _viewModel.toggleActionButtonAsFab(!_viewModel.isActionButtonAsFab),
                             ),
                           ),
                           SettingsTile(
                             icon: Icons.dark_mode_rounded,
                             iconColor: scheme.tertiary,
                             title: 'OLED mód',
-                            onTap: () => _viewModel
-                                .toggleOledMode(!_viewModel.isOledMode),
+                            onTap: () => _viewModel.toggleOledMode(!_viewModel.isOledMode),
                             trailing: Switch.adaptive(
                               activeTrackColor: itkPrimary,
                               value: _viewModel.isOledMode,
-                              onChanged: (value) => _viewModel
-                                  .toggleOledMode(!_viewModel.isOledMode),
+                              onChanged: (value) => _viewModel.toggleOledMode(!_viewModel.isOledMode),
                             ),
                           ),
                         ],
@@ -194,8 +182,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         iconColor: scheme.outline,
                         title: 'Verzió',
                         value: switch (snapshot.connectionState) {
-                          ConnectionState.done when snapshot.hasData =>
-                            '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
+                          ConnectionState.done when snapshot.hasData => '${snapshot.data!.version} (${snapshot.data!.buildNumber})',
                           ConnectionState.done => 'Ismeretlen',
                           _ => '…',
                         },
@@ -257,8 +244,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onTap: () async {
                         await _viewModel.clearCookies();
                         if (!context.mounted) return;
-                        context.showMessage(
-                            'Cookie törölve, most frissíts valamit.');
+                        context.showMessage('Cookie törölve, most frissíts valamit.');
                       },
                     ),
                     SettingsTile(
@@ -301,8 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget _buildAccountGroup(LdapUser currentUser) {
     return SettingsGroup(
       header: 'Fiók',
-      footer:
-          'A felhasználónév a bejelentkezett fiókodhoz tartozik, nem módosítható.',
+      footer: 'A felhasználónév a bejelentkezett fiókodhoz tartozik, nem módosítható.',
       children: [
         SettingsTile(
           title: 'Név',

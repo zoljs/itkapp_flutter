@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:itk_app/data/services/api_error.dart';
+import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/utils/result.dart';
 
 class UsersClient {
@@ -18,15 +18,6 @@ class UsersClient {
     required T Function(Object?) parse,
     Map<String, dynamic>? queryParameters,
   }) async {
-    try {
-      final response = await dio.get(path, queryParameters: queryParameters);
-      final value = parse(response.data);
-
-      return Ok(value);
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    } on FormatException catch (e) {
-      return Err(e.message);
-    }
+    return sendRequest(parse: parse, send: () => dio.get(path, queryParameters: queryParameters));
   }
 }

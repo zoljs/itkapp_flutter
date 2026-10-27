@@ -67,8 +67,7 @@ GoRouter router(
           },
         ),
         StatefulShellRoute.indexedStack(
-          builder: (context, state, navigationShell) =>
-              AppScaffold(navigationShell: navigationShell),
+          builder: (context, state, navigationShell) => AppScaffold(navigationShell: navigationShell),
           branches: [
             // ----------------- [HOME] -----------------
             StatefulShellBranch(routes: [
@@ -92,15 +91,13 @@ GoRouter router(
                 routes: [
                   GoRoute(
                     path: 'edit',
-                    pageBuilder: (context, state) =>
-                        _page(state, const MySiteScreen()),
+                    pageBuilder: (context, state) => _page(state, const MySiteScreen()),
                   ),
                   GoRoute(
                     path: 'files/:user',
                     pageBuilder: (context, state) {
                       final user = state.pathParameters['user']!; // /naszy
-                      final dir = state.uri.queryParameters['dir'] ??
-                          ''; // ?key=value -> dir=semester1
+                      final dir = state.uri.queryParameters['dir'] ?? ''; // ?key=value -> dir=semester1
 
                       return _page(
                         state,
@@ -128,8 +125,7 @@ GoRouter router(
         ),
         GoRoute(
           path: Routes.adminRoles,
-          pageBuilder: (context, state) =>
-              _page(state, const AdminRolesScreen()),
+          pageBuilder: (context, state) => _page(state, const AdminRolesScreen()),
         ),
         GoRoute(
           path: Routes.midterms,
@@ -142,5 +138,4 @@ GoRouter router(
       ],
     );
 
-Page<void> _page(GoRouterState state, Widget child) =>
-    MaterialPage(child: child, key: state.pageKey);
+Page<void> _page(GoRouterState state, Widget child) => MaterialPage(child: child, key: state.pageKey);

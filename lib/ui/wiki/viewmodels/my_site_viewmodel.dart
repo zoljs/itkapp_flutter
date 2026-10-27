@@ -83,8 +83,7 @@ class MySiteViewModel extends ChangeNotifier {
       return const Err('Nincs bejelentkezett felhasználó.');
     }
 
-    final result =
-        await _sitesRepository.saveMySite(_tags, _isPublic, _isPhpEnabled);
+    final result = await _sitesRepository.saveMySite(_tags, _isPublic, _isPhpEnabled);
 
     return result;
   }

@@ -43,11 +43,7 @@ class CalendarRepository {
 
     // Parse data from response
     try {
-      final events = ICalendar.fromString(data)
-          .data
-          .where((item) => item['type'] == 'VEVENT')
-          .map(CalendarEvent.fromJson)
-          .toList();
+      final events = ICalendar.fromString(data).data.where((item) => item['type'] == 'VEVENT').map(CalendarEvent.fromJson).toList();
       _cached = events;
       return Ok(events);
     } catch (e) {

@@ -37,10 +37,7 @@ class WikiViewModel extends ChangeNotifier {
     final q = _query.trim().toLowerCase();
 
     return _sites.where((s) {
-      final matchesSearch = q.isEmpty ||
-          s.name.toLowerCase().contains(q) ||
-          s.tags.any((t) => t.toLowerCase().contains(q)) ||
-          s.url.toLowerCase().contains(q);
+      final matchesSearch = q.isEmpty || s.name.toLowerCase().contains(q) || s.tags.any((t) => t.toLowerCase().contains(q)) || s.url.toLowerCase().contains(q);
 
       return matchesSearch;
     }).toList();

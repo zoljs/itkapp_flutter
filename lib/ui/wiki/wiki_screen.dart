@@ -77,8 +77,7 @@ class _WikiScreenState extends State<WikiScreen> {
             runSpacing: AppSpacing.sm,
             children: site.tags.take(4).map((tag) {
               return Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.25),
                   borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -158,14 +157,10 @@ class _WikiScreenState extends State<WikiScreen> {
                     centerTitle: false,
                     title: Text(
                       'ITK Wiki 3 Beta',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineSmall
-                          ?.merge(topBarTitleStyle),
+                      style: Theme.of(context).textTheme.headlineSmall?.merge(topBarTitleStyle),
                     ),
                     preferredSizeChild: Padding(
-                      padding:
-                          const EdgeInsets.all(AppSpacing.screenHorizontal),
+                      padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
                       child: SizedBox(
                         height: AppSpacing.searchFieldHeight,
                         child: TextField(
@@ -193,8 +188,7 @@ class _WikiScreenState extends State<WikiScreen> {
                       ),
                     ),
                     centeredWidget: Padding(
-                      padding:
-                          const EdgeInsets.all(AppSpacing.screenHorizontal),
+                      padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
                       child: _viewModel.load.running
                           ? UserSiteCard(
                               height: 80,
@@ -211,8 +205,7 @@ class _WikiScreenState extends State<WikiScreen> {
                   ),
                   Builder(
                     builder: (context) {
-                      final displaySites = _viewModel.load.running &&
-                              _viewModel.sites.isEmpty
+                      final displaySites = _viewModel.load.running && _viewModel.sites.isEmpty
                           ? List.filled(
                               4,
                               UserSite(
@@ -227,28 +220,13 @@ class _WikiScreenState extends State<WikiScreen> {
                             )
                           : _viewModel.filteredSites;
 
-                      if (!_viewModel.load.running &&
-                          _viewModel.sites.isEmpty &&
-                          (_viewModel.load.errorMessage != null ||
-                              displaySites.isEmpty)) {
+                      if (!_viewModel.load.running && _viewModel.sites.isEmpty && (_viewModel.load.errorMessage != null || displaySites.isEmpty)) {
                         final query = _searchController.text.trim();
 
-                        final (icon, message) = switch ((
-                          _viewModel.load.errorMessage,
-                          query.isEmpty
-                        )) {
-                          (final String error, _) => (
-                              Icons.cloud_off_rounded,
-                              error
-                            ),
-                          (null, true) => (
-                              Icons.hourglass_empty,
-                              'Még nincs oldal.'
-                            ),
-                          (null, false) => (
-                              Icons.search_off_rounded,
-                              'Nincs találat erre: „$query”'
-                            ),
+                        final (icon, message) = switch ((_viewModel.load.errorMessage, query.isEmpty)) {
+                          (final String error, _) => (Icons.cloud_off_rounded, error),
+                          (null, true) => (Icons.hourglass_empty, 'Még nincs oldal.'),
+                          (null, false) => (Icons.search_off_rounded, 'Nincs találat erre: „$query”'),
                         };
 
                         return SliverFillRemaining(
@@ -258,35 +236,25 @@ class _WikiScreenState extends State<WikiScreen> {
                               AppSpacing.xxl,
                               AppSpacing.xxl,
                               AppSpacing.xxl,
-                              MediaQuery.paddingOf(context).bottom +
-                                  AppSpacing.lg,
+                              MediaQuery.paddingOf(context).bottom + AppSpacing.lg,
                             ),
                             child: StateMessage(
                               icon: icon,
                               message: message,
-                              onRetry: _viewModel.load.errorMessage != null
-                                  ? () => _viewModel.load.execute(true)
-                                  : null,
+                              onRetry: _viewModel.load.errorMessage != null ? () => _viewModel.load.execute(true) : null,
                             ),
                           ),
                         );
                       }
 
                       return SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(
-                            AppSpacing.screenHorizontal,
-                            0,
-                            AppSpacing.screenHorizontal,
-                            AppSpacing.bottomNavClearance),
+                        padding: const EdgeInsets.fromLTRB(AppSpacing.screenHorizontal, 0, AppSpacing.screenHorizontal, AppSpacing.bottomNavClearance),
                         sliver: Skeletonizer.sliver(
-                          enabled: _viewModel.load.running &&
-                              _viewModel.sites.isEmpty,
+                          enabled: _viewModel.load.running && _viewModel.sites.isEmpty,
                           child: SliverList.separated(
                             itemCount: displaySites.length,
-                            itemBuilder: (context, index) =>
-                                _buildSiteCard(displaySites[index], index),
-                            separatorBuilder: (context, index) =>
-                                const SizedBox(height: AppSpacing.lg),
+                            itemBuilder: (context, index) => _buildSiteCard(displaySites[index], index),
+                            separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.lg),
                           ),
                         ),
                       );

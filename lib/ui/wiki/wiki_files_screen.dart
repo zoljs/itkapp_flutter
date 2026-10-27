@@ -28,9 +28,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
   void _openItem(BuildContext context, WikiFile item) {
     if (item.isDir) {
       final dir = widget.viewModel.childPath(item.name);
-      final uri = Uri(
-          path: Routes.wikiFilesFor(widget.viewModel.user),
-          queryParameters: {'dir': dir}).toString();
+      final uri = Uri(path: Routes.wikiFilesFor(widget.viewModel.user), queryParameters: {'dir': dir}).toString();
 
       context.push(uri);
     } else {
@@ -39,8 +37,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
   }
 
   Future<void> _openFile(BuildContext context, String name) async {
-    openLink(context, widget.viewModel.fileUrl(name),
-        mode: LaunchMode.inAppWebView);
+    openLink(context, widget.viewModel.fileUrl(name), mode: LaunchMode.inAppWebView);
   }
 
   @override
@@ -86,13 +83,9 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
             itemBuilder: (context, index) {
               final file = items[index];
               return SettingsTile(
-                icon: file.isDir
-                    ? Icons.folder_outlined
-                    : Icons.insert_drive_file_outlined,
+                icon: file.isDir ? Icons.folder_outlined : Icons.insert_drive_file_outlined,
                 title: file.name,
-                trailing: Icon(file.isDir
-                    ? Icons.chevron_right_rounded
-                    : Icons.open_in_new_rounded),
+                trailing: Icon(file.isDir ? Icons.chevron_right_rounded : Icons.open_in_new_rounded),
                 onTap: () => _openItem(context, file),
               );
             },

@@ -9,8 +9,7 @@ class SubjectMultiPickerViewModel extends SubjectPickerViewModel {
   }) : _selectedSubjects = Set.of(initialSubjects);
 
   final Set<String> _selectedSubjects;
-  UnmodifiableSetView<String> get selectedSubjects =>
-      UnmodifiableSetView(_selectedSubjects);
+  UnmodifiableSetView<String> get selectedSubjects => UnmodifiableSetView(_selectedSubjects);
 
   void toggleSubject(String subject) {
     if (_selectedSubjects.contains(subject)) {

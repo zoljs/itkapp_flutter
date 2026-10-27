@@ -32,8 +32,7 @@ class SettingsViewModel extends ChangeNotifier {
 
   // Methods
   void toggleOledMode(bool value) => _themeRepository.toggleOledMode(value);
-  void toggleActionButtonAsFab(bool value) =>
-      _themeRepository.toggleActionButtonAsFab(value);
+  void toggleActionButtonAsFab(bool value) => _themeRepository.toggleActionButtonAsFab(value);
 
   Future<void> clearCookies() => _apiClient.clearCookies();
 

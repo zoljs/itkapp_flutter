@@ -32,9 +32,7 @@ class ShrinkingSliverAppBar extends StatelessWidget {
       centerTitle: centerTitle,
       title: title,
       expandedHeight: expandedHeight,
-      collapsedHeight: preferredSizeChild != null
-          ? AppSpacing.searchBarHeight
-          : kToolbarHeight,
+      collapsedHeight: preferredSizeChild != null ? AppSpacing.searchBarHeight : kToolbarHeight,
       floating: true,
       pinned: true,
       scrolledUnderElevation: 0,
@@ -42,13 +40,11 @@ class ShrinkingSliverAppBar extends StatelessWidget {
       actions: [
         ...?actions,
       ],
-      actionsPadding:
-          const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+      actionsPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
       bottom: preferredSizeChild == null
           ? null
           : PreferredSize(
-              preferredSize:
-                  const Size.fromHeight(AppSpacing.searchFieldHeight),
+              preferredSize: const Size.fromHeight(AppSpacing.searchFieldHeight),
               child: preferredSizeChild!,
             ),
       flexibleSpace: FlexibleSpaceBar(
@@ -61,12 +57,9 @@ class ShrinkingSliverAppBar extends StatelessWidget {
         background: LayoutBuilder(
           builder: (context, constraints) {
             // Standard searchbar height + half of card
-            final bottomHeight = preferredSizeChild == null
-                ? 130.0
-                : AppSpacing.searchBarHeight + AppSpacing.mySiteCardHeight / 2;
+            final bottomHeight = preferredSizeChild == null ? 130.0 : AppSpacing.searchBarHeight + AppSpacing.mySiteCardHeight / 2;
 
-            final separatorHeight = (constraints.maxHeight - bottomHeight)
-                .clamp(0.0, double.infinity);
+            final separatorHeight = (constraints.maxHeight - bottomHeight).clamp(0.0, double.infinity);
 
             return Align(
               alignment: Alignment.topCenter,

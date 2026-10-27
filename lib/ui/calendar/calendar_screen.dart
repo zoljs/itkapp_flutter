@@ -31,8 +31,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel =
-        CalendarViewModel(repository: context.read<CalendarRepository>());
+    _viewModel = CalendarViewModel(repository: context.read<CalendarRepository>());
   }
 
   @override
@@ -78,11 +77,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               // Day view title
               dayTitleBuilder: (date) {
                 return Container(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.screenHorizontal,
-                      1,
-                      AppSpacing.screenHorizontal,
-                      18),
+                  padding: const EdgeInsets.fromLTRB(AppSpacing.screenHorizontal, 1, AppSpacing.screenHorizontal, 18),
                   decoration: BoxDecoration(
                     color: scheme.primaryContainer,
                   ),
@@ -95,34 +90,26 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              toBeginningOfSentenceCase(
-                                      DateFormat('EEEE', 'hu').format(date)) +
-                                  (isToday ? ' · Ma' : ''),
+                              toBeginningOfSentenceCase(DateFormat('EEEE', 'hu').format(date)) + (isToday ? ' · Ma' : ''),
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: scheme.onPrimaryContainer
-                                    .withValues(alpha: 0.7),
+                                color: scheme.onPrimaryContainer.withValues(alpha: 0.7),
                                 letterSpacing: 0.5,
                               ),
                             ),
                             Text(
                               DateFormat('MMMM d.', 'hu').format(date),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.merge(topBarTitleStyle),
+                              style: Theme.of(context).textTheme.headlineSmall?.merge(topBarTitleStyle),
                             ),
                             // Error message
                             ListenableBuilder(
                               listenable: _viewModel.load,
-                              builder: (context, _) =>
-                                  switch (_viewModel.load.errorMessage) {
+                              builder: (context, _) => switch (_viewModel.load.errorMessage) {
                                 null => const SizedBox.shrink(),
                                 final message => Text(
                                     message,
-                                    style: TextStyle(
-                                        fontSize: 12, color: scheme.error),
+                                    style: TextStyle(fontSize: 12, color: scheme.error),
                                   ),
                               },
                             ),
@@ -136,15 +123,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         children: [
                           BrandIconButton(
                             icon: Icons.refresh_rounded,
-                            onPressed: () => _viewModel.load.running
-                                ? null
-                                : _viewModel.load.execute(true),
+                            onPressed: () => _viewModel.load.running ? null : _viewModel.load.execute(true),
                             semanticLabel: 'Frissítés',
                           ),
-                          BrandIconButton(
-                              icon: Icons.calendar_month,
-                              onPressed: () => _pickDate(date),
-                              semanticLabel: 'Dátum választása'),
+                          BrandIconButton(icon: Icons.calendar_month, onPressed: () => _pickDate(date), semanticLabel: 'Dátum választása'),
                         ],
                       ),
                     ],
@@ -171,14 +153,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 if (events.isEmpty) return const SizedBox.shrink();
                 final myEvent = events.first.event as CalendarEvent;
 
-                final effectiveHeight =
-                    boundary.height < 24 ? 24.0 : boundary.height;
+                final effectiveHeight = boundary.height < 24 ? 24.0 : boundary.height;
 
                 return Container(
                   width: boundary.width,
                   height: effectiveHeight,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: scheme.primaryContainer,
                     borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -197,14 +177,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      if (myEvent.location != null &&
-                          myEvent.location!.isNotEmpty)
+                      if (myEvent.location != null && myEvent.location!.isNotEmpty)
                         Text(
                           myEvent.location!,
                           style: TextStyle(
                             fontSize: 11,
-                            color: scheme.onPrimaryContainer
-                                .withValues(alpha: 0.7),
+                            color: scheme.onPrimaryContainer.withValues(alpha: 0.7),
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -224,15 +202,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
                       final myEvent = e.event as CalendarEvent;
                       return Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                         decoration: BoxDecoration(
                           color: scheme.secondaryContainer,
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.event_rounded,
-                                size: 14, color: scheme.onSecondaryContainer),
+                            Icon(Icons.event_rounded, size: 14, color: scheme.onSecondaryContainer),
                             const SizedBox(width: 6),
                             Expanded(
                               child: Text(
@@ -272,10 +248,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                     child: const Text(
                       'Ma',
                     ),
-                  )
-                      .animate(target: isToday ? 0 : 1)
-                      .fadeIn(duration: 250.ms)
-                      .slideY(
+                  ).animate(target: isToday ? 0 : 1).fadeIn(duration: 250.ms).slideY(
                         begin: .5,
                         end: 0,
                         duration: 250.ms,

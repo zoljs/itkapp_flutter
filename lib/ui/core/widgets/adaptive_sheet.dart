@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 
 Color sheetBackgroundColor(BuildContext context) {
   final theme = Theme.of(context);
-  return theme.bottomSheetTheme.modalBackgroundColor ??
-      theme.colorScheme.surfaceContainerLow;
+  return theme.bottomSheetTheme.modalBackgroundColor ?? theme.colorScheme.surfaceContainerLow;
 }
 
 void closeSheet(BuildContext context) {

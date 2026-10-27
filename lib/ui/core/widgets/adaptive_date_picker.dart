@@ -71,8 +71,7 @@ Future<TimeOfDay?> showAdaptiveTimePicker({
               child: CupertinoDatePicker(
                 use24hFormat: true,
                 mode: CupertinoDatePickerMode.time,
-                initialDateTime:
-                    DateTime(2000, 1, 1, initialTime.hour, initialTime.minute),
+                initialDateTime: DateTime(2000, 1, 1, initialTime.hour, initialTime.minute),
                 onDateTimeChanged: (d) => selected = TimeOfDay.fromDateTime(d),
               ),
             ),

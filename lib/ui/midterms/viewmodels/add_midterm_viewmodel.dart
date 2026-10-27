@@ -5,8 +5,7 @@ import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AddMidtermViewModel extends ChangeNotifier {
-  AddMidtermViewModel({required MidtermsRepository repository})
-      : _repository = repository {
+  AddMidtermViewModel({required MidtermsRepository repository}) : _repository = repository {
     save = Command0<void>(_save);
   }
 

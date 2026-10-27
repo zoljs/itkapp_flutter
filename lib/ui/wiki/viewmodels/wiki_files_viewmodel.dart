@@ -39,8 +39,7 @@ class WikiFilesViewModel extends ChangeNotifier {
   // Getters
   UnmodifiableListView<WikiFile> get items => UnmodifiableListView(_items);
   String get title => _dir.isEmpty ? 'Fájlok' : _dir.split('/').last;
-  String fileUrl(String name) =>
-      Uri.encodeFull('$siteUrl/files/${childPath(name)}');
+  String fileUrl(String name) => Uri.encodeFull('$siteUrl/files/${childPath(name)}');
 
   String childPath(String name) => _dir.isEmpty ? name : '$_dir/$name';
 

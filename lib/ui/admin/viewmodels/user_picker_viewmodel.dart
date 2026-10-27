@@ -7,8 +7,7 @@ import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class UserPickerViewModel extends ChangeNotifier {
-  UserPickerViewModel({required AdminUsersRepository repository})
-      : _repository = repository {
+  UserPickerViewModel({required AdminUsersRepository repository}) : _repository = repository {
     load = Command0<void>(_load)..execute();
   }
 
@@ -32,11 +31,7 @@ class UserPickerViewModel extends ChangeNotifier {
   List<UserSummary> get filteredUsers {
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return _users;
-    return _users
-        .where((u) =>
-            u.fullName.toLowerCase().contains(q) ||
-            u.ldapUsername.toLowerCase().contains(q))
-        .toList();
+    return _users.where((u) => u.fullName.toLowerCase().contains(q) || u.ldapUsername.toLowerCase().contains(q)).toList();
   }
 
   // Methods

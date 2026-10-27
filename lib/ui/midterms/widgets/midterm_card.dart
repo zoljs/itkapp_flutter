@@ -14,8 +14,7 @@ class MidtermCard extends StatelessWidget {
       0 => 'MA',
       1 => 'HOLNAP',
       < 7 => '$diff NAP MÚLVA',
-      _ =>
-        MaterialLocalizations.of(context).formatMediumDate(local).toUpperCase(),
+      _ => MaterialLocalizations.of(context).formatMediumDate(local).toUpperCase(),
     };
   }
 
@@ -26,12 +25,9 @@ class MidtermCard extends StatelessWidget {
     final today = DateUtils.dateOnly(DateTime.now());
     final isSoon = DateUtils.dateOnly(local).difference(today).inDays <= 1;
 
-    final background =
-        isSoon ? scheme.primaryContainer : scheme.surfaceContainerHigh;
+    final background = isSoon ? scheme.primaryContainer : scheme.surfaceContainerHigh;
     final foreground = isSoon ? scheme.onPrimaryContainer : scheme.onSurface;
-    final muted = isSoon
-        ? scheme.onPrimaryContainer.withValues(alpha: 0.7)
-        : scheme.onSurfaceVariant;
+    final muted = isSoon ? scheme.onPrimaryContainer.withValues(alpha: 0.7) : scheme.onSurfaceVariant;
 
     final subtitle = [
       midterm.subject.code,

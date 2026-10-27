@@ -106,8 +106,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
         children: [
           SettingsGroup(
             header: 'Adatok',
-            footer:
-                'Az oldal neve és az URL a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
+            footer: 'Az oldal neve és az URL a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
             children: [
               SettingsTile(
                 title: 'Név és URL',
@@ -176,29 +175,24 @@ class _MySiteScreenState extends State<MySiteScreen> {
           //     ),
           //   ],
           // ),
-          SettingsGroup(
-              header: 'Beállítások',
-              footer:
-                  'Bekapcsolásával ki lesz listázva a Users oldalad tartalma az alkalmazásban.',
-              children: [
-                SettingsTile(
-                  title: 'Oldal publikussá tétele',
-                  trailing: Switch.adaptive(
-                    value: _viewModel.isPublic,
-                    onChanged: (value) => _viewModel.setPublic(value),
-                  ),
-                  onTap: () => _viewModel.setPublic(!_viewModel.isPublic),
-                ),
-                SettingsTile(
-                  title: 'PHP Fájlkezelő engedélyezése',
-                  trailing: Switch.adaptive(
-                    value: _viewModel.isPhpEnabled,
-                    onChanged: (value) => _viewModel.setPhpEnabled(value),
-                  ),
-                  onTap: () =>
-                      _viewModel.setPhpEnabled(!_viewModel.isPhpEnabled),
-                ),
-              ]),
+          SettingsGroup(header: 'Beállítások', footer: 'Bekapcsolásával ki lesz listázva a Users oldalad tartalma az alkalmazásban.', children: [
+            SettingsTile(
+              title: 'Oldal publikussá tétele',
+              trailing: Switch.adaptive(
+                value: _viewModel.isPublic,
+                onChanged: (value) => _viewModel.setPublic(value),
+              ),
+              onTap: () => _viewModel.setPublic(!_viewModel.isPublic),
+            ),
+            SettingsTile(
+              title: 'PHP Fájlkezelő engedélyezése',
+              trailing: Switch.adaptive(
+                value: _viewModel.isPhpEnabled,
+                onChanged: (value) => _viewModel.setPhpEnabled(value),
+              ),
+              onTap: () => _viewModel.setPhpEnabled(!_viewModel.isPhpEnabled),
+            ),
+          ]),
 
           SettingsGroup(
             header: 'Címkék',
@@ -279,18 +273,14 @@ class _MySiteScreenState extends State<MySiteScreen> {
             extendBodyBehindAppBar: true,
             appBar: buildBrandAppBar(
               context: context,
-              title: _viewModel.hasExistingSite
-                  ? 'Saját oldalam'
-                  : 'Oldal létrehozása',
+              title: _viewModel.hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása',
               onAction: () async {
                 await _submit();
                 if (!context.mounted) return;
                 if (_viewModel.save.completed) Navigator.pop(context);
               },
             ),
-            body: _viewModel.load.running
-                ? const Center(child: RefreshProgressIndicator())
-                : _buildForm(context),
+            body: _viewModel.load.running ? const Center(child: RefreshProgressIndicator()) : _buildForm(context),
           );
         });
   }

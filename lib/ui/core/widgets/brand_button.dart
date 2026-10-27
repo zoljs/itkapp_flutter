@@ -45,14 +45,10 @@ class _BrandButtonState extends State<BrandButton> {
           alignment: Alignment.center,
           decoration: ShapeDecoration(
             color: widget.backgroundColor,
-            shape: RoundedSuperellipseBorder(
-                borderRadius: BorderRadius.circular(AppRadius.xxl)),
+            shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
           ),
           child: widget.child,
-        )
-            .animate(target: _pressed ? 1 : 0)
-            .scaleXY(end: 0.96, duration: 100.ms)
-            .tint(color: Colors.black, end: 0.15, duration: 100.ms),
+        ).animate(target: _pressed ? 1 : 0).scaleXY(end: 0.96, duration: 100.ms).tint(color: Colors.black, end: 0.15, duration: 100.ms),
       ),
     );
   }

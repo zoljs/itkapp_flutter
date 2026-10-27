@@ -33,12 +33,10 @@ class MidtermsViewModel extends ChangeNotifier {
   // State
   String _query = '';
   List<MidtermDate> _midterms = [];
-  bool get canModerate =>
-      _authRepository.cachedUser?.canModerateMidterms ?? false;
+  bool get canModerate => _authRepository.cachedUser?.canModerateMidterms ?? false;
 
   // Getters
-  UnmodifiableListView<MidtermDate> get midterms =>
-      UnmodifiableListView(_midterms);
+  UnmodifiableListView<MidtermDate> get midterms => UnmodifiableListView(_midterms);
 
   String get query => _query;
   void setQuery(String value) {
@@ -49,19 +47,13 @@ class MidtermsViewModel extends ChangeNotifier {
   List<MidtermDate> get filteredMidterms {
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return midterms;
-    return midterms
-        .where((m) =>
-            m.subject.name.toLowerCase().contains(q) ||
-            m.subject.code.toLowerCase().contains(q) ||
-            (m.location?.toLowerCase().contains(q) ?? false))
-        .toList();
+    return midterms.where((m) => m.subject.name.toLowerCase().contains(q) || m.subject.code.toLowerCase().contains(q) || (m.location?.toLowerCase().contains(q) ?? false)).toList();
   }
 
   bool get initialLoading => load.running && _midterms.isEmpty;
 
   Future<Result<void>> _load(bool forceReload) async {
-    final result =
-        await _midtermRepository.getMidterms(forceReload: forceReload);
+    final result = await _midtermRepository.getMidterms(forceReload: forceReload);
 
     if (result case Ok(:final value)) {
       _midterms = value;

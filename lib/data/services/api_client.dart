@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
-import 'package:itk_app/data/services/api_error.dart';
+import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -10,8 +10,7 @@ class ApiClient {
     // 401 Interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onError: (error, handler) {
-        if (isSessionExpired(
-            error.requestOptions.uri, error.response?.statusCode)) {
+        if (isSessionExpired(error.requestOptions.uri, error.response?.statusCode)) {
           _handleUnauthorized();
         }
         handler.next(error);
@@ -21,8 +20,7 @@ class ApiClient {
     // Session expired Interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onResponse: (response, handler) {
-        if (isSessionExpired(
-            response.requestOptions.uri, response.statusCode)) {
+        if (isSessionExpired(response.requestOptions.uri, response.statusCode)) {
           _handleUnauthorized();
           return handler.reject(DioException.badResponse(
             statusCode: 401,
@@ -82,21 +80,9 @@ class ApiClient {
     required T Function(Object?) parse,
     Map<String, dynamic>? queryParameters,
   }) async {
-    try {
-      final response = await dio.get(path, queryParameters: queryParameters);
-      final value = parse(response.data);
-
-      return Ok(value);
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    } on FormatException catch (e) {
-      return Err(e.message);
-    }
+    return sendRequest(parse: parse, send: () => dio.get(path, queryParameters: queryParameters));
   }
 }
 
 const _pathsWithoutLogout = {'/api/auth/login', '/api/auth/logout'};
-bool isSessionExpired(Uri uri, int? statusCode) =>
-    statusCode == 401 &&
-    uri.host == Uri.parse(ApiClient.baseUrl).host &&
-    !_pathsWithoutLogout.contains(uri.path);
+bool isSessionExpired(Uri uri, int? statusCode) => statusCode == 401 && uri.host == Uri.parse(ApiClient.baseUrl).host && !_pathsWithoutLogout.contains(uri.path);

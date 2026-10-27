@@ -74,8 +74,7 @@ class MySiteCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(Icons.edit_rounded,
-              color: Colors.black87, size: AppSpacing.minimumAndroid / 2),
+          const Icon(Icons.edit_rounded, color: Colors.black87, size: AppSpacing.minimumAndroid / 2),
         ],
       ),
     );

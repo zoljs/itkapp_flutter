@@ -22,12 +22,10 @@ class UserSummary {
 
     final ldapUsername = json['ldapUsername'];
     if (ldapUsername is! String || ldapUsername.trim().isEmpty) {
-      throw const FormatException(
-          'Egy felhasználónak hiányzik a felhasználóneve.');
+      throw const FormatException('Egy felhasználónak hiányzik a felhasználóneve.');
     }
 
-    return UserSummary(
-        userId: userId, fullName: fullName, ldapUsername: ldapUsername);
+    return UserSummary(userId: userId, fullName: fullName, ldapUsername: ldapUsername);
   }
 
   static List<UserSummary> parseUsers(Object? data) {

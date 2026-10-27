@@ -37,9 +37,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = MidtermsViewModel(
-        midtermRepository: context.read<MidtermsRepository>(),
-        authRepository: context.read<AuthRepository>());
+    _viewModel = MidtermsViewModel(midtermRepository: context.read<MidtermsRepository>(), authRepository: context.read<AuthRepository>());
   }
 
   @override
@@ -71,8 +69,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
   Future<void> _openAddMidterm() async {
     await showAdaptiveSheet(
       context: context,
-      builder: (context, controller) =>
-          AddMidtermScreen(scrollController: controller),
+      builder: (context, controller) => AddMidtermScreen(scrollController: controller),
     );
     _viewModel.load.execute(true);
   }
@@ -200,8 +197,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
                 await showConfirmDialog(
                   context,
                   title: 'ZH törlése',
-                  message:
-                      'A ZH időpont mindenki számára törlődik. (${m.subject.name})',
+                  message: 'A ZH időpont mindenki számára törlődik. (${m.subject.name})',
                   confirmLabel: 'Törlés',
                   isDestructive: true,
                 ) ==
@@ -242,16 +238,11 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
       );
     }
 
-    final items = _viewModel.initialLoading
-        ? _skeletonItems
-        : _viewModel.filteredMidterms;
+    final items = _viewModel.initialLoading ? _skeletonItems : _viewModel.filteredMidterms;
     final query = _viewModel.query.trim();
 
     if (!_viewModel.initialLoading && items.isEmpty) {
-      return query.isEmpty
-          ? _buildMessage(Icons.event_available_rounded, 'Nincs közelgő ZH.')
-          : _buildMessage(
-              Icons.search_off_rounded, 'Nincs találat erre: „$query”');
+      return query.isEmpty ? _buildMessage(Icons.event_available_rounded, 'Nincs közelgő ZH.') : _buildMessage(Icons.search_off_rounded, 'Nincs találat erre: „$query”');
     }
 
     return SliverPadding(
@@ -266,8 +257,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
         child: SliverList.separated(
           itemCount: items.length,
           itemBuilder: (context, index) => _buildCard(items[index]),
-          separatorBuilder: (context, index) =>
-              const SizedBox(height: AppSpacing.md),
+          separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.md),
         ),
       ),
     );

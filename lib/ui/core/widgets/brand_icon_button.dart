@@ -75,10 +75,7 @@ class _BrandIconButtonState extends State<BrandIconButton> {
               color: widget.iconColor ?? scheme.onSurface,
               semanticLabel: widget.semanticLabel,
             ),
-          )
-              .animate(target: _pressed ? 1 : 0)
-              .scaleXY(end: 0.9, duration: 100.ms)
-              .tint(color: Colors.black, end: 0.15, duration: 100.ms),
+          ).animate(target: _pressed ? 1 : 0).scaleXY(end: 0.9, duration: 100.ms).tint(color: Colors.black, end: 0.15, duration: 100.ms),
         ),
       ),
     );

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/data/services/api_error.dart';
+import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/result.dart';
 
@@ -43,37 +44,27 @@ class SitesRepository {
     }
   }
 
-  Future<Result<UserSite>> saveMySite(
-      List<String> tags, bool isPublic, bool isPhpEnabled) async {
-    final Response<dynamic> response;
-    try {
-      response = await _dio.post('/api/sites', data: {
-        'tags': tags,
-        'isPublic': isPublic,
-        'isPhpEnabled': isPhpEnabled
-      });
-      final data = response.data;
-      if (data is! Map<String, dynamic>) {
-        return const Err('Nem sikerült feldolgozni a választ.');
-      }
-      final saved = _parseSite(data);
-      clearCache();
-      return Ok(saved);
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    } on FormatException catch (e) {
-      return Err(e.message);
-    }
+  Future<Result<UserSite>> saveMySite(List<String> tags, bool isPublic, bool isPhpEnabled) async {
+    final result = await sendRequest(
+      parse: (data) {
+        if (data is! Map<String, dynamic>) {
+          // cant return Err so must throw FormatException which gets handled down the line anyway
+          throw const FormatException('Nem sikerült feldolgozni a választ.');
+        }
+        // gets returned from the value field that calls the parse function
+        return _parseSite(data);
+      },
+      send: () => _dio.post('/api/sites', data: {'tags': tags, 'isPublic': isPublic, 'isPhpEnabled': isPhpEnabled}),
+    );
+    if (result is Ok) clearCache();
+
+    return result;
   }
 
   Future<Result<void>> deleteMySite() async {
-    try {
-      await _dio.delete('/api/sites');
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    }
-    clearCache();
-    return const Ok(null);
+    final result = await sendRequest(parse: (_) {}, send: () => _dio.delete('/api/sites'));
+    if (result is Ok) clearCache();
+    return result;
   }
 
   UserSite _parseSite(Map<String, dynamic> json) {

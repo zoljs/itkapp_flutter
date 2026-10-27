@@ -131,8 +131,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
         children: [
           SettingsGroup(
             header: 'Évfolyamfelelősök',
-            footer:
-                'Az évfolyamfelelősök bármely ZH-t felvehetik és törölhetik. '
+            footer: 'Az évfolyamfelelősök bármely ZH-t felvehetik és törölhetik. '
                 'Balra húzva visszavonhatod a rangot.',
             children: [for (final u in _viewModel.roleHolders) _buildRow(u)],
           ),

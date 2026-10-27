@@ -23,9 +23,7 @@ class WeekStrip extends StatelessWidget {
                 margin: const EdgeInsets.symmetric(horizontal: 3),
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: isToday
-                      ? scheme.onPrimary
-                      : scheme.onPrimary.withValues(alpha: 0.4),
+                  color: isToday ? scheme.onPrimary : scheme.onPrimary.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Text(
@@ -33,9 +31,7 @@ class WeekStrip extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w700,
-                    color: isToday
-                        ? scheme.primary
-                        : scheme.primary.withValues(alpha: 0.5),
+                    color: isToday ? scheme.primary : scheme.primary.withValues(alpha: 0.5),
                   ),
                 ),
               ),

@@ -115,8 +115,7 @@ class _VideosScreenState extends State<VideosScreen> {
     } on DioException {
       if (!mounted || id != _requestId) return;
       setState(() => _loadingMore = false);
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('Nem sikerült betölteni a további videókat.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nem sikerült betölteni a további videókat.')));
     }
   }
 
@@ -179,19 +178,13 @@ class _VideosScreenState extends State<VideosScreen> {
 
   Future<void> _openVideo(OnlineVideo video) async {
     final uri = Uri.tryParse(video.url);
-    final ok = uri != null &&
-        uri.hasScheme &&
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
+    final ok = uri != null && uri.hasScheme && await launchUrl(uri, mode: LaunchMode.externalApplication);
     if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Nem sikerült megnyitni a videót.')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Nem sikerült megnyitni a videót.')));
     }
   }
 
-  bool get _hasFilters =>
-      _semester != null ||
-      _subject != null ||
-      _searchController.text.trim().isNotEmpty;
+  bool get _hasFilters => _semester != null || _subject != null || _searchController.text.trim().isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -324,9 +317,7 @@ class _VideosScreenState extends State<VideosScreen> {
           child: _EmptyState(
             icon: Icons.video_library_outlined,
             title: 'Nincs találat',
-            message: _hasFilters
-                ? 'Próbálj másik félévet, tárgyat vagy keresést.'
-                : 'Még nincsenek videók.',
+            message: _hasFilters ? 'Próbálj másik félévet, tárgyat vagy keresést.' : 'Még nincsenek videók.',
             actionLabel: _hasFilters ? 'Szűrők törlése' : null,
             onAction: _hasFilters ? _clearFilters : null,
           ),
@@ -349,8 +340,7 @@ class _VideosScreenState extends State<VideosScreen> {
           child: SliverList.builder(
             itemCount: entries.length,
             itemBuilder: (context, i) => switch (entries[i]) {
-              _HeaderEntry(:final subject, :final semesterLabel) =>
-                _GroupHeader(subject: subject, semesterLabel: semesterLabel),
+              _HeaderEntry(:final subject, :final semesterLabel) => _GroupHeader(subject: subject, semesterLabel: semesterLabel),
               _VideoEntry(:final video) => _VideoTile(
                   video: video,
                   onTap: _loading ? null : () => _openVideo(video),
@@ -452,9 +442,7 @@ class _FilterBar extends StatelessWidget {
     final options = <(String?, String)>[
       (null, 'Minden félév'),
       for (final s in semesters) (s.key, s.label),
-      if (selectedSemester != null &&
-          !semesters.any((s) => s.key == selectedSemester))
-        (selectedSemester, selectedSemester!),
+      if (selectedSemester != null && !semesters.any((s) => s.key == selectedSemester)) (selectedSemester, selectedSemester!),
     ];
 
     return Container(
@@ -483,9 +471,7 @@ class _FilterBar extends StatelessWidget {
               itemBuilder: (context, i) {
                 final (key, label) = options[i];
                 return _FilterChip(
-                  icon: key == null
-                      ? Icons.apps_rounded
-                      : Icons.calendar_month_rounded,
+                  icon: key == null ? Icons.apps_rounded : Icons.calendar_month_rounded,
                   label: label,
                   selected: key == selectedSemester,
                   onSelected: () => onSemesterSelected(key),
@@ -496,8 +482,7 @@ class _FilterBar extends StatelessWidget {
           SizedBox(
             height: _subjectRowHeight,
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.screenHorizontal),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
               child: Row(
                 children: [
                   Flexible(
@@ -589,8 +574,7 @@ class _SubjectButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppRadius.lg),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-              AppSpacing.md, AppSpacing.xxs, AppSpacing.xxs, AppSpacing.xxs),
+          padding: const EdgeInsets.fromLTRB(AppSpacing.md, AppSpacing.xxs, AppSpacing.xxs, AppSpacing.xxs),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -690,8 +674,7 @@ class _VideoTile extends StatelessWidget {
     final placeholder = ColoredBox(
       color: scheme.surfaceContainerHigh,
       child: Center(
-        child: Icon(Icons.play_circle_outline_rounded,
-            size: 32, color: scheme.onSurfaceVariant),
+        child: Icon(Icons.play_circle_outline_rounded, size: 32, color: scheme.onSurfaceVariant),
       ),
     );
 
@@ -715,8 +698,7 @@ class _VideoTile extends StatelessWidget {
                           video.thumbnailUrl!,
                           fit: BoxFit.cover,
                           errorBuilder: (_, __, ___) => placeholder,
-                          loadingBuilder: (_, child, progress) =>
-                              progress == null ? child : placeholder,
+                          loadingBuilder: (_, child, progress) => progress == null ? child : placeholder,
                         ),
                 ),
               ),
@@ -788,8 +770,7 @@ class _EmptyState extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon,
-              size: 56, color: scheme.onSurfaceVariant.withValues(alpha: 0.6)),
+          Icon(icon, size: 56, color: scheme.onSurfaceVariant.withValues(alpha: 0.6)),
           const SizedBox(height: AppSpacing.lg),
           Text(
             title,
@@ -804,8 +785,7 @@ class _EmptyState extends StatelessWidget {
             Text(
               message!,
               textAlign: TextAlign.center,
-              style: textTheme.bodyMedium
-                  ?.copyWith(color: scheme.onSurfaceVariant),
+              style: textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
             ),
           ],
           if (actionLabel != null && onAction != null) ...[
@@ -848,8 +828,7 @@ class _SubjectSheetState extends State<_SubjectSheet> {
     'ű': 'u',
   };
 
-  static String _normalize(String s) =>
-      s.toLowerCase().split('').map((c) => _fold[c] ?? c).join();
+  static String _normalize(String s) => s.toLowerCase().split('').map((c) => _fold[c] ?? c).join();
 
   @override
   void dispose() {
@@ -862,11 +841,7 @@ class _SubjectSheetState extends State<_SubjectSheet> {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
     final query = _normalize(_controller.text.trim());
-    final visible = query.isEmpty
-        ? widget.subjects
-        : widget.subjects
-            .where((s) => _normalize(s.name).contains(query))
-            .toList();
+    final visible = query.isEmpty ? widget.subjects : widget.subjects.where((s) => _normalize(s.name).contains(query)).toList();
 
     return DraggableScrollableSheet(
       expand: false,
@@ -877,12 +852,9 @@ class _SubjectSheetState extends State<_SubjectSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.screenHorizontal),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
             child: Text(
-              widget.semesterLabel == null
-                  ? 'Tárgyak'
-                  : 'Tárgyak · ${widget.semesterLabel}',
+              widget.semesterLabel == null ? 'Tárgyak' : 'Tárgyak · ${widget.semesterLabel}',
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
@@ -955,8 +927,7 @@ class _SubjectTile extends StatelessWidget {
     return ListTile(
       selected: selected,
       selectedTileColor: scheme.primaryContainer.withValues(alpha: 0.5),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+      contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
       title: Text(
         title,
         style: TextStyle(
@@ -970,8 +941,7 @@ class _SubjectTile extends StatelessWidget {
               children: [
                 Text(
                   '$count',
-                  style:
-                      TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+                  style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
                 ),
                 if (selected) ...[
                   const SizedBox(width: AppSpacing.sm),

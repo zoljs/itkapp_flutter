@@ -9,6 +9,5 @@ class AdminUsersRepository {
 
   final ApiClient _apiClient;
 
-  Future<Result<List<UserSummary>>> getUsers() async => await _apiClient
-      .getJson('/api/admin/users', parse: UserSummary.parseUsers);
+  Future<Result<List<UserSummary>>> getUsers() async => await _apiClient.getJson('/api/admin/users', parse: UserSummary.parseUsers);
 }

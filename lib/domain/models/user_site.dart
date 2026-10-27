@@ -39,8 +39,7 @@ class UserSite {
       throw FormatException('$name oldalának hiányoznak a címkéi.');
     }
     if (tags.any((tag) => tag is! String || tag.trim().isEmpty)) {
-      throw FormatException(
-          '$name oldalának címkéi között van egy hibás elem.');
+      throw FormatException('$name oldalának címkéi között van egy hibás elem.');
     }
     final tagsList = tags.map((tag) => tag.toString()).toList();
 

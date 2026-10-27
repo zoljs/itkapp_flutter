@@ -155,8 +155,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   const SizedBox(height: AppSpacing.sm),
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: AppSpacing.md),
+                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
                     child: Text(
                       'Jelentkezz be a Shibboleth azonosítóddal a naptárad és többi feature eléréséhez.',
                       textAlign: TextAlign.center,
@@ -190,10 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               hintText: 'Shibboleth ID (pl. naszy)',
                               prefixIcon: Icons.person_outline_rounded,
                             ),
-                            validator: (value) =>
-                                (value == null || value.trim().isEmpty)
-                                    ? 'Kérlek, add meg a felhasználóneved.'
-                                    : null,
+                            validator: (value) => (value == null || value.trim().isEmpty) ? 'Kérlek, add meg a felhasználóneved.' : null,
                           ),
                           const SizedBox(height: AppSpacing.xxl),
                           TextFormField(
@@ -214,23 +210,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 padding: const EdgeInsets.only(right: 4.0),
                                 child: IconButton(
                                   icon: Icon(
-                                    _obscurePassword
-                                        ? Icons.visibility_off_outlined
-                                        : Icons.visibility_outlined,
+                                    _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                                     color: scheme.outline,
                                     size: 22,
                                   ),
                                   onPressed: () {
-                                    setState(() =>
-                                        _obscurePassword = !_obscurePassword);
+                                    setState(() => _obscurePassword = !_obscurePassword);
                                   },
                                 ),
                               ),
                             ),
-                            validator: (value) =>
-                                (value == null || value.isEmpty)
-                                    ? 'Kérlek, add meg a jelszavad.'
-                                    : null,
+                            validator: (value) => (value == null || value.isEmpty) ? 'Kérlek, add meg a jelszavad.' : null,
                           ),
                           const SizedBox(height: AppSpacing.xxxl),
                           ListenableBuilder(
@@ -238,8 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               builder: (context, _) {
                                 return BrandButton(
                                   height: 56,
-                                  onTap:
-                                      _viewModel.login.running ? null : _submit,
+                                  onTap: _viewModel.login.running ? null : _submit,
                                   backgroundColor: itkPrimary,
                                   child: Center(
                                     child: _viewModel.login.running
@@ -247,9 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                             height: 24,
                                             width: 24,
                                             child: CircularProgressIndicator(
-                                              valueColor:
-                                                  AlwaysStoppedAnimation(
-                                                      scheme.onPrimary),
+                                              valueColor: AlwaysStoppedAnimation(scheme.onPrimary),
                                               strokeWidth: 3,
                                             ),
                                           )

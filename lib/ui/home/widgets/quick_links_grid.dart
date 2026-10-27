@@ -3,10 +3,8 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/home/widgets/quick_link_tile.dart';
 
 List<QuickLink> _quickLinks = [
-  const QuickLink('Neptun', 'https://neptun3.ppke.hu/hallgato_uj/login',
-      'assets/icons/neptun.png'),
-  const QuickLink(
-      'ITK Space', 'https://space.itk.ppke.hu', 'assets/icons/itk-small.png'),
+  const QuickLink('Neptun', 'https://neptun3.ppke.hu/hallgato_uj/login', 'assets/icons/neptun.png'),
+  const QuickLink('ITK Space', 'https://space.itk.ppke.hu', 'assets/icons/itk-small.png'),
   const QuickLink('TO', '', 'assets/icons/sharepoint.png'),
   const QuickLink('Oktatók', '', 'assets/icons/ppke.png'),
 ];
@@ -34,8 +32,7 @@ class QuickLinksGrid extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(AppSpacing.sm),
       children: [
-        for (final link in _quickLinks)
-          QuickLinkTile(onTap: onTap, link: link, scheme: scheme),
+        for (final link in _quickLinks) QuickLinkTile(onTap: onTap, link: link, scheme: scheme),
       ],
     );
   }

@@ -6,9 +6,7 @@ import 'package:itk_app/utils/result.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 
 class HomeViewModel extends ChangeNotifier {
-  HomeViewModel(
-      {required AuthRepository authRepository,
-      required CalendarRepository calendarRepository})
+  HomeViewModel({required AuthRepository authRepository, required CalendarRepository calendarRepository})
       : _authRepository = authRepository,
         _calendarRepository = calendarRepository {
     load = Command1<void, bool>(_load)..execute(false);
@@ -33,13 +31,11 @@ class HomeViewModel extends ChangeNotifier {
   CalendarEvent? get nextEvent => _nextEvent;
 
   Future<Result<void>> _load(bool forceReload) async {
-    final result =
-        await _calendarRepository.getCalendar(forceReload: forceReload);
+    final result = await _calendarRepository.getCalendar(forceReload: forceReload);
 
     if (result case Ok(:final value)) {
       final now = DateTime.now();
-      final upcoming = value.where((e) => e.end.isAfter(now)).toList()
-        ..sort((a, b) => a.start.compareTo(b.start));
+      final upcoming = value.where((e) => e.end.isAfter(now)).toList()..sort((a, b) => a.start.compareTo(b.start));
       _nextEvent = upcoming.firstOrNull;
       notifyListeners();
     }

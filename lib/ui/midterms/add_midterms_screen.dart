@@ -27,8 +27,7 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel =
-        AddMidtermViewModel(repository: context.read<MidtermsRepository>());
+    _viewModel = AddMidtermViewModel(repository: context.read<MidtermsRepository>());
   }
 
   @override
@@ -107,16 +106,12 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
             children: [
               SettingsTile(
                 title: 'Dátum',
-                value: _viewModel.date == null
-                    ? 'Válassz'
-                    : localizations.formatMediumDate(_viewModel.date!),
+                value: _viewModel.date == null ? 'Válassz' : localizations.formatMediumDate(_viewModel.date!),
                 onTap: _pickDate,
               ),
               SettingsTile(
                 title: 'Kezdés',
-                value: _viewModel.time == null
-                    ? 'Válassz'
-                    : _viewModel.time!.format(context),
+                value: _viewModel.time == null ? 'Válassz' : _viewModel.time!.format(context),
                 onTap: _pickTime,
               ),
             ],
@@ -157,9 +152,7 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
               title: 'Új ZH',
               closesSheet: true,
               actionIcon: Icons.check,
-              onAction: _viewModel.canSave && !_viewModel.save.running
-                  ? _submit
-                  : null,
+              onAction: _viewModel.canSave && !_viewModel.save.running ? _submit : null,
             ),
             body: _buildForm(context),
           );

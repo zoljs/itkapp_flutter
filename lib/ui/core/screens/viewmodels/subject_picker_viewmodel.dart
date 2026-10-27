@@ -7,8 +7,7 @@ import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class SubjectPickerViewModel extends ChangeNotifier {
-  SubjectPickerViewModel({required SubjectsRepository repository})
-      : _repository = repository {
+  SubjectPickerViewModel({required SubjectsRepository repository}) : _repository = repository {
     load = Command0<void>(_load)..execute();
   }
 
@@ -37,11 +36,7 @@ class SubjectPickerViewModel extends ChangeNotifier {
   List<Subject> get filteredSubjects {
     final q = _query.trim().toLowerCase();
     if (q.isEmpty) return subjects;
-    return _subjects
-        .where((s) =>
-            s.name.toLowerCase().contains(q) ||
-            s.code.toLowerCase().contains(q))
-        .toList();
+    return _subjects.where((s) => s.name.toLowerCase().contains(q) || s.code.toLowerCase().contains(q)).toList();
   }
 
   // Methods

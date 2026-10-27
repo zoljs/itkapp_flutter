@@ -35,8 +35,7 @@ class VideosRepository {
       queryParameters: _params(semester: semester, subject: subject),
     );
     _ensureOk(response);
-    final filters =
-        VideoFilters.fromJson(response.data as Map<String, dynamic>);
+    final filters = VideoFilters.fromJson(response.data as Map<String, dynamic>);
     _filtersCache[key] = filters;
     return filters;
   }
