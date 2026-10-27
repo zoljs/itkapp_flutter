@@ -118,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         iconColor: itkPrimary,
                         title: 'Online Videók',
                         onTap: () {
-                          context.push(Routes.onlineVideos);
+                          context.push(Routes.videos);
                         },
                       )
                     ],

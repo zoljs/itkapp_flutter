@@ -12,16 +12,16 @@ import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
-class OnlineVideosScreen extends StatefulWidget {
-  const OnlineVideosScreen({super.key, this.title = 'Online videók'});
+class VideosScreen extends StatefulWidget {
+  const VideosScreen({super.key, this.title = 'Online videók'});
 
   final String title;
 
   @override
-  State<OnlineVideosScreen> createState() => _OnlineVideosScreenState();
+  State<VideosScreen> createState() => _VideosScreenState();
 }
 
-class _OnlineVideosScreenState extends State<OnlineVideosScreen> {
+class _VideosScreenState extends State<VideosScreen> {
   final _searchController = TextEditingController();
   Timer? _searchDebounce;
 

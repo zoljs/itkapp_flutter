@@ -10,7 +10,7 @@ import 'package:itk_app/ui/home/home_screen.dart';
 import 'package:itk_app/ui/login/login_screen.dart';
 import 'package:itk_app/ui/midterms/midterms_screen.dart';
 import 'package:itk_app/ui/onboarding/onboarding_screen.dart';
-import 'package:itk_app/ui/online_videos/online_videos_screen.dart';
+import 'package:itk_app/ui/videos/videos_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/ui/wiki/my_site_screen.dart';
 import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
@@ -82,9 +82,9 @@ GoRouter router(
                         _page(state, const MidtermsScreen()),
                   ),
                   GoRoute(
-                    path: 'onlinevideos',
+                    path: 'videos',
                     pageBuilder: (context, state) =>
-                        _page(state, const OnlineVideosScreen()),
+                        _page(state, const VideosScreen()),
                   ),
                 ],
               ),
