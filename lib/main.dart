@@ -13,6 +13,7 @@ import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/repositories/videos_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:itk_app/data/services/shared_preferences_service.dart';
 import 'package:itk_app/data/services/users_client.dart';
 import 'package:itk_app/routing/router.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
@@ -20,19 +21,18 @@ import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'data/services/api_client.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final apiClient = await ApiClient.create();
+  final prefs = SharedPreferencesService(await SharedPreferences.getInstance());
 
-  final themeRepository = ThemeRepository();
-  final onboardingRepository = OnboardingRepository();
-  final authRepository = AuthRepository(apiClient: apiClient);
-
-  await themeRepository.loadFromDisk();
-  await onboardingRepository.loadFromDisk();
+  final themeRepository = ThemeRepository(prefs: prefs);
+  final onboardingRepository = OnboardingRepository(prefs: prefs);
+  final authRepository = AuthRepository(apiClient: apiClient, prefs: prefs);
   await authRepository.getSessionUser();
 
   final appRouter = router(authRepository, onboardingRepository);
@@ -42,6 +42,7 @@ Future<void> main() async {
       MultiProvider(
         providers: [
           Provider.value(value: apiClient),
+          Provider.value(value: prefs),
           Provider.value(value: themeRepository),
           Provider.value(value: onboardingRepository),
           ChangeNotifierProvider.value(value: authRepository),
