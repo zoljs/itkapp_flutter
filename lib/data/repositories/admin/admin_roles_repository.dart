@@ -7,21 +7,14 @@ import 'package:itk_app/utils/result.dart';
 class AdminRolesRepository {
   AdminRolesRepository({
     required ApiClient apiClient,
-  }) : _dio = apiClient.dio;
+  })  : _dio = apiClient.dio,
+        _apiClient = apiClient;
 
   final Dio _dio;
+  final ApiClient _apiClient;
 
-  Future<Result<List<UserSummary>>> getRoleHolders() async {
-    try {
-      final response = await _dio.get('/api/admin/roles');
-      final users = UserSummary.parseUsers(response.data);
-      return Ok(users);
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    } on FormatException catch (e) {
-      return Err(e.message);
-    }
-  }
+  Future<Result<List<UserSummary>>> getRoleHolders() async => await _apiClient
+      .getJson('/api/admin/roles', parse: UserSummary.parseUsers);
 
   Future<Result<void>> assignCohortRep(int userId) async {
     try {

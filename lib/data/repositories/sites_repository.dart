@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/user_site.dart';
@@ -8,9 +7,11 @@ import 'package:itk_app/utils/result.dart';
 class SitesRepository {
   SitesRepository({
     required ApiClient apiClient,
-  }) : _dio = apiClient.dio;
+  })  : _dio = apiClient.dio,
+        _apiClient = apiClient;
 
   final Dio _dio;
+  final ApiClient _apiClient;
 
   List<UserSite>? _cachedSites;
 
@@ -24,36 +25,24 @@ class SitesRepository {
     final cached = _cachedSites;
     if (cached != null && !forceReload) return Ok(cached);
 
-    final Response<dynamic> response;
-    try {
-      response = await _dio.get('/api/sites');
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    }
-
-    final sites = _parseSites(response.data);
-    if (sites == null) {
-      return const Err('Nem sikerült feldolgozni az oldalakat.');
-    }
-
-    _cachedSites = sites;
-    return Ok(sites);
+    final result = await _apiClient.getJson('/api/sites', parse: _parseSites);
+    if (result case Ok(:final value)) _cachedSites = value;
+    return result;
   }
 
   Future<Result<UserSite?>> getMySite() async {
     final Response<dynamic> response;
     try {
       response = await _dio.get('/api/sites/me');
+      final data = response.data;
+      if (data is! Map<String, dynamic>) return const Ok(null);
+      return Ok(_parseSite(data));
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) return const Ok(null);
       return Err(apiErrorMessage(e));
+    } on FormatException catch (e) {
+      return Err(e.message);
     }
-
-    final data = response.data;
-    if (data is! Map<String, dynamic>) return const Ok(null);
-    final site = _parseSite(data);
-    if (site == null) return const Err('Nem sikerült feldolgozni az oldalad.');
-    return Ok(site);
   }
 
   Future<Result<UserSite>> saveMySite(
@@ -65,16 +54,18 @@ class SitesRepository {
         'isPublic': isPublic,
         'isPhpEnabled': isPhpEnabled
       });
+      final data = response.data;
+      if (data is! Map<String, dynamic>) {
+        return const Err('Nem sikerült feldolgozni a választ.');
+      }
+      final saved = _parseSite(data);
+      clearCache();
+      return Ok(saved);
     } on DioException catch (e) {
       return Err(apiErrorMessage(e));
+    } on FormatException catch (e) {
+      return Err(e.message);
     }
-
-    final data = response.data;
-    final saved = data is Map<String, dynamic> ? _parseSite(data) : null;
-    if (saved == null) return const Err('Nem sikerült feldolgozni a választ.');
-
-    clearCache();
-    return Ok(saved);
   }
 
   Future<Result<void>> deleteMySite() async {
@@ -87,23 +78,25 @@ class SitesRepository {
     return const Ok(null);
   }
 
-  UserSite? _parseSite(Map<String, dynamic> json) {
+  UserSite _parseSite(Map<String, dynamic> json) {
     try {
       return UserSite.fromJson(json);
-    } catch (e) {
-      debugPrint('[SitesRepository] bad site json: $e');
-      return null;
+    } on TypeError catch (e) {
+      throw FormatException('Hibás oldal adat: $e');
     }
   }
 
-  List<UserSite>? _parseSites(Object? data) {
-    if (data is! List) return null;
+  List<UserSite> _parseSites(Object? data) {
+    if (data is! List) {
+      throw const FormatException('Az oldal lista nem lista formátumú.');
+    }
+
     final sites = <UserSite>[];
-    for (final item in data) {
-      if (item is! Map<String, dynamic>) return null;
-      final site = _parseSite(item);
-      if (site == null) return null;
-      sites.add(site);
+    for (final entry in data) {
+      if (entry is! Map<String, dynamic>) {
+        throw const FormatException('Egy oldal nem objektum formátumú.');
+      }
+      sites.add(_parseSite(entry));
     }
     return sites;
   }

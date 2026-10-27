@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
+import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/data/services/http_adapter.dart';
 import 'package:flutter/foundation.dart';
+import 'package:itk_app/utils/result.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ApiClient {
@@ -80,6 +82,23 @@ class ApiClient {
 
   Future<void> clearCookies() async {
     await _cookieJar?.deleteAll();
+  }
+
+  Future<Result<T>> getJson<T>(
+    String path, {
+    required T Function(Object?) parse,
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    try {
+      final response = await dio.get(path, queryParameters: queryParameters);
+      final value = parse(response.data);
+
+      return Ok(value);
+    } on DioException catch (e) {
+      return Err(apiErrorMessage(e));
+    } on FormatException catch (e) {
+      return Err(e.message);
+    }
   }
 }
 

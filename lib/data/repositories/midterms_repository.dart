@@ -7,21 +7,14 @@ import 'package:itk_app/utils/result.dart';
 class MidtermsRepository {
   MidtermsRepository({
     required ApiClient apiClient,
-  }) : _dio = apiClient.dio;
+  })  : _dio = apiClient.dio,
+        _apiClient = apiClient;
 
+  final ApiClient _apiClient;
   final Dio _dio;
 
-  Future<Result<List<MidtermDate>>> getMidterms() async {
-    try {
-      final response = await _dio.get('/api/midterms');
-      final midterms = parseMidterms(response.data);
-      return Ok(midterms);
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    } on FormatException catch (e) {
-      return Err(e.message);
-    }
-  }
+  Future<Result<List<MidtermDate>>> getMidterms() async =>
+      await _apiClient.getJson('/api/midterms', parse: parseMidterms);
 
   List<MidtermDate> parseMidterms(Object? data) {
     if (data is! List) {

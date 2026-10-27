@@ -1,15 +1,13 @@
-import 'package:dio/dio.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/utils/result.dart';
 
 class SubjectsRepository {
   SubjectsRepository({
     required ApiClient apiClient,
-  }) : _dio = apiClient.dio;
+  }) : _apiClient = apiClient;
 
-  final Dio _dio;
+  final ApiClient _apiClient;
 
   List<Subject>? _cached;
 
@@ -19,16 +17,10 @@ class SubjectsRepository {
     final cached = _cached;
     if (cached != null && !forceReload) return Ok(cached);
 
-    try {
-      final response = await _dio.get('/api/subjects');
-      final subjects = parseSubjects(response.data);
-      _cached = subjects;
-      return Ok(subjects);
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    } on FormatException catch (e) {
-      return Err(e.message);
-    }
+    final result =
+        await _apiClient.getJson('/api/subjects', parse: parseSubjects);
+    if (result case Ok(:final value)) _cached = value;
+    return result;
   }
 
   static List<Subject> parseSubjects(Object? data) {
