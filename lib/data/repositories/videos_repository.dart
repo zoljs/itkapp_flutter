@@ -2,13 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/domain/models/online_video.dart';
 
-class VideosService {
-  VideosService._();
-  static final VideosService instance = VideosService._();
+class VideosRepository {
+  VideosRepository({required ApiClient apiClient}) : _dio = apiClient.dio;
+  final Dio _dio;
 
   static const pageSize = 50;
-
-  Dio get _dio => ApiClient.instance.dio;
 
   final Map<String, VideoFilters> _filtersCache = {};
 

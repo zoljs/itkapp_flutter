@@ -7,8 +7,6 @@ import 'package:path_provider/path_provider.dart';
 
 class ApiClient {
   ApiClient();
-  static final ApiClient instance = ApiClient();
-
   static const String baseUrl = 'https://test.app.itk.ppke.hu';
 
   late final Dio dio;

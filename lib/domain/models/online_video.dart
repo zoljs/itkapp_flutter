@@ -26,7 +26,7 @@ class OnlineVideo {
       id: json['id'] as int,
       semester: json['semester'] as String,
       semesterLabel:
-      (json['semesterLabel'] as String?) ?? json['semester'] as String,
+          (json['semesterLabel'] as String?) ?? json['semester'] as String,
       subject: json['subject'] as String,
       title: json['title'] as String,
       uploader: json['uploader'] as String?,
@@ -67,10 +67,10 @@ class SemesterFacet {
       {required this.key, required this.label, required this.count});
 
   factory SemesterFacet.fromJson(Map<String, dynamic> json) => SemesterFacet(
-    key: json['key'] as String,
-    label: json['label'] as String,
-    count: json['count'] as int,
-  );
+        key: json['key'] as String,
+        label: json['label'] as String,
+        count: json['count'] as int,
+      );
 }
 
 class SubjectFacet {
@@ -80,9 +80,9 @@ class SubjectFacet {
   const SubjectFacet({required this.name, required this.count});
 
   factory SubjectFacet.fromJson(Map<String, dynamic> json) => SubjectFacet(
-    name: json['name'] as String,
-    count: json['count'] as int,
-  );
+        name: json['name'] as String,
+        count: json['count'] as int,
+      );
 }
 
 class VideoFilters {
@@ -94,11 +94,11 @@ class VideoFilters {
   static const empty = VideoFilters(semesters: [], subjects: []);
 
   factory VideoFilters.fromJson(Map<String, dynamic> json) => VideoFilters(
-    semesters: (json['semesters'] as List)
-        .map((e) => SemesterFacet.fromJson(e as Map<String, dynamic>))
-        .toList(),
-    subjects: (json['subjects'] as List)
-        .map((e) => SubjectFacet.fromJson(e as Map<String, dynamic>))
-        .toList(),
-  );
+        semesters: (json['semesters'] as List)
+            .map((e) => SemesterFacet.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        subjects: (json['subjects'] as List)
+            .map((e) => SubjectFacet.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
 }

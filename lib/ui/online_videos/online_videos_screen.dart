@@ -2,25 +2,26 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/videos_repository.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:itk_app/data/services/videos_service.dart';
 import 'package:itk_app/domain/models/online_video.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
-class OnlineVideos extends StatefulWidget {
-  const OnlineVideos({super.key, this.title = 'Online videók'});
+class OnlineVideosScreen extends StatefulWidget {
+  const OnlineVideosScreen({super.key, this.title = 'Online videók'});
 
   final String title;
 
   @override
-  State<OnlineVideos> createState() => _OnlineVideosState();
+  State<OnlineVideosScreen> createState() => _OnlineVideosScreenState();
 }
 
-class _OnlineVideosState extends State<OnlineVideos> {
+class _OnlineVideosScreenState extends State<OnlineVideosScreen> {
   final _searchController = TextEditingController();
   Timer? _searchDebounce;
 
@@ -60,16 +61,16 @@ class _OnlineVideosState extends State<OnlineVideos> {
 
     try {
       final results = await Future.wait([
-        VideosService.instance.getFilters(
-          semester: _semester,
-          subject: _subject,
-          forceReload: forceReload,
-        ),
-        VideosService.instance.getVideos(
-          semester: _semester,
-          subject: _subject,
-          query: _searchController.text,
-        ),
+        context.read<VideosRepository>().getFilters(
+              semester: _semester,
+              subject: _subject,
+              forceReload: forceReload,
+            ),
+        context.read<VideosRepository>().getVideos(
+              semester: _semester,
+              subject: _subject,
+              query: _searchController.text,
+            ),
       ]);
       if (!mounted || id != _requestId) return;
 
@@ -90,19 +91,21 @@ class _OnlineVideosState extends State<OnlineVideos> {
       });
     }
   }
+
   Future<void> _loadMore() async {
     if (_loading || _loadingMore || _error != null) return;
     if (_videos.length >= _total) return;
 
     final id = _requestId;
     setState(() => _loadingMore = true);
+
     try {
-      final page = await VideosService.instance.getVideos(
-        semester: _semester,
-        subject: _subject,
-        query: _searchController.text,
-        offset: _videos.length,
-      );
+      final page = await context.read<VideosRepository>().getVideos(
+            semester: _semester,
+            subject: _subject,
+            query: _searchController.text,
+            offset: _videos.length,
+          );
       if (!mounted || id != _requestId) return;
       setState(() {
         _videos.addAll(page.items);
@@ -116,7 +119,8 @@ class _OnlineVideosState extends State<OnlineVideos> {
           content: Text('Nem sikerült betölteni a további videókat.')));
     }
   }
-    void _onSearchChanged(String _) {
+
+  void _onSearchChanged(String _) {
     setState(() {});
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 350), _reload);
@@ -189,7 +193,7 @@ class _OnlineVideosState extends State<OnlineVideos> {
       _subject != null ||
       _searchController.text.trim().isNotEmpty;
 
-    @override
+  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
@@ -273,7 +277,8 @@ class _OnlineVideosState extends State<OnlineVideos> {
       ),
     );
   }
-    Widget _buildList(BuildContext context) {
+
+  Widget _buildList(BuildContext context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
         if (n.metrics.extentAfter < 600) _loadMore();
@@ -297,7 +302,7 @@ class _OnlineVideosState extends State<OnlineVideos> {
     );
   }
 
-    List<Widget> _buildContent(BuildContext context) {
+  List<Widget> _buildContent(BuildContext context) {
     if (_error != null) {
       return [
         SliverFillRemaining(
@@ -372,7 +377,8 @@ class _OnlineVideosState extends State<OnlineVideos> {
       ),
     ];
   }
-    static List<_Entry> _groupEntries(List<OnlineVideo> videos) {
+
+  static List<_Entry> _groupEntries(List<OnlineVideo> videos) {
     final entries = <_Entry>[];
     String? lastKey;
     for (final v in videos) {
@@ -627,6 +633,7 @@ class _SubjectButton extends StatelessWidget {
     );
   }
 }
+
 class _GroupHeader extends StatelessWidget {
   const _GroupHeader({required this.subject, required this.semesterLabel});
 
@@ -797,8 +804,8 @@ class _EmptyState extends StatelessWidget {
             Text(
               message!,
               textAlign: TextAlign.center,
-              style:
-                  textTheme.bodyMedium?.copyWith(color: scheme.onSurfaceVariant),
+              style: textTheme.bodyMedium
+                  ?.copyWith(color: scheme.onSurfaceVariant),
             ),
           ],
           if (actionLabel != null && onAction != null) ...[
@@ -830,8 +837,15 @@ class _SubjectSheetState extends State<_SubjectSheet> {
   final _controller = TextEditingController();
 
   static const _fold = {
-    'á': 'a', 'é': 'e', 'í': 'i', 'ó': 'o', 'ö': 'o', 'ő': 'o',
-    'ú': 'u', 'ü': 'u', 'ű': 'u',
+    'á': 'a',
+    'é': 'e',
+    'í': 'i',
+    'ó': 'o',
+    'ö': 'o',
+    'ő': 'o',
+    'ú': 'u',
+    'ü': 'u',
+    'ű': 'u',
   };
 
   static String _normalize(String s) =>
@@ -941,8 +955,8 @@ class _SubjectTile extends StatelessWidget {
     return ListTile(
       selected: selected,
       selectedTileColor: scheme.primaryContainer.withValues(alpha: 0.5),
-      contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.screenHorizontal),
+      contentPadding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
       title: Text(
         title,
         style: TextStyle(

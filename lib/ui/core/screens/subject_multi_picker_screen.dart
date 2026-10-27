@@ -85,7 +85,6 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   Widget _buildSubjectRow(
       BuildContext context, Subject subject, bool selected) {
     final scheme = Theme.of(context).colorScheme;
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
     return InkWell(
       onTap: () => _viewModel.toggleSubject(subject.name),
@@ -116,21 +115,13 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
                   ],
                 ),
               ),
-              if (isIOS)
-                Icon(
-                  selected
-                      ? CupertinoIcons.checkmark_circle_fill
-                      : CupertinoIcons.circle,
-                  color: selected ? scheme.primary : scheme.outline,
-                  size: 24,
-                )
-              else
-                Checkbox(
-                  value: selected,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  visualDensity: VisualDensity.compact,
-                  onChanged: (_) => _viewModel.toggleSubject(subject.name),
-                ),
+              Icon(
+                selected
+                    ? CupertinoIcons.checkmark_circle_fill
+                    : CupertinoIcons.circle,
+                color: selected ? scheme.primary : scheme.outline,
+                size: 24,
+              )
             ],
           ),
         ),
