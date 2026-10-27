@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +22,7 @@ import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:flutter/services.dart';
+import 'package:itk_app/utils/auth_actions.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'data/services/api_client.dart';
@@ -33,7 +36,8 @@ Future<void> main() async {
   final themeRepository = ThemeRepository(prefs: prefs);
   final onboardingRepository = OnboardingRepository(prefs: prefs);
   final authRepository = AuthRepository(apiClient: apiClient, prefs: prefs);
-  await authRepository.getSessionUser();
+  unawaited(authRepository.refreshUser());
+  apiClient.onUnauthorized = handleSessionExpired;
 
   final appRouter = router(authRepository, onboardingRepository);
 

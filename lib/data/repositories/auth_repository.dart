@@ -14,7 +14,9 @@ class AuthRepository extends ChangeNotifier {
       {required ApiClient apiClient, required SharedPreferencesService prefs})
       : _apiClient = apiClient,
         _dio = apiClient.dio,
-        _prefs = prefs;
+        _prefs = prefs {
+    _cachedUser = _loadUserFromDisk();
+  }
 
   static const _cacheKey = 'cached_user';
 
@@ -45,22 +47,7 @@ class AuthRepository extends ChangeNotifier {
   }
 
   // Logged in user, or null if session is invalid
-  Future<LdapUser?> getSessionUser() async {
-    // Load from disk
-    final fromDisk = await _loadUserFromDisk();
-
-    // If disk has valid user, set cache
-    if (fromDisk != null) {
-      _cachedUser = fromDisk;
-      notifyListeners();
-
-      unawaited(_fetchUserFromNetwork());
-      return fromDisk;
-    }
-
-    // Else wait for network and return that
-    return _fetchUserFromNetwork();
-  }
+  Future<LdapUser?> refreshUser() => _fetchUserFromNetwork();
 
   Future<void> logout() async {
     try {
@@ -95,7 +82,7 @@ class AuthRepository extends ChangeNotifier {
     return user;
   }
 
-  Future<LdapUser?> _loadUserFromDisk() async {
+  LdapUser? _loadUserFromDisk() {
     final raw = _prefs.getString(_cacheKey);
     if (raw == null) return null;
 
@@ -103,12 +90,12 @@ class AuthRepository extends ChangeNotifier {
     try {
       decoded = jsonDecode(raw);
     } on FormatException {
-      await _prefs.remove(_cacheKey);
+      unawaited(_prefs.remove(_cacheKey));
       return null;
     }
 
     final user = _parseUser(decoded);
-    if (user == null) await _prefs.remove(_cacheKey);
+    if (user == null) unawaited(_prefs.remove(_cacheKey));
     return user;
   }
 
