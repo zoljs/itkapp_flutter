@@ -2,54 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:itk_app/data/services/api_error.dart';
-import 'package:itk_app/data/services/http_adapter.dart';
-import 'package:flutter/foundation.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:path_provider/path_provider.dart';
 
 class ApiClient {
-  ApiClient();
-  static const String baseUrl = 'https://test.app.itk.ppke.hu';
-
-  late final Dio dio;
-  CookieJar? _cookieJar;
-  bool _initialized = false;
-
-  Future<void> Function()? onUnauthorized;
-  bool _handlingUnauthorized = false;
-
-  Future<void> _handleUnauthorized() async {
-    if (_handlingUnauthorized) return;
-    _handlingUnauthorized = true;
-
-    try {
-      await onUnauthorized?.call();
-    } finally {
-      _handlingUnauthorized = false;
-    }
-  }
-
-  Future<void> init() async {
-    if (_initialized) return;
-
-    dio = Dio(
-      BaseOptions(
-        baseUrl: baseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-      ),
-    );
-
-    if (kIsWeb) {
-      configureHttpAdapter(dio);
-    } else {
-      final appDocDir = await getApplicationDocumentsDirectory();
-      _cookieJar = PersistCookieJar(
-        storage: FileStorage('${appDocDir.path}/.cookies/'),
-      );
-      dio.interceptors.add(CookieManager(_cookieJar!));
-    }
-
+  ApiClient._(this.dio, this._cookieJar) {
     // 401 Interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onError: (error, handler) {
@@ -76,12 +33,48 @@ class ApiClient {
         handler.next(response);
       },
     ));
+  }
 
-    _initialized = true;
+  static const String baseUrl = 'https://test.app.itk.ppke.hu';
+
+  final Dio dio;
+  final CookieJar _cookieJar;
+
+  Future<void> Function()? onUnauthorized;
+  bool _handlingUnauthorized = false;
+
+  Future<void> _handleUnauthorized() async {
+    if (_handlingUnauthorized) return;
+    _handlingUnauthorized = true;
+
+    try {
+      await onUnauthorized?.call();
+    } finally {
+      _handlingUnauthorized = false;
+    }
+  }
+
+  static Future<ApiClient> create() async {
+    final Dio dio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+        baseUrl: baseUrl,
+      ),
+    );
+    final CookieJar cookieJar;
+
+    final appDocDir = await getApplicationDocumentsDirectory();
+    cookieJar = PersistCookieJar(
+      storage: FileStorage('${appDocDir.path}/.cookies/'),
+    );
+    dio.interceptors.add(CookieManager(cookieJar));
+
+    return ApiClient._(dio, cookieJar);
   }
 
   Future<void> clearCookies() async {
-    await _cookieJar?.deleteAll();
+    await _cookieJar.deleteAll();
   }
 
   Future<Result<T>> getJson<T>(

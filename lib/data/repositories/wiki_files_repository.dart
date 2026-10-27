@@ -1,29 +1,17 @@
-import 'package:dio/dio.dart';
-import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/api_error.dart';
+import 'package:itk_app/data/services/users_client.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/utils/result.dart';
 
 class WikiFilesRepository {
   WikiFilesRepository({
-    required ApiClient apiClient,
-  }) : _dio = apiClient.dio;
+    required UsersClient usersClient,
+  }) : _usersClient = usersClient;
 
-  final Dio _dio;
+  final UsersClient _usersClient;
 
-  Future<Result<List<WikiFile>>> listDir(String dir, String siteUrl) async {
-    try {
-      final response = await _dio.get(
-        '$siteUrl/files_wiki.php',
-        queryParameters: {'dir': dir},
-      );
-      return Ok(parseFiles(response.data));
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    } on FormatException catch (e) {
-      return Err(e.message);
-    }
-  }
+  Future<Result<List<WikiFile>>> listDir(String dir, String user) async =>
+      await _usersClient.getJson('/~$user/files_wiki.php',
+          parse: parseFiles, queryParameters: {'dir': dir});
 
   static List<WikiFile> parseFiles(Object? data) {
     if (data is! List) {

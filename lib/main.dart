@@ -13,22 +13,19 @@ import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/repositories/videos_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:itk_app/data/services/users_client.dart';
 import 'package:itk_app/routing/router.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:flutter/services.dart';
-import 'package:itk_app/utils/auth_actions.dart';
 import 'package:provider/provider.dart';
 import 'data/services/api_client.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final apiClient = ApiClient();
-
-  await apiClient.init();
-  apiClient.onUnauthorized = handleSessionExpired;
+  final apiClient = await ApiClient.create();
 
   final themeRepository = ThemeRepository();
   final onboardingRepository = OnboardingRepository();
@@ -61,9 +58,10 @@ Future<void> main() async {
           Provider(
               create: (context) =>
                   SubjectsRepository(apiClient: context.read<ApiClient>())),
+          Provider(create: (_) => UsersClient()),
           Provider(
-              create: (context) =>
-                  WikiFilesRepository(apiClient: context.read<ApiClient>())),
+              create: (context) => WikiFilesRepository(
+                  usersClient: context.read<UsersClient>())),
           Provider(
               create: (context) =>
                   AdminRolesRepository(apiClient: context.read<ApiClient>())),
