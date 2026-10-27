@@ -14,13 +14,13 @@ class MidtermsViewModel extends ChangeNotifier {
     repository,
   })  : _authRepository = authRepository,
         _midtermRepository = midtermRepository {
-    load = Command0<void>(_load)..execute();
+    load = Command1<void, bool>(_load)..execute(false);
     delete = Command1<void, int>(_delete);
   }
 
   final MidtermsRepository _midtermRepository;
   final AuthRepository _authRepository;
-  late final Command0<void> load;
+  late final Command1<void, bool> load;
   late final Command1<void, int> delete;
 
   @override
@@ -59,8 +59,9 @@ class MidtermsViewModel extends ChangeNotifier {
 
   bool get initialLoading => load.running && _midterms.isEmpty;
 
-  Future<Result<void>> _load() async {
-    final result = await _midtermRepository.getMidterms();
+  Future<Result<void>> _load(bool forceReload) async {
+    final result =
+        await _midtermRepository.getMidterms(forceReload: forceReload);
 
     switch (result) {
       case Ok(:final value):
@@ -76,7 +77,7 @@ class MidtermsViewModel extends ChangeNotifier {
     _midterms = _midterms.where((m) => m.id != id).toList();
     notifyListeners();
     final result = await _midtermRepository.deleteMidterm(midtermId: id);
-    if (result is Err) await _load();
+    if (result is Err) await _load(true);
     return result;
   }
 }

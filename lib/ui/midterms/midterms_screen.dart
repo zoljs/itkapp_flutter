@@ -74,7 +74,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
       builder: (context, controller) =>
           AddMidtermScreen(scrollController: controller),
     );
-    _viewModel.load.execute();
+    _viewModel.load.execute(true);
   }
 
   Widget _buildHeader(BuildContext context, {required bool asFab}) {
@@ -236,8 +236,10 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
   Widget _buildListSliver(BuildContext context) {
     if (!_viewModel.initialLoading && _viewModel.load.errorMessage != null) {
       return _buildMessage(
-          Icons.cloud_off_rounded, _viewModel.load.errorMessage!,
-          onRetry: _viewModel.load.execute);
+        Icons.cloud_off_rounded,
+        _viewModel.load.errorMessage!,
+        onRetry: () => _viewModel.load.execute(true),
+      );
     }
 
     final items = _viewModel.initialLoading
@@ -280,7 +282,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
           builder: (context, _) {
             return Scaffold(
               body: RefreshIndicator(
-                onRefresh: _viewModel.load.execute,
+                onRefresh: () => _viewModel.load.execute(true),
                 child: CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(
                     parent: BouncingScrollPhysics(),

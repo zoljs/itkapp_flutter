@@ -75,18 +75,6 @@ GoRouter router(
               GoRoute(
                 path: Routes.home,
                 builder: (context, state) => const HomeScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'midterms',
-                    pageBuilder: (context, state) =>
-                        _page(state, const MidtermsScreen()),
-                  ),
-                  GoRoute(
-                    path: 'videos',
-                    pageBuilder: (context, state) =>
-                        _page(state, const VideosScreen()),
-                  ),
-                ],
               ),
             ]),
             // ----------------- [CAL] -----------------
@@ -142,6 +130,14 @@ GoRouter router(
           path: Routes.adminRoles,
           pageBuilder: (context, state) =>
               _page(state, const AdminRolesScreen()),
+        ),
+        GoRoute(
+          path: Routes.midterms,
+          pageBuilder: (context, state) => _page(state, const MidtermsScreen()),
+        ),
+        GoRoute(
+          path: Routes.videos,
+          pageBuilder: (context, state) => _page(state, const VideosScreen()),
         ),
       ],
     );

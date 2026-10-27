@@ -13,20 +13,18 @@ class SitesRepository {
   final Dio _dio;
   final ApiClient _apiClient;
 
-  List<UserSite>? _cachedSites;
+  List<UserSite>? _cached;
 
-  List<UserSite> get cachedSites => _cachedSites ?? const [];
+  List<UserSite> get cached => _cached ?? const [];
 
-  bool get hasCachedSites => _cachedSites != null;
-
-  void clearCache() => _cachedSites = null;
+  void clearCache() => _cached = null;
 
   Future<Result<List<UserSite>>> getAllSites({bool forceReload = false}) async {
-    final cached = _cachedSites;
+    final cached = _cached;
     if (cached != null && !forceReload) return Ok(cached);
 
     final result = await _apiClient.getJson('/api/sites', parse: _parseSites);
-    if (result case Ok(:final value)) _cachedSites = value;
+    if (result case Ok(:final value)) _cached = value;
     return result;
   }
 

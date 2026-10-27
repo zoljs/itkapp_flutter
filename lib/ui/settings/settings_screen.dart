@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
+import 'package:itk_app/data/repositories/midterms_repository.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
@@ -45,6 +46,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       subjectsRepository: context.read<SubjectsRepository>(),
       sitesRepository: context.read<SitesRepository>(),
       calendarRepository: context.read<CalendarRepository>(),
+      midtermsRepository: context.read<MidtermsRepository>(),
       apiClient: context.read<ApiClient>(),
       onboardingRepository: context.read<OnboardingRepository>(),
     );

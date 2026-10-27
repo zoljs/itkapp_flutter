@@ -7,10 +7,7 @@ class FakeSitesService implements SitesRepository {
   Result<UserSite?> mySiteResult = const Ok(null);
 
   @override
-  List<UserSite> get cachedSites => const [];
-
-  @override
-  bool get hasCachedSites => false;
+  List<UserSite> get cached => const [];
 
   @override
   void clearCache() {}

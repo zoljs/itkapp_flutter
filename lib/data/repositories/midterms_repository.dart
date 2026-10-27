@@ -13,8 +13,20 @@ class MidtermsRepository {
   final ApiClient _apiClient;
   final Dio _dio;
 
-  Future<Result<List<MidtermDate>>> getMidterms() async =>
-      await _apiClient.getJson('/api/midterms', parse: parseMidterms);
+  List<MidtermDate>? _cached;
+
+  void clearCache() => _cached = null;
+
+  Future<Result<List<MidtermDate>>> getMidterms(
+      {bool forceReload = false}) async {
+    final cached = _cached;
+    if (cached != null && !forceReload) return Ok(cached);
+
+    final result =
+        await _apiClient.getJson('/api/midterms', parse: parseMidterms);
+    if (result case Ok(:final value)) _cached = value;
+    return result;
+  }
 
   List<MidtermDate> parseMidterms(Object? data) {
     if (data is! List) {
@@ -48,6 +60,7 @@ class MidtermsRepository {
     } on DioException catch (e) {
       return Err(apiErrorMessage(e));
     }
+    clearCache();
     return const Ok(null);
   }
 
@@ -59,7 +72,7 @@ class MidtermsRepository {
     } on DioException catch (e) {
       return Err(apiErrorMessage(e));
     }
-
+    clearCache();
     return const Ok(null);
   }
 }

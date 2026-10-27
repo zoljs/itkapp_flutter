@@ -10,7 +10,7 @@ class WikiViewModel extends ChangeNotifier {
   WikiViewModel({
     required SitesRepository repository,
   })  : _repository = repository,
-        _sites = repository.cachedSites {
+        _sites = repository.cached {
     load = Command1<void, bool>(_load)..execute(false);
   }
 
