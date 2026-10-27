@@ -210,7 +210,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
                 onTap: _openTagPicker,
               ),
               ..._viewModel.tags.map((tag) {
-                return buildTagRow(tag);
+                return _buildTagRow(tag);
               }),
             ],
           ),
@@ -237,7 +237,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
     );
   }
 
-  Dismissible buildTagRow(String tag) {
+  Dismissible _buildTagRow(String tag) {
     final scheme = Theme.of(context).colorScheme;
 
     return Dismissible(

@@ -17,7 +17,7 @@ import 'package:itk_app/ui/core/theme/app_themes.dart';
 
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
-import 'package:itk_app/ui/core/widgets/my_site_card.dart';
+import 'package:itk_app/ui/wiki/widgets/my_site_card.dart';
 
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 
