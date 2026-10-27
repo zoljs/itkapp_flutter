@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
-import 'package:itk_app/data/repositories/calendar_repository.dart';
-import 'package:itk_app/data/repositories/midterms_repository.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
-import 'package:itk_app/data/repositories/sites_repository.dart';
-import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/routing/routes.dart';
@@ -43,10 +39,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _viewModel = SettingsViewModel(
       authRepository: context.read<AuthRepository>(),
       themeRepository: context.read<ThemeRepository>(),
-      subjectsRepository: context.read<SubjectsRepository>(),
-      sitesRepository: context.read<SitesRepository>(),
-      calendarRepository: context.read<CalendarRepository>(),
-      midtermsRepository: context.read<MidtermsRepository>(),
       apiClient: context.read<ApiClient>(),
       onboardingRepository: context.read<OnboardingRepository>(),
     );
@@ -254,7 +246,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       iconColor: Colors.orange,
                       title: 'Gyorsítótár törlése',
                       onTap: () {
-                        _viewModel.clearCaches();
+                        clearAllCaches(context);
                         context.showMessage("Gyorsítótárak törölve!");
                       },
                     ),
