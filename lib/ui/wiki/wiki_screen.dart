@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/routing/routes.dart';
+import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -19,7 +20,6 @@ import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
 import 'package:itk_app/ui/core/widgets/my_site_card.dart';
 
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
-import 'package:itk_app/utils/context_extensions.dart';
 
 class WikiScreen extends StatefulWidget {
   const WikiScreen({super.key});
@@ -35,17 +35,6 @@ class _WikiScreenState extends State<WikiScreen> {
   Future<void> _openMySite() async {
     await context.push(Routes.wikiEdit);
     _viewModel.load.execute(true);
-  }
-
-  Future<void> _openSite(String url) async {
-    final uri = Uri.tryParse(url);
-    final ok = uri != null &&
-        uri.hasScheme &&
-        await launchUrl(uri, mode: LaunchMode.inAppWebView);
-
-    if (!ok && mounted) {
-      context.showMessage('Nem sikerült megnyitni az oldalt.');
-    }
   }
 
   @override
@@ -145,7 +134,7 @@ class _WikiScreenState extends State<WikiScreen> {
     if (site.isPhpEnabled && login != null) {
       context.push(Routes.wikiFilesFor(login));
     } else {
-      _openSite(site.url);
+      openLink(context, site.url, mode: LaunchMode.inAppWebView);
     }
   }
 

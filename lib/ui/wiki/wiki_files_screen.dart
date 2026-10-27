@@ -6,7 +6,7 @@ import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
-import 'package:itk_app/utils/context_extensions.dart';
+import 'package:itk_app/utils/open_link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WikiFilesScreen extends StatefulWidget {
@@ -39,16 +39,8 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
   }
 
   Future<void> _openFile(BuildContext context, String name) async {
-    final url = widget.viewModel.fileUrl(name);
-    final uri = Uri.tryParse(url);
-
-    final ok = uri != null &&
-        uri.hasScheme &&
-        await launchUrl(uri, mode: LaunchMode.inAppWebView);
-
-    if (!ok && context.mounted) {
-      context.showMessage('Nem sikerült megnyitni az oldalt.');
-    }
+    openLink(context, widget.viewModel.fileUrl(name),
+        mode: LaunchMode.inAppWebView);
   }
 
   @override
