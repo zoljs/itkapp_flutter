@@ -1,13 +1,13 @@
 import 'dart:async';
+import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
+import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/viewmodels/home_viewmodel.dart';
 import 'package:itk_app/ui/home/widgets/event_card.dart';
 import 'package:itk_app/ui/home/widgets/home_screen_app_bar.dart';
 import 'package:itk_app/ui/home/widgets/quick_links_grid.dart';
-import 'package:itk_app/ui/midterms/midterms_screen.dart';
-import 'package:itk_app/ui/online_videos/online_videos.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -103,11 +103,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.event_note_rounded,
                         iconColor: scheme.error,
                         title: 'ZH időpontok',
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const MidtermsScreen()),
-                        ),
+                        onTap: () {
+                          context.push(Routes.midterms);
+                        },
                       ),
                     ],
                   ),
@@ -119,10 +117,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.video_chat_outlined,
                         iconColor: itkPrimary,
                         title: 'Online Videók',
-                        onTap: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const OnlineVideos())),
+                        onTap: () {
+                          context.push(Routes.onlineVideos);
+                        },
                       )
                     ],
                   ),

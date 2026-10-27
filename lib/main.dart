@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/admin/admin_roles_repository.dart';
 import 'package:itk_app/data/repositories/admin/admin_users_repository.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
@@ -11,7 +12,7 @@ import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
-import 'package:itk_app/ui/core/navigator_key.dart';
+import 'package:itk_app/routing/router.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
@@ -19,19 +20,23 @@ import 'package:flutter/services.dart';
 import 'package:itk_app/utils/auth_actions.dart';
 import 'package:provider/provider.dart';
 import 'data/services/api_client.dart';
-import 'ui/login/auth_gate.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final apiClient = ApiClient.instance;
-  final themeRepository = ThemeRepository();
-  final onboardingRepository = OnboardingRepository();
-
   await apiClient.init();
   apiClient.onUnauthorized = handleSessionExpired;
+
+  final themeRepository = ThemeRepository();
+  final onboardingRepository = OnboardingRepository();
+  final authRepository = AuthRepository(apiClient: apiClient);
+
   await themeRepository.loadFromDisk();
   await onboardingRepository.loadFromDisk();
+  await authRepository.getSessionUser();
+
+  final appRouter = router(authRepository, onboardingRepository);
 
   initializeDateFormatting().then(
     (_) => runApp(
@@ -40,9 +45,7 @@ Future<void> main() async {
           Provider.value(value: apiClient),
           Provider.value(value: themeRepository),
           Provider.value(value: onboardingRepository),
-          ChangeNotifierProvider(
-              create: (context) =>
-                  AuthRepository(apiClient: context.read<ApiClient>())),
+          ChangeNotifierProvider.value(value: authRepository),
           Provider(
               create: (context) =>
                   CalendarRepository(apiClient: context.read<ApiClient>())),
@@ -66,7 +69,7 @@ Future<void> main() async {
               create: (context) =>
                   AdminUsersRepository(apiClient: context.read<ApiClient>())),
         ],
-        child: const ITKApp(),
+        child: ITKApp(appRouter: appRouter),
       ),
     ),
   );
@@ -92,6 +95,12 @@ ThemeData _buildTheme(ColorScheme scheme) {
   final cupertinoText = const CupertinoThemeData().textTheme;
 
   return ThemeData(
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: ZoomPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
     colorScheme: scheme,
     useMaterial3: true,
     splashFactory: defaultTargetPlatform == TargetPlatform.iOS
@@ -121,7 +130,9 @@ ThemeData _buildTheme(ColorScheme scheme) {
 }
 
 class ITKApp extends StatelessWidget {
-  const ITKApp({super.key});
+  const ITKApp({super.key, required this.appRouter});
+
+  final GoRouter appRouter;
 
   @override
   Widget build(BuildContext context) {
@@ -140,13 +151,12 @@ class ITKApp extends StatelessWidget {
       builder: (context, isOled, child) {
         final darkScheme = _darkSchemeFor(baseDarkScheme, isOled: isOled);
 
-        return MaterialApp(
+        return MaterialApp.router(
           debugShowCheckedModeBanner: false,
           title: 'ITK App',
           themeMode: ThemeMode.dark,
           darkTheme: _buildTheme(darkScheme),
-          home: const AuthGate(),
-          navigatorKey: navigatorKey,
+          routerConfig: appRouter,
         );
       },
     );

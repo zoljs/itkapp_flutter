@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
-import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
@@ -51,9 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
     if (_viewModel.login.completed) {
       TextInput.finishAutofillContext();
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AppScaffold()),
-      );
     } else if (_viewModel.login.errorMessage case final message?) {
       context.showMessage(message);
     }

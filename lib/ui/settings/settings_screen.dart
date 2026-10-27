@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
@@ -6,7 +7,7 @@ import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/ui/admin/admin_roles_screen.dart';
+import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
@@ -171,28 +172,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       );
                     }),
 
-                // Privacy
-                SettingsGroup(
-                  header: 'Adatok és adatvédelem',
-                  children: [
-                    SettingsTile(
-                      icon: Icons.cleaning_services_rounded,
-                      iconColor: scheme.secondary,
-                      title: 'Gyorsítótár törlése',
-                      onTap: () {
-                        _viewModel.clearCaches();
-                        context.showMessage("Gyorsítótárak törölve!");
-                      },
-                    ),
-                    SettingsTile(
-                      icon: Icons.privacy_tip_rounded,
-                      iconColor: scheme.secondary,
-                      title: 'Adatkezelési tájékoztató',
-                      onTap: () {},
-                    ),
-                  ],
-                ),
-
                 // Admin
                 if (_viewModel.currentUser?.isAdmin ?? false)
                   SettingsGroup(
@@ -200,13 +179,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     footer: 'Évfolyamfelelősök kinevezése és visszavonása.',
                     children: [
                       SettingsTile(
+                        icon: Icons.shield_rounded,
+                        iconColor: Colors.lightBlue,
                         title: 'Jogosultságok',
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const AdminRolesScreen(),
-                          ),
-                        ),
+                        onTap: () {
+                          context.push(Routes.adminRoles);
+                        },
                       ),
                     ],
                   ),
@@ -228,6 +206,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           _ => '…',
                         },
                       ),
+                    ),
+                    SettingsTile(
+                      icon: Icons.privacy_tip_rounded,
+                      iconColor: scheme.outline,
+                      title: 'Adatkezelési tájékoztató',
+                      onTap: () {},
                     ),
                     SettingsTile(
                       icon: Icons.description_rounded,
@@ -264,9 +248,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   header: 'Debug',
                   children: [
                     SettingsTile(
+                      icon: Icons.cleaning_services_rounded,
+                      iconColor: Colors.orange,
+                      title: 'Gyorsítótár törlése',
+                      onTap: () {
+                        _viewModel.clearCaches();
+                        context.showMessage("Gyorsítótárak törölve!");
+                      },
+                    ),
+                    SettingsTile(
                       icon: Icons.bug_report_rounded,
                       iconColor: Colors.orange,
-                      title: 'Session törlése',
+                      title: 'Munkamenet törlése',
                       onTap: () async {
                         await _viewModel.clearCookies();
                         if (!context.mounted) return;
@@ -277,7 +270,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SettingsTile(
                       icon: Icons.bug_report_rounded,
                       iconColor: Colors.orange,
-                      title: 'Onboarding reset',
+                      title: 'Onboarding visszaállítása',
                       onTap: () async {
                         await _viewModel.resetOnboarding();
                         if (!context.mounted) return;

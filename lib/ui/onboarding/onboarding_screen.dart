@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
-import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
@@ -54,10 +53,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   Future<void> _finish() async {
     await context.read<OnboardingRepository>().markSeenOnboarding();
     if (!mounted) return;
-
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const AppScaffold()),
-    );
   }
 
   void _next() {
