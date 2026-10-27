@@ -136,30 +136,3 @@ class SettingsTile extends StatelessWidget {
     );
   }
 }
-
-class DestructiveTile extends StatelessWidget {
-  const DestructiveTile({super.key, required this.title, required this.onTap});
-
-  final String title;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: SizedBox(
-        height: 52,
-        child: Center(
-          child: Text(
-            title,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w600,
-              color: Theme.of(context).colorScheme.error,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}

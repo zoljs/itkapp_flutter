@@ -46,11 +46,6 @@ class MySiteViewModel extends ChangeNotifier {
   }
 
   bool get hasExistingSite => _hasExistingSite;
-  void setExistingSite(bool value) {
-    _hasExistingSite = value;
-    notifyListeners();
-  }
-
   String? get login => _authRepository.cachedUser?.login;
 
   bool get isPublic => _isPublic;

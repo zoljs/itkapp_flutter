@@ -8,7 +8,6 @@ abstract class Command<T> extends ChangeNotifier {
   Result<T>? _result;
   Result<T>? get result => _result;
 
-  bool get error => _result is Error;
   bool get completed => result is Ok;
 
   String? get errorMessage =>
