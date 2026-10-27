@@ -119,7 +119,7 @@ GoRouter router(
                         WikiFilesScreen(
                           viewModel: WikiFilesViewModel(
                             repository: context.read<WikiFilesRepository>(),
-                            siteUrl: 'https://users.itk.ppke.hu/~$user',
+                            user: user,
                             dir: dir,
                           ),
                         ),

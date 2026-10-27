@@ -27,11 +27,10 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
 
   void _openItem(BuildContext context, WikiFile item) {
     if (item.isDir) {
-      final user = GoRouterState.of(context).pathParameters['user'];
       final dir = widget.viewModel.childPath(item.name);
-      final uri =
-          Uri(path: Routes.wikiFilesFor(user!), queryParameters: {'dir': dir})
-              .toString();
+      final uri = Uri(
+          path: Routes.wikiFilesFor(widget.viewModel.user),
+          queryParameters: {'dir': dir}).toString();
 
       context.push(uri);
     } else {

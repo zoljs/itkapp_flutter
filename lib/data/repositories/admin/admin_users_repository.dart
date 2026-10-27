@@ -1,25 +1,14 @@
-import 'package:dio/dio.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AdminUsersRepository {
   AdminUsersRepository({
     required ApiClient apiClient,
-  }) : _dio = apiClient.dio;
+  }) : _apiClient = apiClient;
 
-  final Dio _dio;
+  final ApiClient _apiClient;
 
-  Future<Result<List<UserSummary>>> getUsers() async {
-    try {
-      final response = await _dio.get('/api/admin/users');
-      final users = UserSummary.parseUsers(response.data);
-      return Ok(users);
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    } on FormatException catch (e) {
-      return Err(e.message);
-    }
-  }
+  Future<Result<List<UserSummary>>> getUsers() async => await _apiClient
+      .getJson('/api/admin/users', parse: UserSummary.parseUsers);
 }
