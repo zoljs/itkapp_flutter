@@ -63,14 +63,11 @@ class MidtermsViewModel extends ChangeNotifier {
     final result =
         await _midtermRepository.getMidterms(forceReload: forceReload);
 
-    switch (result) {
-      case Ok(:final value):
-        _midterms = value;
-        notifyListeners();
-        return const Ok(null);
-      case Err(:final message):
-        return Err(message);
+    if (result case Ok(:final value)) {
+      _midterms = value;
+      notifyListeners();
     }
+    return result;
   }
 
   Future<Result<void>> _delete(int id) async {

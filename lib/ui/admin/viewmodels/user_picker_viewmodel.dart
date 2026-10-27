@@ -43,14 +43,11 @@ class UserPickerViewModel extends ChangeNotifier {
   Future<Result<void>> _load() async {
     final result = await _repository.getUsers();
 
-    switch (result) {
-      case Ok(:final value):
-        _users = value;
-        notifyListeners();
-        return const Ok(null);
-      case Err(:final message):
-        return Err(message);
+    if (result case Ok(:final value)) {
+      _users = value;
+      notifyListeners();
     }
+    return result;
   }
 
   void setQuery(String value) {

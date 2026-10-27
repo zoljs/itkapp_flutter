@@ -40,14 +40,11 @@ class AdminRolesViewModel extends ChangeNotifier {
   Future<Result<void>> _load() async {
     final result = await _repository.getRoleHolders();
 
-    switch (result) {
-      case Ok(:final value):
-        _roleHolders = value;
-        notifyListeners();
-        return const Ok(null);
-      case Err(:final message):
-        return Err(message);
+    if (result case Ok(:final value)) {
+      _roleHolders = value;
+      notifyListeners();
     }
+    return result;
   }
 
   Future<Result<void>> _assign(int id) async {

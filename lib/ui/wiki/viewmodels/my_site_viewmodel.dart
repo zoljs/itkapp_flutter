@@ -65,21 +65,17 @@ class MySiteViewModel extends ChangeNotifier {
     // Mysite
     final result = await _sitesRepository.getMySite();
 
-    switch (result) {
-      case Ok(value: final UserSite site):
-        _tags = List.of(site.tags);
-        _hasExistingSite = true;
-        _isPublic = site.isPublic;
-        _isPhpEnabled = site.isPhpEnabled;
-        notifyListeners();
-        return const Ok(null);
-      case Ok(value: null):
-        _hasExistingSite = false;
-        notifyListeners();
-        return const Ok(null);
-      case Err(:final message):
-        return Err(message);
+    if (result case Ok(value: final UserSite site)) {
+      _tags = List.of(site.tags);
+      _hasExistingSite = true;
+      _isPublic = site.isPublic;
+      _isPhpEnabled = site.isPhpEnabled;
+      notifyListeners();
+    } else if (result case Ok(value: null)) {
+      _hasExistingSite = false;
+      notifyListeners();
     }
+    return result;
   }
 
   Future<Result<void>> _save() async {

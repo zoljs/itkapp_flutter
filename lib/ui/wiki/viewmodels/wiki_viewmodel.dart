@@ -56,14 +56,11 @@ class WikiViewModel extends ChangeNotifier {
     // mySite
     if (mySiteResult case Ok(:final value)) _mySite = value;
 
-    switch (sitesResult) {
-      case Ok(:final value):
-        _sites = value;
-        notifyListeners();
-        return const Ok(null);
-      case Err(:final message):
-        return Err(message);
+    if (sitesResult case Ok(:final value)) {
+      _sites = value;
+      notifyListeners();
     }
+    return sitesResult;
   }
 
   void setQuery(String value) {

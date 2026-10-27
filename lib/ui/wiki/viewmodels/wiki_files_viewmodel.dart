@@ -48,13 +48,10 @@ class WikiFilesViewModel extends ChangeNotifier {
   Future<Result<void>> _load() async {
     final result = await _repository.listDir(_dir, _user);
 
-    switch (result) {
-      case Ok(:final value):
-        _items = value;
-        notifyListeners();
-        return const Ok(null);
-      case Err(:final message):
-        return Err(message);
+    if (result case Ok(:final value)) {
+      _items = value;
+      notifyListeners();
     }
+    return result;
   }
 }

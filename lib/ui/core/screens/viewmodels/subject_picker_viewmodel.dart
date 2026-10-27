@@ -48,13 +48,10 @@ class SubjectPickerViewModel extends ChangeNotifier {
   Future<Result<void>> _load() async {
     final result = await _repository.getSubjects();
 
-    switch (result) {
-      case Ok(:final value):
-        _subjects = value;
-        notifyListeners();
-        return const Ok(null);
-      case Err(:final message):
-        return Err(message);
+    if (result case Ok(:final value)) {
+      _subjects = value;
+      notifyListeners();
     }
+    return result;
   }
 }

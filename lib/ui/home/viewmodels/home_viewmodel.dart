@@ -36,16 +36,13 @@ class HomeViewModel extends ChangeNotifier {
     final result =
         await _calendarRepository.getCalendar(forceReload: forceReload);
 
-    switch (result) {
-      case Ok(:final value):
-        final now = DateTime.now();
-        final upcoming = value.where((e) => e.end.isAfter(now)).toList()
-          ..sort((a, b) => a.start.compareTo(b.start));
-        _nextEvent = upcoming.firstOrNull;
-        notifyListeners();
-        return const Ok(null);
-      case Err(:final message):
-        return Err(message);
+    if (result case Ok(:final value)) {
+      final now = DateTime.now();
+      final upcoming = value.where((e) => e.end.isAfter(now)).toList()
+        ..sort((a, b) => a.start.compareTo(b.start));
+      _nextEvent = upcoming.firstOrNull;
+      notifyListeners();
     }
+    return result;
   }
 }

@@ -27,34 +27,27 @@ class CalendarViewModel extends ChangeNotifier {
   // Methods
   Future<Result<void>> _load(bool forceReload) async {
     final result = await _repository.getCalendar(forceReload: forceReload);
-    final List<CalendarEvent> events;
 
-    switch (result) {
-      case Ok(:final value):
-        events = value;
-      case Err(:final message):
-        return Err(message);
+    if (result case Ok(:final value)) {
+      final eventData = value.map((e) {
+        final start = e.start.toLocal();
+        final end = e.end.toLocal();
+        final isInstant = end.isAtSameMomentAs(start);
+        final displayEnd =
+            isInstant ? start.add(const Duration(minutes: 15)) : end;
+
+        return CalendarEventData<CalendarEvent>(
+          date: start,
+          startTime: start,
+          endTime: displayEnd,
+          title: e.title,
+          event: e,
+        );
+      }).toList();
+
+      eventController.removeWhere((_) => true);
+      eventController.addAll(eventData);
     }
-
-    final eventData = events.map((e) {
-      final start = e.start.toLocal();
-      final end = e.end.toLocal();
-      final isInstant = end.isAtSameMomentAs(start);
-      final displayEnd =
-          isInstant ? start.add(const Duration(minutes: 15)) : end;
-
-      return CalendarEventData<CalendarEvent>(
-        date: start,
-        startTime: start,
-        endTime: displayEnd,
-        title: e.title,
-        event: e,
-      );
-    }).toList();
-
-    eventController.removeWhere((_) => true);
-    eventController.addAll(eventData);
-
-    return const Ok(null);
+    return result;
   }
 }
