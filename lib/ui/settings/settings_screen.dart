@@ -105,17 +105,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   header: 'Naptár',
                   children: [
                     SettingsTile(
-                      icon: Icons.view_day_rounded,
-                      iconColor: scheme.primary,
-                      title: 'Alapnézet',
-                      value: 'Nap',
-                      onTap: () {},
-                    ),
-                    SettingsTile(
                       icon: Icons.link_rounded,
                       iconColor: scheme.primary,
                       title: 'Naptárlinkek',
-                      onTap: () {},
+                      onTap: () => context.push(Routes.calendarLinks),
                     ),
                   ],
                 ),

@@ -28,7 +28,6 @@ class ShrinkingSliverAppBar extends StatelessWidget {
 
     return SliverAppBar(
       stretch: true,
-      stretchTriggerOffset: 100.0,
       centerTitle: centerTitle,
       title: title,
       expandedHeight: expandedHeight,

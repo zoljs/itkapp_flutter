@@ -1,0 +1,557 @@
+9d2bd77  2026-10-27  Zoltán
+  chore(lint): enable stricter async and dynamic lints and fix warnings
+
+- enable unawaited_futures, discarded_futures, avoid_dynamic_calls,
+  unnecessary_await_in_return and always_declare_return_types
+- mark intentional fire-and-forget calls with unawaited
+- await logout, reloads and openLink in async functions
+- move orientation lock and date formatting init into main
+- remove unused getMySite prefetch from AppScaffold
+
+----------------------------------------
+e0dc374  2026-10-27  Zoltán
+  refactor(data): add sendRequest and use it for all simple requests
+
+- add sendRequest that maps DioException and FormatException to Err
+- build ApiClient.getJson and UsersClient.getJson on sendRequest
+- use sendRequest for midterm, site and admin role mutations
+
+----------------------------------------
+4d3b450  2026-10-27  Zoltán
+  refactor(settings): clear caches via shared clearAllCaches helper
+
+- remove duplicated cache clearing and four repository dependencies from SettingsViewModel
+
+----------------------------------------
+e5ee501  2026-10-27  Zoltán
+  chore(wiki): move MySiteCard to wiki widgets and make buildTagRow private
+
+
+----------------------------------------
+90d27f1  2026-10-27  Zoltán
+  refactor(wiki): use openLink helper for sites and files
+
+
+----------------------------------------
+94702e0  2026-10-27  Zoltán
+  refactor(ui): simplify viewmodel result handling
+
+- replace Ok/Err switch with if-case and return the repository result
+
+----------------------------------------
+bda845f  2026-10-27  Zoltán
+  chore: remove dead code
+
+- remove unused Command.error getter (checked against Dart Error, always false)
+- remove unused ComposeAppBarLarge, DestructiveTile and setExistingSite
+
+----------------------------------------
+a5020dd  2026-10-27  Zoltán
+  feat(midterms): cache midterms and open midterms and videos full screen
+
+- cache midterm list in MidtermsRepository, clear on add and delete
+- clear midterms cache on logout via shared clearAllCaches helper
+- force reload midterms on pull to refresh and retry
+- move midterms and videos routes outside the shell so the FAB is not hidden
+- remove manual navigation from performLogout, the router handles it
+
+----------------------------------------
+9dd0b60  2026-10-27  patrik.dart
+  Merge pull request #5 from zoljs/refactor/api-client-get-json
+
+refactor(data): add SharedPreferencesService and load auth state synchronously
+----------------------------------------
+e5eb661  2026-10-27  Zoltán
+  refactor(data): add SharedPreferencesService and load auth state synchronously
+
+- wrap SharedPreferences in a service created once in main
+- inject it into Theme, Onboarding and Auth repositories
+- initialize theme, onboarding and cached user in constructors
+- replace getSessionUser with refreshUser, run it in background on startup
+- await remove in resetOnboarding
+- restore onUnauthorized wiring after ApiClient.create migration
+
+----------------------------------------
+1ddc61a  2026-10-27  Zoltán
+  refactor(data): add SharedPreferencesService
+
+- wrap SharedPreferences in a service created once in main
+- inject it into Theme, Onboarding and Auth repositories
+- initialize theme and onboarding state in constructors, remove loadFromDisk
+- await remove in resetOnboarding
+
+----------------------------------------
+6b7f7ab  2026-10-27  Zoltán
+  refactor(data): separate users site client and simplify ApiClient
+
+- add UsersClient for users.itk.ppke.hu with its own Dio
+- WikiFilesRepository takes user instead of site url
+- WikiFilesViewModel builds site and file urls from user
+- replace ApiClient.init with async ApiClient.create factory
+- remove web http adapter and kIsWeb branch
+
+----------------------------------------
+0a7e302  2026-10-27  Zoltán
+  refactor(data): add ApiClient.getJson and use it in repositories
+
+- add getJson<T> that maps DioException and FormatException to Err
+- use getJson in Subjects, Midterms, Sites, AdminRoles and AdminUsers
+- make Sites parse functions throw FormatException instead of returning null
+- catch FormatException in getMySite and saveMySite
+
+----------------------------------------
+5f2ec65  2026-10-27  Zoltán
+  refactor(videos): move online videos ui into ui/videos
+
+
+----------------------------------------
+421f8fc  2026-10-27  patrik.dart
+  Merge pull request #4 from zoljs/refactor/videos-service-di
+
+refactor(di): remove last singletons
+----------------------------------------
+1ba4bbf  2026-10-27  Zoltán
+  refactor(di): remove last singletons
+
+- rename VideosService to VideosRepository and inject ApiClient
+- provide VideosRepository and read it from context in OnlineVideosScreen
+- create ApiClient in main and remove ApiClient.instance
+
+----------------------------------------
+33e46e3  2026-10-27  patrik.dart
+  Merge pull request #3 from zoljs/refactor/go-router
+
+refactor(routing): migrate navigation to go_router
+----------------------------------------
+a334c19  2026-10-27  Zoltán
+  refactor(routing): migrate navigation to go_router
+
+- add Routes constants and router with auth and onboarding redirect
+- replace AuthGate with redirect; load session user in main
+- switch ITKApp to MaterialApp.router
+- move bottom navigation to StatefulShellRoute
+- add nested routes for wiki, midterms, online videos and admin
+- open wiki files by user path and dir query parameter
+- remove manual navigation after login, onboarding and logout
+
+----------------------------------------
+d6a2bec  2026-10-27  patrik.dart
+  Merge pull request #2 from zoljs/feat/php-site-files
+
+feat(wiki): open php-enabled sites as file browser
+----------------------------------------
+d3a6ef5  2026-10-27  Zoltán
+  feat(wiki): open php-enabled sites as file browser
+
+- build files.php and file urls from the site url instead of hardcoded perpa4
+- strip trailing slash from site url in WikiFilesViewModel
+- pass siteUrl when navigating into subfolders
+- open WikiFilesScreen from the wiki list when isPhpEnabled is set
+
+----------------------------------------
+7deb157  2026-10-26  patrik.dart
+  Merge pull request #1 from zoljs/refactor/provider-go-router
+
+refactor: migrate dependency injection to Provider
+----------------------------------------
+ae35232  2026-10-26  Zoltán
+  refactor(di): finish provider migration and dispose viewmodels
+
+- inject remaining viewmodel dependencies via context.read in initState
+- create WikiFilesViewModel at navigation sites, read repository before push
+- make WikiFilesScreen stateful to dispose its viewmodel
+- read repositories from provider in AuthGate, AppScaffold, Onboarding and ITKApp
+- use context.read in auth_actions instead of singletons
+- move cache clearing into SettingsViewModel, remove clearAllCaches helper
+- dispose viewmodels in all screens
+- dispose commands and controllers owned by viewmodels
+- create repositories in main with provider create, remove static instances
+- remove unused viewmodel factories
+
+fix(auth): clear subjects cache on session expiry
+
+----------------------------------------
+d90d00e  2026-10-26  Zoltán
+  refactor(di): inject HomeViewModel dependencies via context
+
+- init HomeViewModel in initState with context.read
+- remove HomeViewModel.create factory
+
+----------------------------------------
+09c1831  2026-10-26  Zoltán
+  refactor(di): add provider and inject CalendarViewModel via context
+
+- add provider package
+- wrap ITKApp in MultiProvider with existing repository instances
+- use ChangeNotifierProvider for AuthRepository
+- init CalendarViewModel in initState with context.read
+- remove CalendarViewModel.create factory
+
+----------------------------------------
+879eece  2026-10-26  Zoltán
+  refactor(data): turn remaining services into repositories
+
+- Move all data classes to lib/data/repositories with injected ApiClient
+- CalendarRepository no longer depends on AuthRepository
+- Remove the unused getMySite prefetch from AppScaffold
+
+----------------------------------------
+88aedd2  2026-10-26  Zoltán
+  refactor(data): replace AuthService with AuthRepository
+
+- AuthRepository extends ChangeNotifier and notifies when the session
+  user is loaded, refreshed or cleared, so the router can react later
+- ApiClient is injected through the constructor
+- Remove the unused AuthResult class
+
+----------------------------------------
+1a594f6  2026-10-25  Zoltán
+  fix(onboarding): show onboarding to users who have not seen it yet
+
+- The AuthGate condition was inverted for testing; restore it
+- Add a debug action in Settings to reset the onboarding flag
+
+----------------------------------------
+bc783fb  2026-10-25  Zoltán
+  refactor(calendar): move CalendarScreen into a view model
+
+- Rename calendar_screen_test.dart to calendar_screen.dart
+- The view model owns its EventController and passes it to DayView
+  directly; drop the app-wide CalendarControllerProvider
+- Only the error text rebuilds on load state changes
+- The date picker opens on the currently visible day
+
+----------------------------------------
+e1863cb  2026-10-25  Zoltán
+  refactor(settings): move SettingsScreen into a view model
+
+- The view model listens to ThemeService and unsubscribes in dispose,
+  so theme changes made elsewhere (e.g. onboarding) show up here
+- Cache clearing goes through clearAllCaches(), shared with logout
+- clearCookies is awaited before showing the confirmation
+- Remove the unimplemented midterm reminder toggle and dead code
+
+----------------------------------------
+a414454  2026-10-25  Zoltán
+  refactor(home): move next-event loading into a view model
+
+- Pull-to-refresh now bypasses the calendar cache (it used to return
+  the cached calendar, so refreshing did nothing)
+- Fix: the empty state used Expanded outside a Flex and would throw
+- Next-event selection lives in the view model
+
+----------------------------------------
+eb03ec9  2026-10-25  Zoltán
+  refactor(auth): move login into a view model with a command
+
+- Credentials are passed to Command1 as a record
+- Only the submit button rebuilds while logging in
+- Password visibility stays as local widget state
+
+----------------------------------------
+c97e210  2026-10-25  Zoltán
+  refactor(midterms): move MidtermsScreen into a view model with commands
+
+- Fix: deleting a midterm called the server twice (confirmDismiss
+  deleted directly, then onDismissed deleted again via the view model)
+- Search now filters through the view model
+- Skeleton only on the first load, so refreshing keeps the list
+
+----------------------------------------
+31fbf31  2026-10-25  Zoltán
+  refactor(wiki): move MySiteScreen into a view model; enable PHP toggle
+
+- MySiteViewModel holds the form (tags, isPublic, isPhpEnabled) and
+  load/save/delete commands; login comes from the cached auth user
+- Fix: the screen only closes after a successful save or delete,
+  so a failed save no longer discards the user's changes
+- The PHP file browser toggle can now be switched on and off
+
+----------------------------------------
+52e2eeb  2026-10-25  Zoltán
+  refactor(midterms): move AddMidtermScreen form state into a view model
+
+- Form fields live in AddMidtermViewModel with setters
+- canSave disables the save action until the required fields are set
+- startsAt combines date and time in the view model
+- save is a command; the view closes the sheet or shows the error
+
+----------------------------------------
+707610c  2026-10-25  Zoltán
+  refactor(ui): migrate all view models to commands
+
+- Replace hand-written loading/error fields with Command0/Command1
+  in the picker, wiki and wiki files view models
+- Views listen to both the view model and its load command
+- WikiViewModel.load takes forceReload; the skeleton only shows
+  when there is no cached data, so cached lists no longer flash
+
+----------------------------------------
+d517e16  2026-10-25  Zoltán
+  refactor(admin): move AdminRolesScreen to a view model with commands
+
+- Add Command0/Command1 (lib/utils/command.dart) following the Compass
+  app pattern: per-action running state, result, double-tap guard
+- Revoke removes the user optimistically and reloads only on failure;
+  the confirm dialog stays in the view (confirmDismiss)
+- Assign reloads the list on success; the view shows the result
+
+----------------------------------------
+e3abf0e  2026-10-24  Zoltán
+  refactor(core): move pickers to core and share their logic and search
+
+- Move SubjectPicker and SubjectMultiPicker (formerly MySiteTags)
+  screens to ui/core/screens, as both are reused across features
+- SubjectMultiPickerViewModel extends SubjectPickerViewModel and adds
+  only the selection state
+- Extract PickerSearchField, used by all three pickers; its clear
+  button listens to the controller and updates on its own
+
+----------------------------------------
+79053ef  2026-10-24  Zoltán
+  refactor(wiki): move WikiScreen and WikiFilesScreen state into view models
+
+- Add WikiViewModel and WikiFilesViewModel (ChangeNotifier) following
+  the official Flutter MVVM guide; services are injected via constructor
+- Load the site list and own site in parallel, so both finish together
+- Move search filtering and path/title logic out of the widgets
+- Drop SitesService.mySiteNotifier; the own site is now plain view state
+- Expose lists as UnmodifiableListView
+- Add FakeSitesService for upcoming view model tests
+
+----------------------------------------
+bddd9fc  2026-10-24  Zoltán
+  feat: wip automatic users site exploration via php
+
+
+----------------------------------------
+6120f41  2026-10-23  Zoltán
+  feat(sites): expose claimed flag in site list
+
+
+----------------------------------------
+345540c  2026-10-19  Zoltán
+  fix: settings item icon color
+
+
+----------------------------------------
+3fcbec6  2026-10-13  Zoltán
+  feat: added access control screen for admins - reworked borders for all widgets - added option to move action buttons into a FAB
+
+
+----------------------------------------
+7ea7e6f  2026-10-12  Zoltán
+  fix: TO abbreviation
+
+
+----------------------------------------
+2056ad4  2026-10-09  Zoltán
+  feat: hig related changes and consistent bottom sheets
+
+
+----------------------------------------
+d60814c  2026-10-07  Zoltán
+  feat: somewhat better midterms screen
+
+
+----------------------------------------
+e53ddc8  2026-10-06  Zoltán
+  feat: horrible midterm dates screens
+
+
+----------------------------------------
+a796b54  2026-10-06  bww01
+  Online videos
+
+
+----------------------------------------
+f799c35  2026-10-05  Zoltán
+  feat(midterms): add midterm dates list screen
+
+- Subject model: switch to backend shape (id, code, name), validate in fromJson
+- SubjectsService: fetch from /api/subjects instead of space API
+- Add MidtermDate model with validating fromJson
+- Add MidtermsService (getMidterms, addMidterm)
+- Add barebones MidtermsScreen, linked from home screen
+
+----------------------------------------
+5675b13  2026-10-04  Zoltán
+  Secure endpoints, error codes, remove push and client-set site fields
+
+
+----------------------------------------
+e0835ff  2026-10-03  Zoltán
+  Cache clearing option in settings
+
+
+----------------------------------------
+7b88777  2026-10-03  Zoltán
+  Removed unused import from settings
+
+
+----------------------------------------
+5d5b2ec  2026-10-03  Zoltán
+  Extract shared UI helpers: StateMessage, confirm dialog, openLink, showMessage
+
+
+----------------------------------------
+2806c9f  2026-10-03  Zoltán
+  Standardize service errors with Result type
+
+
+----------------------------------------
+027a1d9  2026-10-02  Zoltán
+  Better state indicators for the wiki page.
+
+
+----------------------------------------
+58b0fd5  2026-10-02  bww01
+  Merge branch 'main' of https://github.com/zoljs/itkapp_flutter
+
+
+----------------------------------------
+4d4ccbb  2026-10-02  Zoltán
+  Swapped incorrect minimum spacing for platforms. Added cache clearing for CalendarService. Moved calendarController out of ValueListenableBuilder.
+
+
+----------------------------------------
+cf323f2  2026-10-02  bww01
+  Merge remote-tracking branch 'origin/main'
+
+# Conflicts:
+#	lib/ui/app_scaffold.dart
+
+----------------------------------------
+f0a8d6a  2026-10-02  bww01
+  Online videos for studies
+
+
+----------------------------------------
+eb2accd  2026-10-02  Zoltán
+  Proper home screen and misc appbar changes. Removed some dead code as well.
+
+
+----------------------------------------
+41cae1e  2026-10-01  Zoltán
+  Proper appbar leading and action icons that look consistent. Added fading flexiblespacebar to platform app bar.
+
+
+----------------------------------------
+35c8605  2026-10-01  bww01
+  calendar_screen_test.dart: handle TZID in ICS DSTART/DTEND
+
+events with TZID parameter were parsed as UTC and the converted to local time which resulted in inaccuracies.
+
+Times with TZID are now interpreted in their own timzone using the @TZDateTime package and only then converted to local
+
+----------------------------------------
+8b3c043  2026-09-30  Zoltán
+  HIG related changes and consistency
+
+
+----------------------------------------
+488d822  2026-09-30  bww01
+  cors fix
+
+
+----------------------------------------
+85c5732  2026-09-29  Zoltán
+  Bunch of changes related to HIG consistency.
+
+
+----------------------------------------
+a3e6417  2026-09-29  Zoltán
+  Revamped calendar with adaptive dialogs/modals and fixed navbar safearea causing overflows.
+
+
+----------------------------------------
+65bcce9  2026-09-28  Zoltán
+  Added SubjectService singleton for future use.
+
+
+----------------------------------------
+f301c37  2026-09-28  Zoltán
+  Removed android folder so it can be re generated.
+
+
+----------------------------------------
+110f870  2026-09-28  Zoltán
+  Removed flutter screenshots.
+
+
+----------------------------------------
+cbc5e93  2026-09-28  Zoltán
+  Removed backup lib.zip
+
+
+----------------------------------------
+5e7acea  2026-09-28  Zoltán
+  Future-safe folder structure.
+
+
+----------------------------------------
+8b1b9f8  2026-09-28  Zoltán
+  Less native, more general hig compliancy
+
+
+----------------------------------------
+1cc2acc  2026-09-27  Zoltán
+  Native adaptive components
+
+
+----------------------------------------
+c1f06ba  2026-09-26  Zoltán
+  Revert point before total destruction
+
+
+----------------------------------------
+e574d16  2026-09-25  Zoltán
+  Liquid glass imitation on iOS
+
+
+----------------------------------------
+b713e57  2026-09-25  Zoltán
+  lol8
+
+
+----------------------------------------
+e8fc532  2026-09-23  patrikdotdart
+  lol7
+
+
+----------------------------------------
+1882a41  2026-09-21  patrikdotdart
+  lol6
+
+
+----------------------------------------
+7340289  2026-09-15  patrikdotdart
+  lol5
+
+
+----------------------------------------
+b7f7f07  2026-09-02  zoljs
+  lol4
+
+
+----------------------------------------
+e039192  2026-08-31  Zoltán
+  lol3
+
+
+----------------------------------------
+fc5fd5f  2026-08-31  zoljs
+  lol2
+
+
+----------------------------------------
+fcfe722  2026-08-29  zoljs
+  lol
+
+
+----------------------------------------
+7c9f99c  2026-08-29  zoljs
+  Initial commit
+
+
+----------------------------------------

@@ -8,33 +8,36 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
+import 'package:itk_app/ui/onboarding/widgets/wiki_illustration.dart';
+import 'package:itk_app/ui/onboarding/widgets/timetable_illustration.dart';
+import 'package:itk_app/ui/onboarding/widgets/welcome_illustration.dart';
 import 'package:provider/provider.dart';
 
 class _OnboardingPage {
-  final IconData icon;
   final String title;
   final String body;
+  final Widget illustration;
 
   const _OnboardingPage({
-    required this.icon,
     required this.title,
     required this.body,
+    required this.illustration,
   });
 }
 
 const _pages = <_OnboardingPage>[
   _OnboardingPage(
-    icon: Icons.waving_hand_rounded,
+    illustration: WelcomeIllustration(),
     title: 'Üdv az ITK Appban!',
     body: 'Órarend, ZH-időpontok és a hallgatói wiki egy helyen.',
   ),
   _OnboardingPage(
-    icon: Icons.calendar_month_rounded,
+    illustration: TimetableIllustration(),
     title: 'Naptár és ZH-k',
     body: 'Kövesd az óráidat és a közelgő számonkéréseket.',
   ),
   _OnboardingPage(
-    icon: Icons.menu_book_rounded,
+    illustration: WikiIllustration(),
     title: 'Hallgatói wiki',
     body: 'Böngészd a hallgatók oldalait, és oszd meg a sajátodat.',
   ),
@@ -143,13 +146,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Widget _buildInfoPage(_OnboardingPage page, BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.all(AppSpacing.xxl),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(page.icon, size: 96, color: scheme.primary),
+          page.illustration,
           const SizedBox(height: AppSpacing.xxl),
           Text(
             page.title,

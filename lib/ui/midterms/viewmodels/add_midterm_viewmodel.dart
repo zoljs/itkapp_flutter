@@ -48,7 +48,7 @@ class AddMidtermViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get canSave => _subject != null && _date != null && _time != null;
+  bool get canSave => _subject != null && _date != null && _time != null && !save.running;
   DateTime? get startsAt {
     final date = _date;
     final time = _time;

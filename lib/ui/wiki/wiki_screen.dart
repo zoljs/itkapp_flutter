@@ -156,9 +156,9 @@ class _WikiScreenState extends State<WikiScreen> {
                 ),
                 slivers: [
                   ShrinkingSliverAppBar(
-                    centerTitle: false,
+                    centerTitle: true,
                     title: Text(
-                      'ITK Wiki 3 Beta',
+                      'Hallgatói oldalak',
                       style: Theme.of(context).textTheme.headlineSmall?.merge(topBarTitleStyle),
                     ),
                     preferredSizeChild: Padding(
