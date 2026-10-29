@@ -96,12 +96,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                   SettingsGroup(
-                    header: 'Számonkérések',
+                    header: 'Időpontok',
                     children: [
                       SettingsTile(
                         icon: Icons.event_note_rounded,
                         iconColor: scheme.error,
-                        title: 'ZH időpontok',
+                        title: 'Zárthelyi dolgozatok',
+                        onTap: () => context.push(Routes.midterms),
+                      ),
+                      SettingsTile(
+                        icon: Icons.event_note_rounded,
+                        iconColor: scheme.error,
+                        title: 'Konzultációk',
                         onTap: () => context.push(Routes.midterms),
                       ),
                     ],

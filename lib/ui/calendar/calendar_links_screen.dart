@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/ui/calendar/viewmodels/calendar_links_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
@@ -38,6 +39,13 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
     if (!_viewModel.load.completed) return;
     _neptunController.text = _viewModel.neptunUrl;
     _moodleController.text = _viewModel.moodleUrl;
+  }
+
+  String _syncLabel(DateTime? syncedAt) {
+    if (syncedAt == null) {
+      return 'Még nincs szinkronizálva.';
+    }
+    return 'Utoljára szinkronizálva: ${DateFormat('MMM d. HH:mm', 'hu').format(syncedAt.toLocal())}';
   }
 
   Future<void> _save() async {
@@ -84,7 +92,7 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
                   icon: Icons.school_rounded,
                   iconColor: scheme.primary,
                   hint: 'https://…/neptun.ics',
-                  lastSynced: 'Utoljára szinkronizálva: ma 08:02',
+                  lastSynced: _syncLabel(_viewModel.links?.neptunLastSyncedAt),
                   helpTitle: 'Hol találom a Neptun naptárlinkemet?',
                 ),
                 _FixedLinkGroup(
@@ -94,7 +102,7 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
                   icon: Icons.assignment_rounded,
                   iconColor: scheme.tertiary,
                   hint: 'https://…/moodle.ics',
-                  lastSynced: 'Még nincs összekapcsolva',
+                  lastSynced: _syncLabel(_viewModel.links?.moodleLastSyncedAt),
                   helpTitle: 'Hol találom a Moodle naptárlinkemet?',
                 ),
               ],

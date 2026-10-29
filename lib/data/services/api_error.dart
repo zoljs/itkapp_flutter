@@ -6,6 +6,12 @@ const _errorMessages = {
   'INVALID_URL': 'Érvénytelen URL.',
   'INVALID_SYNC_INTERVAL': 'Érvénytelen frissítési időköz.',
   'INVALID_BODY': 'Hibás adatok.',
+  'NAME_EMPTY': 'A név nem lehet üres.',
+  'NAME_TOO_LONG': 'A név legfeljebb 50 karakter lehet.',
+  'TOO_MANY_LINKS': 'Legfeljebb 10 naptárat adhatsz hozzá.',
+  'DUPLICATE_LINK': 'Ez a link már fel van véve.',
+  'LINK_NOT_FOUND': 'Ez a link már nem létezik.',
+  'INVALID_ID': 'Érvénytelen azonosító.',
 };
 
 // Sent by server

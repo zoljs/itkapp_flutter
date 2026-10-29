@@ -59,6 +59,7 @@ class SettingsTile extends StatelessWidget {
     super.key,
     this.icon,
     this.iconColor,
+    this.foregroundColor,
     required this.title,
     this.value,
     this.trailing,
@@ -68,6 +69,7 @@ class SettingsTile extends StatelessWidget {
 
   final IconData? icon;
   final Color? iconColor;
+  final Color? foregroundColor;
   final String title;
   final String? value;
   final Widget? trailing;
@@ -94,7 +96,7 @@ class SettingsTile extends StatelessWidget {
                     color: iconColor,
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
-                  child: Icon(icon, size: 18, color: Colors.white),
+                  child: Icon(icon, size: 18, color: foregroundColor ?? Colors.white),
                 ),
                 const SizedBox(width: AppSpacing.md + 2),
               ],

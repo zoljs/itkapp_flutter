@@ -75,18 +75,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'Beállítások',
               style: Theme.of(context).textTheme.headlineSmall?.merge(topBarTitleStyle),
             ),
-            centeredWidget: CircleAvatar(
-              backgroundColor: scheme.surface,
-              radius: 55,
-              child: CircleAvatar(
-                backgroundColor: scheme.primary,
-                radius: 45,
-                child: const Text(
-                  'XD',
-                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
-                ),
-              ),
-            ),
+            centeredWidget: _buildAvatar(_viewModel.currentUser, scheme),
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
@@ -109,6 +98,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       iconColor: scheme.primary,
                       title: 'Naptárlinkek',
                       onTap: () => context.push(Routes.calendarLinks),
+                    ),
+                    SettingsTile(
+                      icon: Icons.link_rounded,
+                      iconColor: scheme.primary,
+                      title: 'Naptárlinkek V2',
+                      onTap: () => context.push(Routes.calendarV2Links),
                     ),
                   ],
                 ),
@@ -271,6 +266,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  CircleAvatar _buildAvatar(LdapUser? currentUser, ColorScheme scheme) {
+    return CircleAvatar(
+      backgroundColor: scheme.surface,
+      radius: 55,
+      child: CircleAvatar(
+        backgroundColor: itkPrimary,
+        radius: 45,
+        child: Text(
+          currentUser?.login.substring(0, 1).toUpperCase() ?? 'U',
+          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
+        ),
       ),
     );
   }
