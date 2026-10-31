@@ -43,9 +43,9 @@ class UserSite {
     }
     final tagsList = tags.map((tag) => tag.toString()).toList();
 
-    final claimed = json['claimed'] as bool? ?? false;
-    final isPublic = json['isPublic'] as bool? ?? false;
-    final isPhpEnabled = json['isPhpEnabled'] as bool? ?? false;
+    final claimed = _readBool(json['claimed'], 'claimed');
+    final isPublic = _readBool(json['isPublic'], 'isPublic');
+    final isPhpEnabled = _readBool(json['isPhpEnabled'], 'isPhpEnabled');
 
     return UserSite(
       login: login,
@@ -58,6 +58,13 @@ class UserSite {
     );
   }
 
+  /// Missing means false, anything other than a bool is an error.
+  static bool _readBool(Object? value, String field) {
+    if (value == null) return false;
+    if (value is! bool) throw FormatException('Hibás $field mező.');
+    return value;
+  }
+
   Map<String, dynamic> toJson() => {
         'name': name,
         'url': url,
@@ -65,4 +72,18 @@ class UserSite {
         'isPublic': isPublic,
         'isPhpEnabled': isPhpEnabled,
       };
+
+  static UserSite parse(Object? data) {
+    if (data is! Map<String, dynamic>) {
+      throw const FormatException('Egy oldal nem objektum formátumú.');
+    }
+    return UserSite.fromJson(data);
+  }
+
+  static List<UserSite> parseList(Object? data) {
+    if (data is! List) {
+      throw const FormatException('Az oldal lista nem lista formátumú.');
+    }
+    return List.unmodifiable(data.map(parse));
+  }
 }

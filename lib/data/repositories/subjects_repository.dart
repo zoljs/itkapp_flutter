@@ -17,23 +17,8 @@ class SubjectsRepository {
     final cached = _cached;
     if (cached != null && !forceReload) return Ok(cached);
 
-    final result = await _apiClient.getJson('/api/subjects', parse: parseSubjects);
+    final result = await _apiClient.getJson('/api/subjects', parse: Subject.parseList);
     if (result case Ok(:final value)) _cached = value;
     return result;
-  }
-
-  static List<Subject> parseSubjects(Object? data) {
-    if (data is! List) {
-      throw const FormatException('A tárgylista nem lista formátumú.');
-    }
-
-    final subjects = <Subject>[];
-    for (final entry in data) {
-      if (entry is! Map<String, dynamic>) {
-        throw const FormatException('Egy tárgy nem objektum formátumú.');
-      }
-      subjects.add(Subject.fromJson(entry));
-    }
-    return List.unmodifiable(subjects);
   }
 }

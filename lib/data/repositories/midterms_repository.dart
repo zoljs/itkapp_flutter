@@ -21,24 +21,9 @@ class MidtermsRepository {
     final cached = _cached;
     if (cached != null && !forceReload) return Ok(cached);
 
-    final result = await _apiClient.getJson('/api/midterms', parse: parseMidterms);
+    final result = await _apiClient.getJson('/api/midterms', parse: MidtermDate.parseList);
     if (result case Ok(:final value)) _cached = value;
     return result;
-  }
-
-  List<MidtermDate> parseMidterms(Object? data) {
-    if (data is! List) {
-      throw const FormatException('A zh lista nem lista formátumú.');
-    }
-
-    final midtermDates = <MidtermDate>[];
-    for (final entry in data) {
-      if (entry is! Map<String, dynamic>) {
-        throw const FormatException('Egy zh nem objektum formátumú.');
-      }
-      midtermDates.add(MidtermDate.fromJson(entry));
-    }
-    return List.unmodifiable(midtermDates);
   }
 
   Future<Result<void>> addMidterm({

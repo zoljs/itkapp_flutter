@@ -41,17 +41,26 @@ class MidtermDate {
       throw const FormatException('Egy ZH-nak hibás a kezdése.');
     }
 
-    final subject = json['subject'];
-    if (subject is! Map<String, dynamic>) {
-      throw const FormatException('Egy ZH-nak hiányzik a tárgya.');
-    }
-
     return MidtermDate(
       id: id,
       createdBy: createdBy,
       startsAt: parsedStartsAt,
       location: location,
-      subject: Subject.fromJson(subject),
+      subject: Subject.parse(json['subject']),
     );
+  }
+
+  static MidtermDate parse(Object? data) {
+    if (data is! Map<String, dynamic>) {
+      throw const FormatException('Egy zh nem objektum formátumú.');
+    }
+    return MidtermDate.fromJson(data);
+  }
+
+  static List<MidtermDate> parseList(Object? data) {
+    if (data is! List) {
+      throw const FormatException('A zh lista nem lista formátumú.');
+    }
+    return List.unmodifiable(data.map(parse));
   }
 }

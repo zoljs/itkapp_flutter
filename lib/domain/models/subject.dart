@@ -29,4 +29,19 @@ class Subject {
         'code': code,
         'id': id,
       };
+
+  static Subject parse(Object? data) {
+    if (data is! Map<String, dynamic>) {
+      throw const FormatException('A tárgy nem objektum formátumú.');
+    }
+    return Subject.fromJson(data);
+  }
+
+  static List<Subject> parseList(Object? data) {
+    if (data is! List) {
+      throw const FormatException('A tárgylista nem lista formátumú.');
+    }
+
+    return List.unmodifiable(data.map(parse));
+  }
 }

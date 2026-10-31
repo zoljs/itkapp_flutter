@@ -24,7 +24,7 @@ class SitesRepository {
     final cached = _cached;
     if (cached != null && !forceReload) return Ok(cached);
 
-    final result = await _apiClient.getJson('/api/sites', parse: _parseSites);
+    final result = await _apiClient.getJson('/api/sites', parse: UserSite.parseList);
     if (result case Ok(:final value)) _cached = value;
     return result;
   }
@@ -35,7 +35,7 @@ class SitesRepository {
       response = await _dio.get('/api/sites/me');
       final data = response.data;
       if (data is! Map<String, dynamic>) return const Ok(null);
-      return Ok(_parseSite(data));
+      return Ok(UserSite.fromJson(data));
     } on DioException catch (e) {
       if (e.response?.statusCode == 404) return const Ok(null);
       return Err(apiErrorMessage(e));
@@ -46,14 +46,7 @@ class SitesRepository {
 
   Future<Result<UserSite>> saveMySite(List<String> tags, bool isPublic, bool isPhpEnabled) async {
     final result = await sendRequest(
-      parse: (data) {
-        if (data is! Map<String, dynamic>) {
-          // cant return Err so must throw FormatException which gets handled down the line anyway
-          throw const FormatException('Nem sikerült feldolgozni a választ.');
-        }
-        // gets returned from the value field that calls the parse function
-        return _parseSite(data);
-      },
+      parse: UserSite.parse,
       send: () => _dio.post('/api/sites', data: {'tags': tags, 'isPublic': isPublic, 'isPhpEnabled': isPhpEnabled}),
     );
     if (result is Ok) clearCache();
@@ -65,28 +58,5 @@ class SitesRepository {
     final result = await sendRequest(parse: (_) {}, send: () => _dio.delete('/api/sites'));
     if (result is Ok) clearCache();
     return result;
-  }
-
-  UserSite _parseSite(Map<String, dynamic> json) {
-    try {
-      return UserSite.fromJson(json);
-    } on TypeError catch (e) {
-      throw FormatException('Hibás oldal adat: $e');
-    }
-  }
-
-  List<UserSite> _parseSites(Object? data) {
-    if (data is! List) {
-      throw const FormatException('Az oldal lista nem lista formátumú.');
-    }
-
-    final sites = <UserSite>[];
-    for (final entry in data) {
-      if (entry is! Map<String, dynamic>) {
-        throw const FormatException('Egy oldal nem objektum formátumú.');
-      }
-      sites.add(_parseSite(entry));
-    }
-    return sites;
   }
 }
