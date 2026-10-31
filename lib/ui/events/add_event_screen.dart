@@ -4,6 +4,7 @@ import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
+import 'package:itk_app/ui/core/widgets/adaptive_segmented_control.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
@@ -104,6 +105,22 @@ class _AddEventScreenState extends State<AddEventScreen> {
               ),
             ],
           ),
+          if (widget.types.length > 1)
+            Padding(
+              padding: const EdgeInsets.only(bottom: AppSpacing.xxl),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const SettingsHeader(title: 'Típus'),
+                  AdaptiveSegmentedControl(
+                    values: widget.types.toList(),
+                    selected: _viewModel.type,
+                    onChanged: _viewModel.setType,
+                    labelOf: (item) => item.label,
+                  ),
+                ],
+              ),
+            ),
           SettingsGroup(
             header: 'Időpont',
             children: [
@@ -138,18 +155,6 @@ class _AddEventScreenState extends State<AddEventScreen> {
               ),
             ],
           ),
-          if (widget.types.length > 1)
-            Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: SegmentedButton<EventType>(
-                showSelectedIcon: false,
-                segments: [
-                  for (final type in widget.types) ButtonSegment(value: type, label: Text(type.label)),
-                ],
-                selected: {_viewModel.type},
-                onSelectionChanged: (selection) => _viewModel.setType(selection.first),
-              ),
-            ),
         ],
       ),
     );
