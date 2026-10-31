@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:itk_app/data/repositories/absolutorium_repository.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/midterms_repository.dart';
@@ -29,4 +30,5 @@ void clearAllCaches(BuildContext context) {
   context.read<SitesRepository>().clearCache();
   context.read<CalendarRepository>().clearCache();
   context.read<MidtermsRepository>().clearCache();
+  context.read<AbsolutoriumRepository>().clearCache();
 }

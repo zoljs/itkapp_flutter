@@ -11,6 +11,12 @@ abstract final class Routes {
   static const adminRoles = '/admin/roles';
   static const midterms = '/midterms';
   static const videos = '/videos';
+  static const absolutorium = '/absolutorium';
+  static const absolutoriumCompletions = '/absolutorium/completions';
+  static const absolutoriumGroups = '/absolutorium/groups';
 
   static String wikiFilesFor(String user) => '$wikiFiles/$user';
+
+  static String absolutoriumGroupFor(int groupId) =>
+      '$absolutoriumGroups/$groupId';
 }

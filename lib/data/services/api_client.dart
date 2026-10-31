@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:dio_web_adapter/dio_web_adapter.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+
 import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
@@ -12,7 +15,8 @@ class ApiClient {
     // 401 Interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onError: (error, handler) {
-        if (isSessionExpired(error.requestOptions.uri, error.response?.statusCode)) {
+        if (isSessionExpired(
+            error.requestOptions.uri, error.response?.statusCode)) {
           unawaited(_handleUnauthorized());
         }
         handler.next(error);
@@ -22,7 +26,8 @@ class ApiClient {
     // Session expired Interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onResponse: (response, handler) {
-        if (isSessionExpired(response.requestOptions.uri, response.statusCode)) {
+        if (isSessionExpired(
+            response.requestOptions.uri, response.statusCode)) {
           unawaited(_handleUnauthorized());
           return handler.reject(DioException.badResponse(
             statusCode: 401,
@@ -38,7 +43,7 @@ class ApiClient {
   static const String baseUrl = 'https://test.app.itk.ppke.hu';
 
   final Dio dio;
-  final CookieJar _cookieJar;
+  final CookieJar? _cookieJar;
 
   Future<void> Function()? onUnauthorized;
   bool _handlingUnauthorized = false;
@@ -62,10 +67,16 @@ class ApiClient {
         baseUrl: baseUrl,
       ),
     );
-    final CookieJar cookieJar;
+
+    if (kIsWeb) {
+      // Browser: cookies are handled by the browser. withCredentials makes it
+      // send and accept the session cookie on cross-origin requests.
+      dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+      return ApiClient._(dio, null);
+    }
 
     final appDocDir = await getApplicationDocumentsDirectory();
-    cookieJar = PersistCookieJar(
+    final cookieJar = PersistCookieJar(
       storage: FileStorage('${appDocDir.path}/.cookies/'),
     );
     dio.interceptors.add(CookieManager(cookieJar));
@@ -74,7 +85,7 @@ class ApiClient {
   }
 
   Future<void> clearCookies() async {
-    await _cookieJar.deleteAll();
+    await _cookieJar?.deleteAll();
   }
 
   Future<Result<T>> getJson<T>(
@@ -82,9 +93,15 @@ class ApiClient {
     required T Function(Object?) parse,
     Map<String, dynamic>? queryParameters,
   }) async {
-    return sendRequest(parse: parse, send: () => dio.get(path, queryParameters: queryParameters));
+    return sendRequest(
+        parse: parse,
+        send: () => dio.get(path, queryParameters: queryParameters));
   }
 }
 
 const _pathsWithoutLogout = {'/api/auth/login', '/api/auth/logout'};
-bool isSessionExpired(Uri uri, int? statusCode) => statusCode == 401 && uri.host == Uri.parse(ApiClient.baseUrl).host && !_pathsWithoutLogout.contains(uri.path);
+
+bool isSessionExpired(Uri uri, int? statusCode) =>
+    statusCode == 401 &&
+    uri.host == Uri.parse(ApiClient.baseUrl).host &&
+    !_pathsWithoutLogout.contains(uri.path);

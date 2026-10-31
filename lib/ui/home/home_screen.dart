@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:go_router/go_router.dart';
+import 'package:itk_app/data/repositories/absolutorium_repository.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/routing/routes.dart';
@@ -33,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _viewModel = HomeViewModel(
       authRepository: context.read<AuthRepository>(),
       calendarRepository: context.read<CalendarRepository>(),
+      absolutoriumRepository: context.read<AbsolutoriumRepository>(),
     );
   }
 
@@ -89,7 +91,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     header: 'Következő óra',
                     children: [
                       ListenableBuilder(
-                          listenable: Listenable.merge([_viewModel.load, _viewModel]),
+                          listenable:
+                              Listenable.merge([_viewModel.load, _viewModel]),
                           builder: (context, _) {
                             return _buildNextEvent(scheme);
                           })
@@ -109,6 +112,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         iconColor: scheme.error,
                         title: 'Konzultációk',
                         onTap: () => context.push(Routes.midterms),
+                      ),
+                    ],
+                  ),
+                  SettingsGroup(
+                    header: 'Tanulmányok',
+                    children: [
+                      ListenableBuilder(
+                        listenable: _viewModel,
+                        builder: (context, _) => SettingsTile(
+                          icon: Icons.school_rounded,
+                          iconColor: itkPrimary,
+                          title: 'Abszolutórium',
+                          value: _viewModel.absolutoriumSummary,
+                          onTap: () => context.push(Routes.absolutorium),
+                        ),
                       ),
                     ],
                   ),
@@ -147,7 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (!_viewModel.load.running && _viewModel.nextEvent == null) {
       content = Text('Nincs közelgő órád.', style: muted);
     } else {
-      // While loading, show mock data
       final e = _viewModel.nextEvent ??
           CalendarEvent(
             title: BoneMock.words(3),
@@ -155,14 +172,16 @@ class _HomeScreenState extends State<HomeScreen> {
             end: DateTime.now(),
           );
 
-      // Datetime stuff
       final isToday = DateUtils.isSameDay(e.start, DateTime.now());
-      final day = isToday ? 'Ma' : DateFormat('MMM d., EEEE', 'hu').format(e.start);
-      final time = '${DateFormat.Hm().format(e.start)}–${DateFormat.Hm().format(e.end)}';
+      final day =
+          isToday ? 'Ma' : DateFormat('MMM d., EEEE', 'hu').format(e.start);
+      final time =
+          '${DateFormat.Hm().format(e.start)}–${DateFormat.Hm().format(e.end)}';
 
       content = Skeletonizer(
         enabled: _viewModel.load.running,
-        child: EventCard(e: e, scheme: scheme, day: day, muted: muted, time: time),
+        child:
+            EventCard(e: e, scheme: scheme, day: day, muted: muted, time: time),
       );
     }
 
