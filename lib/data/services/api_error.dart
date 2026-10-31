@@ -12,6 +12,7 @@ const _errorMessages = {
   'DUPLICATE_LINK': 'Ez a link már fel van véve.',
   'LINK_NOT_FOUND': 'Ez a link már nem létezik.',
   'INVALID_ID': 'Érvénytelen azonosító.',
+  'ENDPOINT_REMOVED': 'Ez a végpont már nem elérhető.',
 };
 
 // Sent by server

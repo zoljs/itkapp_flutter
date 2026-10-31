@@ -3,7 +3,6 @@ abstract final class Routes {
   static const onboarding = '/onboarding';
   static const home = '/';
   static const calendar = '/calendar';
-  static const calendarLinks = '/calendar/links';
   static const calendarV2Links = '/calendar/v2/links';
   static const wiki = '/wiki';
   static const wikiEdit = '/wiki/edit';
