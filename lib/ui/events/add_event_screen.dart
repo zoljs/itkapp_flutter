@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/repositories/midterms_repository.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
@@ -8,9 +7,12 @@ import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/screens/subject_picker_screen.dart';
-import 'package:itk_app/ui/midterms/viewmodels/add_midterm_viewmodel.dart';
+import 'package:itk_app/ui/events/viewmodels/add_event_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
+
+import '../../data/repositories/event_repository.dart';
+import '../../domain/models/event.dart';
 
 class AddEventScreen extends StatefulWidget {
   const AddEventScreen({super.key, this.scrollController, required this.types, required this.eventLabel});

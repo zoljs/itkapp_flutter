@@ -48,7 +48,7 @@ class HomeViewModel extends ChangeNotifier {
   Future<Result<void>> _load(bool forceReload) async {
     unawaited(_absolutoriumRepository.getProgress(forceReload: forceReload));
     final result =
-        await _calendarRepository.getCalendar(forceReload: forceReload);
+        await _calendarRepository.get(forceReload: forceReload);
 
     if (result case Ok(:final value)) {
       final now = DateTime.now();

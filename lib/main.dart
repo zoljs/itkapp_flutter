@@ -67,9 +67,6 @@ Future<void> main() async {
               create: (context) =>
                   CalendarRepository(apiClient: context.read<ApiClient>())),
           Provider(
-              create: (context) =>
-                  MidtermsRepository(apiClient: context.read<ApiClient>())),
-          Provider(
             create: (context) =>
                 SitesRepository(apiClient: context.read<ApiClient>()),
           ),
@@ -138,11 +135,9 @@ ThemeData _buildTheme(ColorScheme scheme) {
         textStyle: cupertinoText.textStyle.merge(flexRegular),
         actionTextStyle: cupertinoText.actionTextStyle.merge(flexRegular),
         navTitleTextStyle: cupertinoText.navTitleTextStyle.merge(flexRounded),
-        navLargeTitleTextStyle:
-            cupertinoText.navLargeTitleTextStyle.merge(flexRounded),
+        navLargeTitleTextStyle: cupertinoText.navLargeTitleTextStyle.merge(flexRounded),
         pickerTextStyle: cupertinoText.pickerTextStyle.merge(flexRegular),
-        dateTimePickerTextStyle:
-            cupertinoText.dateTimePickerTextStyle.merge(flexRegular),
+        dateTimePickerTextStyle: cupertinoText.dateTimePickerTextStyle.merge(flexRegular),
       ),
     ),
     inputDecorationTheme: buildITKAppInputDecorationTheme(scheme),

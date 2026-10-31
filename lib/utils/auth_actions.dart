@@ -29,7 +29,6 @@ void clearAllCaches(BuildContext context) {
   context.read<SubjectsRepository>().clearCache();
   context.read<SitesRepository>().clearCache();
   context.read<CalendarRepository>().clearCache();
-  context.read<MidtermsRepository>().clearCache();
   context.read<AbsolutoriumRepository>().clearCache();
   context.read<EventRepository>().clearCache();
 }
