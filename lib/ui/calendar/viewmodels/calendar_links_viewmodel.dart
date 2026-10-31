@@ -1,73 +1,102 @@
 import 'dart:async';
+import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
+import 'package:itk_app/data/repositories/calendar_links_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
-import 'package:itk_app/domain/models/calendar_links.dart';
+import 'package:itk_app/domain/models/calendar_link.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class CalendarLinksViewmodel extends ChangeNotifier {
-  final CalendarRepository _repository;
+  final CalendarLinksRepository _repository;
+  final CalendarRepository _calendarRepository;
   late final Command0<void> load;
-  late final Command0<void> save;
-
-  CalendarLinks? _links;
-  CalendarLinks? get links => _links;
-
-  String _neptunUrl = '';
-  String _moodleUrl = '';
-
-  String get neptunUrl => _neptunUrl;
-  String get moodleUrl => _moodleUrl;
-
-  void setNeptunUrl(String value) {
-    debugPrint('setNeptunUrl: $value');
-
-    _neptunUrl = value;
-    notifyListeners();
-  }
-
-  void setMoodleUrl(String value) {
-    _moodleUrl = value;
-    notifyListeners();
-  }
+  late final Command0<void> add;
+  late final Command1<void, int> delete;
 
   CalendarLinksViewmodel({
-    required CalendarRepository repository,
-  }) : _repository = repository {
+    required CalendarLinksRepository repository,
+    required CalendarRepository calendarRepository,
+  })  : _repository = repository,
+        _calendarRepository = calendarRepository {
     load = Command0<void>(_load);
-    save = Command0<void>(_save);
+    add = Command0<void>(_add);
+    delete = Command1<void, int>(_delete);
     unawaited(load.execute());
   }
 
+  // State
+  List<CalendarLink> _links = [];
+  String _name = '';
+  String _url = '';
+  SyncInterval _syncInterval = SyncInterval.daily;
+
+  // Getters
+  bool get initialLoading => load.running && _links.isEmpty;
+  UnmodifiableListView<CalendarLink> get links => UnmodifiableListView(_links);
+  SyncInterval get syncInterval => _syncInterval;
+  bool get isFull => _links.length >= 10;
+  bool get canAdd => _name.trim().isNotEmpty && _url.trim().isNotEmpty && !add.running && !isFull;
+
+  // Setters
+  void setName(String value) {
+    _name = value;
+    notifyListeners();
+  }
+
+  void setUrl(String value) {
+    _url = value;
+    notifyListeners();
+  }
+
+  void setSyncInterval(SyncInterval value) {
+    _syncInterval = value;
+    notifyListeners();
+  }
+
+  // Methods
   Future<Result<void>> _load() async {
-    final result = await _repository.getLinks();
+    final result = await _repository.get();
     if (result case Ok(:final value)) {
       _links = value;
-      _neptunUrl = value.neptunUrl ?? '';
-      _moodleUrl = value.moodleUrl ?? '';
       notifyListeners();
     }
     return result;
   }
 
-  bool get canSave => _links != null && !save.running;
-
-  Future<Result<void>> _save() async {
-    final result = await _repository.saveLinks(
-      CalendarLinks(
-        neptunUrl: _neptunUrl.trim().isEmpty ? null : _neptunUrl.trim(),
-        moodleUrl: _moodleUrl.trim().isEmpty ? null : moodleUrl.trim(),
-      ),
+  Future<Result<void>> _add() async {
+    final result = await _repository.add(
+      name: _name.trim(),
+      url: _url.trim(),
+      syncInterval: _syncInterval,
     );
-    if (result is Ok) return _load();
+    if (result case Ok()) {
+      setName('');
+      setUrl('');
+      _calendarRepository.clearCache();
+      return _load();
+    }
+    return result;
+  }
+
+  Future<Result<void>> _delete(int id) async {
+    _links = _links.where((link) => link.id != id).toList();
+    notifyListeners();
+
+    final result = await _repository.delete(id: id);
+    if (result case Ok()) {
+      _calendarRepository.clearCache();
+      return _load();
+    }
     return result;
   }
 
   @override
   void dispose() {
     load.dispose();
-    save.dispose();
+    add.dispose();
+    delete.dispose();
     super.dispose();
   }
 }

@@ -56,7 +56,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
         4,
         (i) => MidtermDate(
           id: -i - 1,
-          startsAt: DateTime.now().add(Duration(days: i * 3)),
+          startsAt: DateTime.now().add(const Duration(days: 2)),
           location: BoneMock.words(2),
           subject: Subject(
             id: -1,
