@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:itk_app/data/repositories/calendar_links_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/domain/models/calendar_link.dart';
-import 'package:itk_app/ui/calendar/v2/widgets/calendar_link_tile.dart';
-import 'package:itk_app/ui/calendar/v2/viewmodels/calendar_links_viewmodel.dart';
+import 'package:itk_app/ui/calendar/widgets/calendar_link_tile.dart';
+import 'package:itk_app/ui/calendar/viewmodels/calendar_links_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
@@ -16,16 +16,16 @@ import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class Calendarv2LinksScreen extends StatefulWidget {
-  const Calendarv2LinksScreen({super.key});
+class CalendarLinksScreen extends StatefulWidget {
+  const CalendarLinksScreen({super.key});
 
   static const _presets = ['Neptun', 'Moodle'];
 
   @override
-  State<Calendarv2LinksScreen> createState() => _Calendarv2LinksScreenState();
+  State<CalendarLinksScreen> createState() => _CalendarLinksScreenState();
 }
 
-class _Calendarv2LinksScreenState extends State<Calendarv2LinksScreen> {
+class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
   late final CalendarLinksViewmodel _viewModel;
   final _nameController = TextEditingController();
   final _urlController = TextEditingController();
@@ -169,7 +169,7 @@ class _Calendarv2LinksScreenState extends State<Calendarv2LinksScreen> {
                     child: Wrap(
                       spacing: AppSpacing.sm,
                       children: [
-                        for (final preset in Calendarv2LinksScreen._presets)
+                        for (final preset in CalendarLinksScreen._presets)
                           ActionChip(
                             label: Text(preset),
                             onPressed: () {

@@ -97,7 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       icon: Icons.link_rounded,
                       iconColor: scheme.primary,
                       title: 'Naptárlinkek V2',
-                      onTap: () => context.push(Routes.calendarV2Links),
+                      onTap: () => context.push(Routes.calendarLinks),
                     ),
                   ],
                 ),

@@ -7,7 +7,7 @@ String _syncLabel(DateTime? syncedAt) {
   if (syncedAt == null) {
     return 'Még nincs szinkronizálva.';
   }
-  return 'Utoljára szinkronizálva: ${DateFormat('MMM d. HH:mm', 'hu').format(syncedAt.toLocal())}';
+  return 'Szinkronizálva: ${DateFormat('MMM d. HH:mm', 'hu').format(syncedAt.toLocal())}';
 }
 
 class CalendarLinkTile extends StatelessWidget {
@@ -50,18 +50,19 @@ class CalendarLinkTile extends StatelessWidget {
               ),
               const SizedBox(width: AppSpacing.md + 2),
               Expanded(
-                child: Text(
-                  link.name,
-                  style: TextStyle(fontSize: 15, color: scheme.onSurface),
-                ),
-              ),
-              Flexible(
-                fit: FlexFit.tight,
-                child: Text(
-                  _syncLabel(link.lastSyncedAt),
-                  textAlign: TextAlign.end,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      link.name,
+                      style: TextStyle(fontSize: 15, color: scheme.onSurface),
+                    ),
+                    Text(
+                      _syncLabel(link.lastSyncedAt),
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
+                    ),
+                  ],
                 ),
               ),
             ],

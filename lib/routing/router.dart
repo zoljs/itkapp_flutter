@@ -5,7 +5,7 @@ import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/ui/admin/admin_roles_screen.dart';
 import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:itk_app/ui/calendar/calendar_screen.dart';
-import 'package:itk_app/ui/calendar/v2/calendar_links_screen.dart';
+import 'package:itk_app/ui/calendar/calendar_links_screen.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/ui/home/home_screen.dart';
 import 'package:itk_app/ui/login/login_screen.dart';
@@ -137,8 +137,8 @@ GoRouter router(
           pageBuilder: (context, state) => _page(state, const VideosScreen()),
         ),
         GoRoute(
-          path: Routes.calendarV2Links,
-          pageBuilder: (context, state) => _page(state, const Calendarv2LinksScreen()),
+          path: Routes.calendarLinks,
+          pageBuilder: (context, state) => _page(state, const CalendarLinksScreen()),
         ),
       ],
     );
