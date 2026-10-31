@@ -5,6 +5,7 @@ import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/ui/absolutorium/absolutorium_screen.dart';
 import 'package:itk_app/ui/absolutorium/completions_screen.dart';
 import 'package:itk_app/ui/absolutorium/group_detail_screen.dart';
+import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/ui/admin/admin_roles_screen.dart';
 import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:itk_app/ui/calendar/calendar_screen.dart';
@@ -12,7 +13,7 @@ import 'package:itk_app/ui/calendar/calendar_links_screen.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/ui/home/home_screen.dart';
 import 'package:itk_app/ui/login/login_screen.dart';
-import 'package:itk_app/ui/midterms/midterms_screen.dart';
+import 'package:itk_app/ui/events/events_screen.dart';
 import 'package:itk_app/ui/onboarding/onboarding_screen.dart';
 import 'package:itk_app/ui/videos/videos_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
@@ -38,12 +39,15 @@ GoRouter router(
         final onLogin = state.matchedLocation == Routes.login;
         final onOnboarding = state.matchedLocation == Routes.onboarding;
 
+        // If not logged in and is on the login screen do nothing, else redirect
         if (!loggedIn) return onLogin ? null : Routes.login;
 
+        // If has not seen onboarding and is on the onboarding screen do nothing, else redirect
         if (!seenOnboarding.value) {
           return onOnboarding ? null : Routes.onboarding;
         }
 
+        // If logged in and seen onboarding but visits either of these screens, redirect home
         if (onOnboarding || onLogin) return Routes.home;
 
         return null;
@@ -52,6 +56,8 @@ GoRouter router(
         authRepository,
         onboardingRepository.hasSeenOnboarding,
       ]),
+
+      // Paths
       routes: [
         GoRoute(
           path: Routes.login,
@@ -66,21 +72,23 @@ GoRouter router(
           },
         ),
         StatefulShellRoute.indexedStack(
-          builder: (context, state, navigationShell) =>
-              AppScaffold(navigationShell: navigationShell),
+          builder: (context, state, navigationShell) => AppScaffold(navigationShell: navigationShell),
           branches: [
+            // ----------------- [HOME] -----------------
             StatefulShellBranch(routes: [
               GoRoute(
                 path: Routes.home,
                 builder: (context, state) => const HomeScreen(),
               ),
             ]),
+            // ----------------- [CAL] -----------------
             StatefulShellBranch(routes: [
               GoRoute(
                 path: Routes.calendar,
                 builder: (context, state) => const CalendarScreen(),
               ),
             ]),
+            // ----------------- [WIKI] -----------------
             StatefulShellBranch(routes: [
               GoRoute(
                 path: Routes.wiki,
@@ -112,6 +120,7 @@ GoRouter router(
                 ],
               ),
             ]),
+            // ----------------- [SETTINGS] -----------------
             StatefulShellBranch(routes: [
               GoRoute(
                 path: Routes.settings,
@@ -127,7 +136,23 @@ GoRouter router(
         ),
         GoRoute(
           path: Routes.midterms,
-          pageBuilder: (context, state) => _page(state, const MidtermsScreen()),
+          pageBuilder: (context, state) => _page(
+              state,
+              const EventsScreen(
+                types: {EventType.midterm, EventType.retake},
+                title: 'ZH-k',
+                eventLabel: 'ZH',
+              )),
+        ),
+        GoRoute(
+          path: Routes.consultations,
+          pageBuilder: (context, state) => _page(
+              state,
+              const EventsScreen(
+                types: {EventType.consultation},
+                title: 'Konzultációk',
+                eventLabel: 'konzultáció',
+              )),
         ),
         GoRoute(
           path: Routes.videos,

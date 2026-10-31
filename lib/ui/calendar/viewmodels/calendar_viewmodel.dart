@@ -29,7 +29,7 @@ class CalendarViewModel extends ChangeNotifier {
 
   // Methods
   Future<Result<void>> _load(bool forceReload) async {
-    final result = await _repository.getCalendar(forceReload: forceReload);
+    final result = await _repository.get(forceReload: forceReload);
 
     if (result case Ok(:final value)) {
       final eventData = value.map((e) {

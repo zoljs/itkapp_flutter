@@ -65,7 +65,7 @@ class MySiteViewModel extends ChangeNotifier {
   // Methods
   Future<Result<void>> _load() async {
     // Mysite
-    final result = await _sitesRepository.getMySite();
+    final result = await _sitesRepository.get();
 
     if (result case Ok(value: final UserSite site)) {
       _tags = List.of(site.tags);
@@ -85,13 +85,13 @@ class MySiteViewModel extends ChangeNotifier {
       return const Err('Nincs bejelentkezett felhasználó.');
     }
 
-    final result = await _sitesRepository.saveMySite(_tags, _isPublic, _isPhpEnabled);
+    final result = await _sitesRepository.save(_tags, _isPublic, _isPhpEnabled);
 
     return result;
   }
 
   Future<Result<void>> _delete() async {
-    final result = await _sitesRepository.deleteMySite();
+    final result = await _sitesRepository.delete();
     return result;
   }
 }

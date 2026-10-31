@@ -11,23 +11,25 @@ import 'package:itk_app/ui/midterms/viewmodels/add_midterm_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
 
-class AddMidtermScreen extends StatefulWidget {
-  const AddMidtermScreen({super.key, this.scrollController});
+class AddEventScreen extends StatefulWidget {
+  const AddEventScreen({super.key, this.scrollController, required this.types, required this.eventLabel});
 
+  final String eventLabel;
+  final Set<EventType> types;
   final ScrollController? scrollController;
 
   @override
-  State<AddMidtermScreen> createState() => _AddMidtermScreenState();
+  State<AddEventScreen> createState() => _AddEventScreenState();
 }
 
-class _AddMidtermScreenState extends State<AddMidtermScreen> {
+class _AddEventScreenState extends State<AddEventScreen> {
   final _locationController = TextEditingController();
-  late final AddMidtermViewModel _viewModel;
+  late final AddEventViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = AddMidtermViewModel(repository: context.read<MidtermsRepository>());
+    _viewModel = AddEventViewModel(repository: context.read<EventRepository>(), allowedTypes: widget.types);
   }
 
   @override
@@ -135,6 +137,18 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
               ),
             ],
           ),
+          if (widget.types.length > 1)
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              child: SegmentedButton<EventType>(
+                showSelectedIcon: false,
+                segments: [
+                  for (final type in widget.types) ButtonSegment(value: type, label: Text(type.label)),
+                ],
+                selected: {_viewModel.type},
+                onSelectionChanged: (selection) => _viewModel.setType(selection.first),
+              ),
+            ),
         ],
       ),
     );
@@ -149,7 +163,7 @@ class _AddMidtermScreenState extends State<AddMidtermScreen> {
             backgroundColor: sheetBackgroundColor(context),
             appBar: buildBrandAppBar(
               context: context,
-              title: 'Új ZH',
+              title: 'Új ${widget.eventLabel}',
               closesSheet: true,
               actionIcon: Icons.check,
               onAction: _viewModel.canSave && !_viewModel.save.running ? _submit : null,

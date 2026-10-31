@@ -10,7 +10,7 @@ import 'package:itk_app/data/repositories/admin/admin_users_repository.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_links_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
-import 'package:itk_app/data/repositories/midterms_repository.dart';
+import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
@@ -57,6 +57,9 @@ Future<void> main() async {
           Provider.value(value: themeRepository),
           Provider.value(value: onboardingRepository),
           ChangeNotifierProvider.value(value: authRepository),
+          Provider(create: (context) => CalendarLinksRepository(apiClient: context.read<ApiClient>())),
+          Provider(create: (context) => CalendarRepository(apiClient: context.read<ApiClient>())),
+          Provider(create: (context) => EventRepository(apiClient: context.read<ApiClient>())),
           Provider(
               create: (context) => CalendarLinksRepository(
                   apiClient: context.read<ApiClient>())),
@@ -114,8 +117,7 @@ ColorScheme _darkSchemeFor(ColorScheme base, {required bool isOled}) {
 }
 
 ThemeData _buildTheme(ColorScheme scheme) {
-  final TextTheme base =
-      ThemeData(colorScheme: scheme, useMaterial3: true).textTheme;
+  final TextTheme base = ThemeData(colorScheme: scheme, useMaterial3: true).textTheme;
   final cupertinoText = const CupertinoThemeData().textTheme;
 
   return ThemeData(

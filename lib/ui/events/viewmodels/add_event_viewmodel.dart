@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/data/repositories/midterms_repository.dart';
+import 'package:itk_app/data/repositories/event_repository.dart';
+import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
-class AddMidtermViewModel extends ChangeNotifier {
-  AddMidtermViewModel({required MidtermsRepository repository}) : _repository = repository {
+class AddEventViewModel extends ChangeNotifier {
+  AddEventViewModel({
+    required EventRepository repository,
+    required Set<EventType> allowedTypes,
+  })  : _repository = repository,
+        _allowedTypes = allowedTypes {
     save = Command0<void>(_save);
   }
 
   // State
-  final MidtermsRepository _repository;
+  final EventRepository _repository;
   late final Command0<void> save;
+  final Set<EventType> _allowedTypes;
+  late EventType _type = _allowedTypes.first;
 
   Subject? _subject;
   DateTime? _date;
@@ -57,6 +64,12 @@ class AddMidtermViewModel extends ChangeNotifier {
     return DateTime(date.year, date.month, date.day, time.hour, time.minute);
   }
 
+  EventType get type => _type;
+  void setType(EventType type) {
+    _type = type;
+    notifyListeners();
+  }
+
   Future<Result<void>> _save() async {
     final subject = _subject;
     final startsAt = this.startsAt;
@@ -66,10 +79,11 @@ class AddMidtermViewModel extends ChangeNotifier {
     }
 
     final location = _location.trim();
-    final result = await _repository.addMidterm(
+    final result = await _repository.add(
       subjectId: subject.id,
       startsAt: startsAt,
       location: location.isEmpty ? null : location,
+      type: type,
     );
 
     return result;
