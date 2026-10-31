@@ -13,7 +13,7 @@ class SubjectsRepository {
 
   void clearCache() => _cached = null;
 
-  Future<Result<List<Subject>>> getSubjects({bool forceReload = false}) async {
+  Future<Result<List<Subject>>> get({bool forceReload = false}) async {
     final cached = _cached;
     if (cached != null && !forceReload) return Ok(cached);
 

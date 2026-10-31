@@ -6,6 +6,8 @@ import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/utils/result.dart';
 
 class CalendarRepository {
+  static const _path = '/api/calendar';
+
   CalendarRepository({
     required ApiClient apiClient,
   }) : _dio = apiClient.dio;
@@ -14,7 +16,7 @@ class CalendarRepository {
 
   List<CalendarEvent>? _cached;
 
-  Future<Result<List<CalendarEvent>>> getCalendar({
+  Future<Result<List<CalendarEvent>>> get({
     bool forceReload = false,
   }) async {
     final cached = _cached;
@@ -23,7 +25,7 @@ class CalendarRepository {
     // Reponse try
     final Response<dynamic> response;
     try {
-      response = await _dio.get('/api/calendar');
+      response = await _dio.get(_path);
     } on DioException catch (e) {
       return Err(apiErrorMessage(e));
     }

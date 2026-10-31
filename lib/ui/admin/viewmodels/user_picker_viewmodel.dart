@@ -38,7 +38,7 @@ class UserPickerViewModel extends ChangeNotifier {
 
   // Methods
   Future<Result<void>> _load() async {
-    final result = await _repository.getUsers();
+    final result = await _repository.get();
 
     if (result case Ok(:final value)) {
       _users = value;

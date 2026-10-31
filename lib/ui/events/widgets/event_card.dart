@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/domain/models/midterm_date.dart';
+import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
-class MidtermCard extends StatelessWidget {
-  const MidtermCard({super.key, required this.midterm});
+class EventCard extends StatelessWidget {
+  const EventCard({super.key, required this.event});
 
-  final MidtermDate midterm;
+  final Event event;
 
   String _whenLabel(BuildContext context, DateTime local) {
     final today = DateUtils.dateOnly(DateTime.now());
@@ -21,7 +21,7 @@ class MidtermCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final local = midterm.startsAt.toLocal();
+    final local = event.startsAt.toLocal();
     final today = DateUtils.dateOnly(DateTime.now());
     final isSoon = DateUtils.dateOnly(local).difference(today).inDays <= 1;
 
@@ -30,8 +30,8 @@ class MidtermCard extends StatelessWidget {
     final muted = isSoon ? scheme.onPrimaryContainer.withValues(alpha: 0.7) : scheme.onSurfaceVariant;
 
     final subtitle = [
-      midterm.subject.code,
-      if (midterm.location != null) midterm.location!,
+      event.subject.code,
+      if (event.location != null) event.location!,
     ].join(' · ');
 
     return Container(
@@ -66,7 +66,7 @@ class MidtermCard extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.sm),
           Text(
-            midterm.subject.name,
+            event.subject.name,
             style: TextStyle(
               fontSize: 19,
               fontWeight: FontWeight.bold,
@@ -74,7 +74,23 @@ class MidtermCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.xs),
-          Text(subtitle, style: TextStyle(fontSize: 13, color: muted)),
+          Row(
+            children: [
+              Text(subtitle, style: TextStyle(fontSize: 13, color: muted)),
+              Expanded(
+                child: Text(
+                  textAlign: TextAlign.end,
+                  event.type.label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.6,
+                    color: muted,
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );

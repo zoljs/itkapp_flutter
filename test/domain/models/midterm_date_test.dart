@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:itk_app/domain/models/midterm_date.dart';
+import 'package:itk_app/domain/models/event.dart';
 
 Map<String, dynamic> validSubjectJson() => {
       'id': 1,
@@ -18,7 +18,7 @@ Map<String, dynamic> validJson() => {
 void main() {
   group('MidtermDate.fromJson', () {
     test('parses a valid json', () {
-      final midterm = MidtermDate.fromJson(validJson());
+      final midterm = Event.fromJson(validJson());
 
       expect(midterm.id, 10);
       expect(midterm.createdBy, 5);
@@ -32,7 +32,7 @@ void main() {
         ..['location'] = null
         ..['createdBy'] = null;
 
-      final midterm = MidtermDate.fromJson(json);
+      final midterm = Event.fromJson(json);
 
       expect(midterm.location, isNull);
       expect(midterm.createdBy, isNull);
@@ -43,13 +43,12 @@ void main() {
       'startsAt is missing': validJson()..remove('startsAt'),
       'startsAt is not a date': validJson()..['startsAt'] = 'not a date',
       'subject is missing': validJson()..remove('subject'),
-      'subject is invalid': validJson()
-        ..['subject'] = (validSubjectJson()..['name'] = ''),
+      'subject is invalid': validJson()..['subject'] = (validSubjectJson()..['name'] = ''),
     };
 
     for (final entry in invalidCases.entries) {
       test('throws FormatException when ${entry.key}', () {
-        expect(() => MidtermDate.fromJson(entry.value), throwsFormatException);
+        expect(() => Event.fromJson(entry.value), throwsFormatException);
       });
     }
   });

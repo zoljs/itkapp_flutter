@@ -13,18 +13,14 @@ class FakeSitesService implements SitesRepository {
   void clearCache() {}
 
   @override
-  Future<Result<List<UserSite>>> getAllSites(
-          {bool forceReload = false}) async =>
-      sitesResult;
+  Future<Result<List<UserSite>>> getAll({bool forceReload = false}) async => sitesResult;
 
   @override
-  Future<Result<UserSite?>> getMySite() async => mySiteResult;
+  Future<Result<UserSite?>> get() async => mySiteResult;
 
   @override
-  Future<Result<UserSite>> saveMySite(
-          List<String> tags, bool isPublic, bool isPhpEnabled) =>
-      throw UnimplementedError();
+  Future<Result<UserSite>> save(List<String> tags, bool isPublic, bool isPhpEnabled) => throw UnimplementedError();
 
   @override
-  Future<Result<void>> deleteMySite() => throw UnimplementedError();
+  Future<Result<void>> delete() => throw UnimplementedError();
 }

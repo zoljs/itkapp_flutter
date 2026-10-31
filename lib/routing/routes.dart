@@ -10,6 +10,7 @@ abstract final class Routes {
   static const settings = '/settings';
   static const adminRoles = '/admin/roles';
   static const midterms = '/midterms';
+  static const consultations = '/consultations';
   static const videos = '/videos';
 
   static String wikiFilesFor(String user) => '$wikiFiles/$user';

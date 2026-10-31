@@ -34,7 +34,7 @@ class HomeViewModel extends ChangeNotifier {
   CalendarEvent? get nextEvent => _nextEvent;
 
   Future<Result<void>> _load(bool forceReload) async {
-    final result = await _calendarRepository.getCalendar(forceReload: forceReload);
+    final result = await _calendarRepository.get(forceReload: forceReload);
 
     if (result case Ok(:final value)) {
       final now = DateTime.now();

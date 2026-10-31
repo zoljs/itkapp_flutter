@@ -10,6 +10,8 @@ import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AuthRepository extends ChangeNotifier {
+  static const _path = '/api/auth';
+
   AuthRepository({required ApiClient apiClient, required SharedPreferencesService prefs})
       : _apiClient = apiClient,
         _dio = apiClient.dio,
@@ -31,7 +33,7 @@ class AuthRepository extends ChangeNotifier {
   Future<Result<void>> login(String username, String password) async {
     try {
       await _dio.post(
-        '/api/auth/login',
+        '$_path/login',
         data: {'username': username, 'password': password},
       );
     } on DioException catch (e) {
@@ -50,7 +52,7 @@ class AuthRepository extends ChangeNotifier {
 
   Future<void> logout() async {
     try {
-      await _dio.post('/api/auth/logout');
+      await _dio.post('$_path/logout');
     } on DioException catch (e) {
       debugPrint('[AuthRepository] logout request failed: ${e.message}');
     } finally {
@@ -65,7 +67,7 @@ class AuthRepository extends ChangeNotifier {
   Future<LdapUser?> _fetchUserFromNetwork() async {
     final Response<dynamic> response;
     try {
-      response = await _dio.get('/api/auth/me');
+      response = await _dio.get('$_path/me');
     } on DioException catch (e) {
       debugPrint('[AuthRepository] /me failed: ${apiErrorMessage(e)}');
       return null;

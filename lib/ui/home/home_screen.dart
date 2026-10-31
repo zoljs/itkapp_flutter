@@ -108,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: Icons.event_note_rounded,
                         iconColor: scheme.error,
                         title: 'Konzultációk',
-                        onTap: () => context.push(Routes.midterms),
+                        onTap: () => context.push(Routes.consultations),
                       ),
                     ],
                   ),

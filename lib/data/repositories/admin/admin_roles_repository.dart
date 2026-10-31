@@ -5,6 +5,8 @@ import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AdminRolesRepository {
+  static const _path = '/api/admin/roles';
+
   AdminRolesRepository({
     required ApiClient apiClient,
   })  : _dio = apiClient.dio,
@@ -13,13 +15,13 @@ class AdminRolesRepository {
   final Dio _dio;
   final ApiClient _apiClient;
 
-  Future<Result<List<UserSummary>>> getRoleHolders() async => _apiClient.getJson('/api/admin/roles', parse: UserSummary.parseList);
+  Future<Result<List<UserSummary>>> getRoleHolders() async => _apiClient.getJson(_path, parse: UserSummary.parseList);
 
   Future<Result<void>> assignCohortRep(int userId) async {
     final result = await sendRequest(
         parse: (_) {},
         send: () => _dio.post(
-              '/api/admin/roles',
+              _path,
               data: {
                 'userId': userId,
                 'role': 'COHORT_REP',
@@ -29,7 +31,7 @@ class AdminRolesRepository {
   }
 
   Future<Result<void>> revokeRole(int userId) async {
-    final result = await sendRequest(parse: (_) {}, send: () => _dio.delete('/api/admin/roles/$userId'));
+    final result = await sendRequest(parse: (_) {}, send: () => _dio.delete('$_path/$userId'));
     return result;
   }
 }

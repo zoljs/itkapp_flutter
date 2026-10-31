@@ -3,9 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
-import 'package:itk_app/data/repositories/midterms_repository.dart';
+import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
-import 'package:itk_app/domain/models/midterm_date.dart';
+import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
@@ -15,29 +15,39 @@ import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/circles_painter.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
-import 'package:itk_app/ui/midterms/add_midterms_screen.dart';
-import 'package:itk_app/ui/midterms/viewmodels/midterms_viewmodel.dart';
-import 'package:itk_app/ui/midterms/widgets/midterm_card.dart';
-import 'package:itk_app/ui/midterms/widgets/weekstrip.dart';
+import 'package:itk_app/ui/events/add_event_screen.dart';
+import 'package:itk_app/ui/events/viewmodels/events_viewmodel.dart';
+import 'package:itk_app/ui/events/widgets/event_card.dart';
+import 'package:itk_app/ui/events/widgets/weekstrip.dart';
 import 'package:itk_app/utils/context_extensions.dart';
+import 'package:itk_app/utils/string_extensions.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-class MidtermsScreen extends StatefulWidget {
-  const MidtermsScreen({super.key});
+class EventsScreen extends StatefulWidget {
+  const EventsScreen({
+    super.key,
+    required this.title,
+    required this.types,
+    required this.eventLabel,
+  });
+
+  final String title;
+  final Set<EventType> types;
+  final String eventLabel;
 
   @override
-  State<MidtermsScreen> createState() => _MidtermsScreenState();
+  State<EventsScreen> createState() => _EventsScreenState();
 }
 
-class _MidtermsScreenState extends State<MidtermsScreen> {
+class _EventsScreenState extends State<EventsScreen> {
   final _searchController = TextEditingController();
-  late final MidtermsViewModel _viewModel;
+  late final EventsViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = MidtermsViewModel(midtermRepository: context.read<MidtermsRepository>(), authRepository: context.read<AuthRepository>());
+    _viewModel = EventsViewModel(eventRepository: context.read<EventRepository>(), authRepository: context.read<AuthRepository>(), types: widget.types);
   }
 
   @override
@@ -52,9 +62,9 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
     return '${toBeginningOfSentenceCase(DateFormat('EEEE', 'hu').format(n))}, ${DateFormat('MMM d.', 'hu').format(n)}';
   }
 
-  List<MidtermDate> get _skeletonItems => List.generate(
+  List<Event> get _skeletonItems => List.generate(
         4,
-        (i) => MidtermDate(
+        (i) => Event(
           id: -i - 1,
           startsAt: DateTime.now().add(const Duration(days: 2)),
           location: BoneMock.words(2),
@@ -66,10 +76,14 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
         ),
       );
 
-  Future<void> _openAddMidterm() async {
+  Future<void> _openAddEvent() async {
     await showAdaptiveSheet(
       context: context,
-      builder: (context, controller) => AddMidtermScreen(scrollController: controller),
+      builder: (context, controller) => AddEventScreen(
+        scrollController: controller,
+        types: widget.types,
+        eventLabel: widget.eventLabel,
+      ),
     );
     await _viewModel.load.execute(true);
   }
@@ -84,7 +98,7 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
       collapsedHeight: AppSpacing.searchBarHeight,
       backgroundColor: scheme.surface,
       scrolledUnderElevation: 0,
-      title: const Text('ZH-k'),
+      title: Text(widget.title),
       leading: buildBrandLeading(context),
       leadingWidth: AppSpacing.minimumAndroid + 2 * AppSpacing.sm,
       actionsPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
@@ -92,8 +106,8 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
         if (_viewModel.canModerate && !asFab)
           buildBrandAction(
             actionIcon: Icons.add_rounded,
-            label: 'Új ZH felvétele',
-            onAction: () => _openAddMidterm(),
+            label: 'Új ${widget.eventLabel} felvétele',
+            onAction: () => _openAddEvent(),
           ),
       ],
       flexibleSpace: FlexibleSpaceBar(
@@ -175,8 +189,8 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
     );
   }
 
-  Widget _buildCard(MidtermDate m) {
-    final card = MidtermCard(midterm: m);
+  Widget _buildCard(Event m) {
+    final card = EventCard(event: m);
     final scheme = Theme.of(context).colorScheme;
 
     final content = (!_viewModel.canModerate || _viewModel.initialLoading)
@@ -196,8 +210,8 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
             confirmDismiss: (_) async =>
                 await showConfirmDialog(
                   context,
-                  title: 'ZH törlése',
-                  message: 'A ZH időpont mindenki számára törlődik. (${m.subject.name})',
+                  title: '${widget.eventLabel} törlése'.capitalize(),
+                  message: 'A ${widget.eventLabel} időpont mindenki számára törlődik. (${m.subject.name})',
                   confirmLabel: 'Törlés',
                   isDestructive: true,
                 ) ==
@@ -238,11 +252,11 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
       );
     }
 
-    final items = _viewModel.initialLoading ? _skeletonItems : _viewModel.filteredMidterms;
+    final items = _viewModel.initialLoading ? _skeletonItems : _viewModel.filteredEvents;
     final query = _viewModel.query.trim();
 
     if (!_viewModel.initialLoading && items.isEmpty) {
-      return query.isEmpty ? _buildMessage(Icons.event_available_rounded, 'Nincs közelgő ZH.') : _buildMessage(Icons.search_off_rounded, 'Nincs találat erre: „$query”');
+      return query.isEmpty ? _buildMessage(Icons.event_available_rounded, 'Nincs közelgő ${widget.eventLabel}.') : _buildMessage(Icons.search_off_rounded, 'Nincs találat erre: „$query”');
     }
 
     return SliverPadding(
@@ -286,8 +300,8 @@ class _MidtermsScreenState extends State<MidtermsScreen> {
               floatingActionButton: _viewModel.canModerate && asFab
                   ? buildBrandFab(
                       icon: Icons.add_rounded,
-                      semanticLabel: "Új ZH felvétele",
-                      onPressed: _openAddMidterm,
+                      semanticLabel: "Új ${widget.eventLabel} felvétele",
+                      onPressed: _openAddEvent,
                     )
                   : null,
             );

@@ -48,8 +48,8 @@ class WikiViewModel extends ChangeNotifier {
   // Methods
   Future<Result<void>> _load(bool forceReload) async {
     final (sitesResult, mySiteResult) = await (
-      _repository.getAllSites(forceReload: forceReload),
-      _repository.getMySite(),
+      _repository.getAll(forceReload: forceReload),
+      _repository.get(),
     ).wait;
 
     // mySite

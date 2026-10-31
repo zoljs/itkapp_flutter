@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/ui/admin/admin_roles_screen.dart';
 import 'package:itk_app/ui/app_scaffold.dart';
 import 'package:itk_app/ui/calendar/calendar_screen.dart';
@@ -9,7 +10,7 @@ import 'package:itk_app/ui/calendar/calendar_links_screen.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/ui/home/home_screen.dart';
 import 'package:itk_app/ui/login/login_screen.dart';
-import 'package:itk_app/ui/midterms/midterms_screen.dart';
+import 'package:itk_app/ui/events/events_screen.dart';
 import 'package:itk_app/ui/onboarding/onboarding_screen.dart';
 import 'package:itk_app/ui/videos/videos_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
@@ -130,7 +131,23 @@ GoRouter router(
         ),
         GoRoute(
           path: Routes.midterms,
-          pageBuilder: (context, state) => _page(state, const MidtermsScreen()),
+          pageBuilder: (context, state) => _page(
+              state,
+              const EventsScreen(
+                types: {EventType.midterm, EventType.retake},
+                title: 'ZH-k',
+                eventLabel: 'ZH',
+              )),
+        ),
+        GoRoute(
+          path: Routes.consultations,
+          pageBuilder: (context, state) => _page(
+              state,
+              const EventsScreen(
+                types: {EventType.consultation},
+                title: 'Konzultációk',
+                eventLabel: 'konzultáció',
+              )),
         ),
         GoRoute(
           path: Routes.videos,
@@ -143,4 +160,5 @@ GoRouter router(
       ],
     );
 
+// https://github.com/flutter/flutter/issues/191132 might explain why this is needed, atp I dont even know
 Page<void> _page(GoRouterState state, Widget child) => MaterialPage(child: child, key: state.pageKey);
