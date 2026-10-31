@@ -1,10 +1,7 @@
 import 'dart:async';
 
-import 'package:dio_web_adapter/dio_web_adapter.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-
-import 'package:dio/dio.dart';
 import 'package:cookie_jar/cookie_jar.dart';
+import 'package:dio/dio.dart';
 import 'package:dio_cookie_manager/dio_cookie_manager.dart';
 import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/utils/result.dart';
@@ -15,8 +12,7 @@ class ApiClient {
     // 401 Interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onError: (error, handler) {
-        if (isSessionExpired(
-            error.requestOptions.uri, error.response?.statusCode)) {
+        if (isSessionExpired(error.requestOptions.uri, error.response?.statusCode)) {
           unawaited(_handleUnauthorized());
         }
         handler.next(error);
@@ -26,8 +22,7 @@ class ApiClient {
     // Session expired Interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onResponse: (response, handler) {
-        if (isSessionExpired(
-            response.requestOptions.uri, response.statusCode)) {
+        if (isSessionExpired(response.requestOptions.uri, response.statusCode)) {
           unawaited(_handleUnauthorized());
           return handler.reject(DioException.badResponse(
             statusCode: 401,
@@ -43,7 +38,7 @@ class ApiClient {
   static const String baseUrl = 'https://test.app.itk.ppke.hu';
 
   final Dio dio;
-  final CookieJar? _cookieJar;
+  final CookieJar _cookieJar;
 
   Future<void> Function()? onUnauthorized;
   bool _handlingUnauthorized = false;
@@ -60,20 +55,13 @@ class ApiClient {
   }
 
   static Future<ApiClient> create() async {
-    final Dio dio = Dio(
+    final dio = Dio(
       BaseOptions(
         connectTimeout: const Duration(seconds: 10),
         receiveTimeout: const Duration(seconds: 10),
         baseUrl: baseUrl,
       ),
     );
-
-    if (kIsWeb) {
-      // Browser: cookies are handled by the browser. withCredentials makes it
-      // send and accept the session cookie on cross-origin requests.
-      dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
-      return ApiClient._(dio, null);
-    }
 
     final appDocDir = await getApplicationDocumentsDirectory();
     final cookieJar = PersistCookieJar(
@@ -84,24 +72,19 @@ class ApiClient {
     return ApiClient._(dio, cookieJar);
   }
 
-  Future<void> clearCookies() async {
-    await _cookieJar?.deleteAll();
-  }
+  Future<void> clearCookies() => _cookieJar.deleteAll();
 
   Future<Result<T>> getJson<T>(
     String path, {
     required T Function(Object?) parse,
     Map<String, dynamic>? queryParameters,
-  }) async {
-    return sendRequest(
+  }) =>
+      sendRequest(
         parse: parse,
-        send: () => dio.get(path, queryParameters: queryParameters));
-  }
+        send: () => dio.get(path, queryParameters: queryParameters),
+      );
 }
 
 const _pathsWithoutLogout = {'/api/auth/login', '/api/auth/logout'};
 
-bool isSessionExpired(Uri uri, int? statusCode) =>
-    statusCode == 401 &&
-    uri.host == Uri.parse(ApiClient.baseUrl).host &&
-    !_pathsWithoutLogout.contains(uri.path);
+bool isSessionExpired(Uri uri, int? statusCode) => statusCode == 401 && uri.host == Uri.parse(ApiClient.baseUrl).host && !_pathsWithoutLogout.contains(uri.path);
