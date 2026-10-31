@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:icalendar_parser/icalendar_parser.dart';
 import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/data/services/api_client.dart';
@@ -43,7 +42,7 @@ class CalendarRepository {
 
     // Parse data from response
     try {
-      final events = ICalendar.fromString(data).data.where((item) => item['type'] == 'VEVENT').map(CalendarEvent.fromJson).toList();
+      final events = CalendarEvent.parseIcs(data);
       _cached = events;
       return Ok(events);
     } catch (e) {
