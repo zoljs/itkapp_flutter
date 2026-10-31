@@ -58,7 +58,6 @@ class UserSite {
     );
   }
 
-  /// Missing means false, anything other than a bool is an error.
   static bool _readBool(Object? value, String field) {
     if (value == null) return false;
     if (value is! bool) throw FormatException('Hibás $field mező.');

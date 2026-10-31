@@ -25,16 +25,40 @@ class LdapUser {
   }
 
   factory LdapUser.fromJson(Map<String, dynamic> json) {
+    final id = json['id'];
+    if (id is! int) throw const FormatException('A felhasználónak hiányzik az id-je.');
+
+    final login = json['login'];
+    if (login is! String) throw const FormatException('A felhasználónak hiányzik a felhasználóneve.');
+
+    final name = json['name'];
+    if (name is! String) throw const FormatException('A felhasználónak hiányzik a neve.');
+
+    final email = json['email'];
+    if (email is! String?) throw const FormatException('Hibás email mező.');
+
+    final givenName = json['givenName'];
+    if (givenName is! String) throw const FormatException('A felhasználónak hiányzik a keresztneve.');
+
+    final familyName = json['familyName'];
+    if (familyName is! String) throw const FormatException('A felhasználónak hiányzik a vezetékneve.');
+
     return LdapUser(
-      id: json['id'] as int,
-      login: json['login'] as String,
-      email: json['email'] as String?,
-      name: json['name'] as String,
-      givenName: json['givenName'] as String? ?? '',
-      familyName: json['familyName'] as String? ?? '',
-      canModerateMidterms: json['canModerateMidterms'] as bool? ?? false,
-      isAdmin: json['isAdmin'] as bool? ?? false,
+      id: id,
+      login: login,
+      email: email,
+      name: name,
+      givenName: givenName,
+      familyName: familyName,
+      canModerateMidterms: _readBool(json['canModerateMidterms'], 'canModerateMidterms'),
+      isAdmin: _readBool(json['isAdmin'], 'isAdmin'),
     );
+  }
+
+  static bool _readBool(Object? value, String field) {
+    if (value == null) return false;
+    if (value is! bool) throw FormatException('Hibás $field mező.');
+    return value;
   }
 
   Map<String, dynamic> toJson() {
@@ -46,6 +70,14 @@ class LdapUser {
       'givenName': givenName,
       'familyName': familyName,
       'canModerateMidterms': canModerateMidterms,
+      'isAdmin': isAdmin,
     };
+  }
+
+  static LdapUser parse(Object? data) {
+    if (data is! Map<String, dynamic>) {
+      throw const FormatException('A felhasználó nem objektum formátumú.');
+    }
+    return LdapUser.fromJson(data);
   }
 }

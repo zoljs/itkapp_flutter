@@ -99,10 +99,9 @@ class AuthRepository extends ChangeNotifier {
   }
 
   LdapUser? _parseUser(Object? data) {
-    if (data is! Map<String, dynamic>) return null;
     try {
-      return LdapUser.fromJson(data);
-    } on TypeError catch (e) {
+      return LdapUser.parse(data);
+    } on FormatException catch (e) {
       debugPrint('[AuthRepository] bad user json: $e');
       return null;
     }

@@ -28,7 +28,7 @@ class UserSummary {
     return UserSummary(userId: userId, fullName: fullName, ldapUsername: ldapUsername);
   }
 
-  static List<UserSummary> parseUsers(Object? data) {
+  static List<UserSummary> parseList(Object? data) {
     if (data is! List) {
       throw const FormatException('A felhasználó lista nem lista formátumú.');
     }

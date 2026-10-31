@@ -25,11 +25,6 @@ class CalendarRepository {
     try {
       response = await _dio.get('/api/calendar');
     } on DioException catch (e) {
-      // Does not have calendar aka empty
-      if (e.response?.statusCode == 404) {
-        _cached = const [];
-        return const Ok([]);
-      }
       return Err(apiErrorMessage(e));
     }
 
@@ -45,7 +40,7 @@ class CalendarRepository {
       final events = CalendarEvent.parseIcs(data);
       _cached = events;
       return Ok(events);
-    } catch (e) {
+    } on Exception catch (e) {
       debugPrint('[CalendarRepository] parse error: $e');
       return const Err('Nem sikerült feldolgozni a naptárat.');
     }
