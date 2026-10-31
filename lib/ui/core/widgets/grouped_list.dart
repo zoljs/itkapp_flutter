@@ -2,6 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
+class SettingsHeader extends StatelessWidget {
+  const SettingsHeader({
+    super.key,
+    required this.title,
+  });
+
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final muted = TextStyle(fontSize: 13, color: scheme.onSurfaceVariant);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+      child: Text(title, style: muted.copyWith(letterSpacing: 0.4)),
+    );
+  }
+}
+
 class SettingsGroup extends StatelessWidget {
   const SettingsGroup({super.key, this.header, this.footer, required this.children});
 
@@ -20,15 +40,15 @@ class SettingsGroup extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (header != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
-              child: Text(header!, style: muted.copyWith(letterSpacing: 0.4)),
+            SettingsHeader(
+              title: header!,
             ),
           ClipRSuperellipse(
             borderRadius: BorderRadius.circular(AppRadius.xxl),
             child: Material(
               color: scheme.surfaceContainerHigh,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (var i = 0; i < children.length; i++) ...[
                     if (i > 0)

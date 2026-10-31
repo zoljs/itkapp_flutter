@@ -7,6 +7,7 @@ import 'package:itk_app/ui/calendar/widgets/calendar_link_tile.dart';
 import 'package:itk_app/ui/calendar/viewmodels/calendar_links_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/core/widgets/adaptive_segmented_control.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
@@ -19,7 +20,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 class CalendarLinksScreen extends StatefulWidget {
   const CalendarLinksScreen({super.key});
 
-  static const _presets = ['Neptun', 'Moodle'];
+  static const _presets = ['Neptun', 'Moodle', 'Teams'];
 
   @override
   State<CalendarLinksScreen> createState() => _CalendarLinksScreenState();
@@ -195,13 +196,11 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(AppSpacing.lg),
-                    child: SegmentedButton<SyncInterval>(
-                      showSelectedIcon: false,
-                      segments: [
-                        for (final interval in SyncInterval.values) ButtonSegment(value: interval, label: Text(interval.label)),
-                      ],
-                      selected: {_viewModel.syncInterval},
-                      onSelectionChanged: (selection) => _viewModel.setSyncInterval(selection.first),
+                    child: AdaptiveSegmentedControl(
+                      values: SyncInterval.values,
+                      selected: _viewModel.syncInterval,
+                      onChanged: _viewModel.setSyncInterval,
+                      labelOf: (interval) => interval.label,
                     ),
                   ),
                 ],
