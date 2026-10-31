@@ -96,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     SettingsTile(
                       icon: Icons.link_rounded,
                       iconColor: scheme.primary,
-                      title: 'Naptárlinkek V2',
+                      title: 'Naptárlinkek',
                       onTap: () => context.push(Routes.calendarLinks),
                     ),
                   ],
