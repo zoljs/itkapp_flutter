@@ -16,9 +16,7 @@ import 'package:itk_app/utils/semester.dart';
 import 'package:provider/provider.dart';
 
 class AddCompletionSheet extends StatefulWidget {
-  const AddCompletionSheet(
-      {super.key, this.scrollController, this.initialSubject});
-
+  const AddCompletionSheet({super.key, this.scrollController, this.initialSubject});
 
   final ScrollController? scrollController;
   final MissingSubject? initialSubject;
@@ -98,14 +96,8 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
     return SegmentedButton<bool>(
       showSelectedIcon: false,
       segments: const [
-        ButtonSegment(
-            value: false,
-            icon: Icon(Icons.menu_book_rounded),
-            label: Text('Tantervi tárgy')),
-        ButtonSegment(
-            value: true,
-            icon: Icon(Icons.edit_note_rounded),
-            label: Text('Saját tárgy')),
+        ButtonSegment(value: false, icon: Icon(Icons.menu_book_rounded), label: Text('Tantervi tárgy')),
+        ButtonSegment(value: true, icon: Icon(Icons.edit_note_rounded), label: Text('Saját tárgy')),
       ],
       selected: {_viewModel.custom},
       onSelectionChanged: (s) => _viewModel.setCustom(s.first),
@@ -116,12 +108,9 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
     final subject = _viewModel.subject;
     return SettingsGroup(
       header: 'Tárgy',
-      footer: subject == null
-          ? 'Csak a saját tantervedben szereplő tárgyak között keresünk.'
-          : '${subject.code} · ${subject.credits} kredit',
+      footer: subject == null ? 'Csak a saját tantervedben szereplő tárgyak között keresünk.' : '${subject.code} · ${subject.credits} kredit',
       children: [
-        SettingsTile(
-            title: subject?.name ?? 'Tárgy kiválasztása', onTap: _pickSubject),
+        SettingsTile(title: subject?.name ?? 'Tárgy kiválasztása', onTap: _pickSubject),
       ],
     );
   }
@@ -160,8 +149,7 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
             textCapitalization: TextCapitalization.characters,
             textInputAction: TextInputAction.done,
             onChanged: _viewModel.setCustomCode,
-            decoration:
-                fieldDecoration.copyWith(hintText: 'Tárgykód (nem kötelező)'),
+            decoration: fieldDecoration.copyWith(hintText: 'Tárgykód (nem kötelező)'),
           ),
         ),
         SettingsTile(
@@ -172,28 +160,20 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
               IconButton(
                 tooltip: 'Kevesebb',
                 icon: const Icon(Icons.remove_rounded),
-                onPressed: _viewModel.customCredits > 0
-                    ? () => _viewModel.changeCustomCredits(-1)
-                    : null,
+                onPressed: _viewModel.customCredits > 0 ? () => _viewModel.changeCustomCredits(-1) : null,
               ),
               SizedBox(
                 width: 32,
                 child: Text(
                   '${_viewModel.customCredits}',
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w700,
-                      color: scheme.onSurface),
+                  style: TextStyle(fontSize: 17, fontWeight: FontWeight.w700, color: scheme.onSurface),
                 ),
               ),
               IconButton(
                 tooltip: 'Több',
                 icon: const Icon(Icons.add_rounded),
-                onPressed: _viewModel.customCredits <
-                        AddCompletionViewModel.maxCustomCredits
-                    ? () => _viewModel.changeCustomCredits(1)
-                    : null,
+                onPressed: _viewModel.customCredits < AddCompletionViewModel.maxCustomCredits ? () => _viewModel.changeCustomCredits(1) : null,
               ),
             ],
           ),
@@ -203,11 +183,9 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
   }
 
   Widget _buildForm(BuildContext context) {
-
     return SingleChildScrollView(
       controller: widget.scrollController,
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xxxl),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.xxxl),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -215,23 +193,16 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
             _buildModeSwitch(),
             const SizedBox(height: AppSpacing.xxl),
           ],
-          if (_viewModel.custom)
-            _buildCustomSubject()
-          else
-            _buildCurriculumSubject(),
+          if (_viewModel.custom) _buildCustomSubject() else _buildCurriculumSubject(),
           SettingsGroup(
             header: 'Félév',
             children: [
-              SettingsTile(
-                  title: 'Félév',
-                  value: semesterLabel(_viewModel.semester),
-                  onTap: _pickSemester),
+              SettingsTile(title: 'Félév', value: semesterLabel(_viewModel.semester), onTap: _pickSemester),
             ],
           ),
           SettingsGroup(
             header: 'Eredmény',
-            footer:
-                'Elégtelen (1) jegy nem számít bele a kreditekbe, de rögzítheted a nyilvántartásodhoz.',
+            footer: 'Elégtelen (1) jegy nem számít bele a kreditekbe, de rögzítheted a nyilvántartásodhoz.',
             children: [
               Padding(
                 padding: const EdgeInsets.all(AppSpacing.md),
@@ -239,8 +210,7 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
                   spacing: AppSpacing.sm,
                   runSpacing: AppSpacing.sm,
                   children: [
-                    for (final g in _viewModel.gradeOptions)
-                      GradeChip(grade: g, selected: g == _viewModel.grade, onTap: () => _viewModel.setGrade(g)),
+                    for (final g in _viewModel.gradeOptions) GradeChip(grade: g, selected: g == _viewModel.grade, onTap: () => _viewModel.setGrade(g)),
                   ],
                 ),
               ),
@@ -270,8 +240,7 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
 }
 
 class _GradeChip extends StatelessWidget {
-  const _GradeChip(
-      {required this.grade, required this.selected, required this.onTap});
+  const _GradeChip({required this.grade, required this.selected, required this.onTap});
 
   final int? grade;
   final bool selected;
@@ -281,8 +250,7 @@ class _GradeChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isWide = grade == null;
-    final shape = RoundedSuperellipseBorder(
-        borderRadius: BorderRadius.circular(AppRadius.lg));
+    final shape = RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.lg));
 
     return Semantics(
       button: true,

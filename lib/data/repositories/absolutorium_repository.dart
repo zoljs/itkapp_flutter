@@ -10,12 +10,10 @@ import 'package:itk_app/domain/models/averages.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AbsolutoriumRepository {
-  AbsolutoriumRepository(
-      {required ApiClient apiClient, required SharedPreferencesService prefs})
+  AbsolutoriumRepository({required ApiClient apiClient, required SharedPreferencesService prefs})
       : _dio = apiClient.dio,
         _prefs = prefs,
-        _diplomaInputs = ValueNotifier(
-            DiplomaInputs.fromJsonString(prefs.getString(_diplomaKey)));
+        _diplomaInputs = ValueNotifier(DiplomaInputs.fromJsonString(prefs.getString(_diplomaKey)));
 
   static const _diplomaKey = 'absolutorium.diplomaInputs';
 
@@ -60,8 +58,7 @@ class AbsolutoriumRepository {
     bool forceReload = false,
     Duration maxAge = const Duration(minutes: 2),
   }) {
-    if (!forceReload && isFresh(maxAge))
-      return Future.value(Ok(_progress.value));
+    if (!forceReload && isFresh(maxAge)) return Future.value(Ok(_progress.value));
     return _inflight ??= _fetchProgress().whenComplete(() => _inflight = null);
   }
 
@@ -87,8 +84,7 @@ class AbsolutoriumRepository {
     ]);
   }
 
-  Future<Result<List<CurriculumOption>>> getCurricula(
-      {bool forceReload = false}) async {
+  Future<Result<List<CurriculumOption>>> getCurricula({bool forceReload = false}) async {
     final cached = _curricula;
     if (cached != null && !forceReload) return Ok(cached);
 
@@ -100,8 +96,7 @@ class AbsolutoriumRepository {
     return result;
   }
 
-  Future<Result<void>> setCurriculum(
-      {required int curriculumId, int? specializationGroupId}) async {
+  Future<Result<void>> setCurriculum({required int curriculumId, int? specializationGroupId}) async {
     final result = await _send<void>(
       send: () => _dio.put('/api/absolutorium/curriculum', data: {
         'curriculumId': curriculumId,
@@ -119,14 +114,10 @@ class AbsolutoriumRepository {
   }) {
     final at = _completionsFetchedAt;
     final cached = _completions.value;
-    if (!forceReload &&
-        cached != null &&
-        at != null &&
-        DateTime.now().difference(at) < maxAge) {
+    if (!forceReload && cached != null && at != null && DateTime.now().difference(at) < maxAge) {
       return Future.value(Ok(cached));
     }
-    return _completionsInflight ??=
-        _fetchCompletions().whenComplete(() => _completionsInflight = null);
+    return _completionsInflight ??= _fetchCompletions().whenComplete(() => _completionsInflight = null);
   }
 
   Future<Result<List<Completion>>> _fetchCompletions() async {
@@ -147,15 +138,11 @@ class AbsolutoriumRepository {
   }
 
   Future<Result<List<CurriculumSubject>>> searchSubjects(String query) => _send(
-        send: () => _dio.get('/api/absolutorium/subjects',
-            queryParameters: {'q': query.trim()}),
+        send: () => _dio.get('/api/absolutorium/subjects', queryParameters: {'q': query.trim()}),
         parse: CurriculumSubject.parseList,
       );
 
-  Future<Result<void>> addCompletion(
-      {required int subjectId,
-      required String semester,
-      required int? grade}) async {
+  Future<Result<void>> addCompletion({required int subjectId, required String semester, required int? grade}) async {
     final result = await _send<void>(
       send: () => _dio.post('/api/absolutorium/completions', data: {
         'subjectId': subjectId,
@@ -180,8 +167,7 @@ class AbsolutoriumRepository {
       send: () => _dio.post('/api/absolutorium/completions', data: {
         'custom': {
           'name': name.trim(),
-          'code':
-              (trimmedCode == null || trimmedCode.isEmpty) ? null : trimmedCode,
+          'code': (trimmedCode == null || trimmedCode.isEmpty) ? null : trimmedCode,
           'credits': credits,
         },
         'semester': semester,
@@ -211,8 +197,7 @@ class AbsolutoriumRepository {
       final response = await send();
       return Ok(parse(response.data));
     } on DioException catch (e) {
-      if (onNotFound != null && e.response?.statusCode == 404)
-        return Ok(onNotFound());
+      if (onNotFound != null && e.response?.statusCode == 404) return Ok(onNotFound());
       return Err(_errorText(e));
     } on FormatException catch (e) {
       debugPrint('[AbsolutoriumRepository] parse error: ${e.message}');

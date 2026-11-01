@@ -35,8 +35,7 @@ class CurriculumViewModel extends ChangeNotifier {
   int? _curriculumId;
   int? _specializationId;
 
-  UnmodifiableListView<CurriculumOption> get curricula =>
-      UnmodifiableListView(_curricula);
+  UnmodifiableListView<CurriculumOption> get curricula => UnmodifiableListView(_curricula);
 
   int? get curriculumId => _curriculumId;
 
@@ -75,8 +74,7 @@ class CurriculumViewModel extends ChangeNotifier {
     final result = await _repository.getCurricula();
     if (result case Ok(:final value)) {
       _curricula = value;
-      if (_curriculumId == null && value.length == 1)
-        _curriculumId = value.first.id;
+      if (_curriculumId == null && value.length == 1) _curriculumId = value.first.id;
       notifyListeners();
     }
     return result;
