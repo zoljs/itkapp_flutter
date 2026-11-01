@@ -89,6 +89,8 @@ class CalendarLinksViewmodel extends ChangeNotifier {
       _calendarRepository.clearCache();
       return _load();
     }
+    if (result is Err) await _load();
+
     return result;
   }
 

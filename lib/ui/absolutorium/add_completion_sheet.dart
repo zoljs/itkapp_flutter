@@ -224,18 +224,18 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([_viewModel, _viewModel.save]),
-      builder: (context, _) => Scaffold(
-        backgroundColor: sheetBackgroundColor(context),
-        appBar: buildBrandAppBar(
-          context: context,
-          title: 'Teljesítés felvétele',
-          closesSheet: true,
-          onAction: _viewModel.canSave ? _submit : null,
-        ),
-        body: _buildForm(context),
-      ),
-    );
+        listenable: Listenable.merge([_viewModel, _viewModel.save]),
+        builder: (context, _) => Scaffold(
+              backgroundColor: sheetBackgroundColor(context),
+              appBar: buildBrandAppBar(
+                context: context,
+                title: 'Teljesítés felvétele',
+                closesSheet: true,
+                onAction: _viewModel.canSave ? _submit : null,
+              ),
+              body: _buildForm(context),
+            ),
+        s);
   }
 }
 

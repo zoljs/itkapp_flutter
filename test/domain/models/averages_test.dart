@@ -3,16 +3,16 @@ import 'package:itk_app/domain/models/absolutorium.dart';
 import 'package:itk_app/domain/models/averages.dart';
 
 Completion c(int id, String semester, int credits, int? grade, {bool custom = false, String? name}) => Completion(
-  id: id,
-  subjectId: custom ? null : id,
-  code: custom ? null : 'K$id',
-  name: name ?? 'Tárgy $id',
-  credits: credits,
-  requirementType: grade == null ? 'Aláírás' : 'Vizsga',
-  isCustom: custom,
-  semester: semester,
-  grade: grade,
-);
+      id: id,
+      subjectId: custom ? null : id,
+      code: custom ? null : 'K$id',
+      name: name ?? 'Tárgy $id',
+      credits: credits,
+      requirementType: grade == null ? 'Aláírás' : 'Vizsga',
+      isCustom: custom,
+      semester: semester,
+      grade: grade,
+    );
 
 final sample = [
   c(1, '2025/26/1', 5, 5),
