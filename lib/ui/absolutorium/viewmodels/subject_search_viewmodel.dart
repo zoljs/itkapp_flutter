@@ -8,8 +8,7 @@ import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class SubjectSearchViewModel extends ChangeNotifier {
-  SubjectSearchViewModel({required AbsolutoriumRepository repository})
-      : _repository = repository {
+  SubjectSearchViewModel({required AbsolutoriumRepository repository}) : _repository = repository {
     search = Command1<void, String>(_search);
   }
 
@@ -33,8 +32,7 @@ class SubjectSearchViewModel extends ChangeNotifier {
 
   String get query => _query.trim();
 
-  UnmodifiableListView<CurriculumSubject> get hits =>
-      UnmodifiableListView(_hits);
+  UnmodifiableListView<CurriculumSubject> get hits => UnmodifiableListView(_hits);
 
   bool get queryTooShort => query.length < minQueryLength;
 

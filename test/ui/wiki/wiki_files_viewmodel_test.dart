@@ -68,5 +68,23 @@ void main() {
       );
       viewModel.dispose();
     });
+
+    test('a fájl URL kódolja a # és ? karaktert', () async {
+      final viewModel = await create();
+      expect(
+        viewModel.fileUrl('zh1#2?.pdf'),
+        'https://users.itk.ppke.hu/~perpa4/files/zh1%232%3F.pdf',
+      );
+      viewModel.dispose();
+    });
+
+    test('a fájl URL kihagyja az üres mappa-darabokat', () async {
+      final viewModel = await create(dir: '/Analizis//ZH/');
+      expect(
+        viewModel.fileUrl('x.pdf'),
+        'https://users.itk.ppke.hu/~perpa4/files/Analizis/ZH/x.pdf',
+      );
+      viewModel.dispose();
+    });
   });
 }

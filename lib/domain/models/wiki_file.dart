@@ -9,11 +9,24 @@ class WikiFile {
 
   /// The PHP script runs on a server we do not control, so a huge listing is rejected.
   static const maxFiles = 1000;
+  static final _controlChars = RegExp(r'[\x00-\x1F\x7F]');
 
   factory WikiFile.fromJson(Map<String, dynamic> json) {
     final name = json['name'];
     if (name is! String || name.trim().isEmpty) {
       throw const FormatException('A fájlnév üres.');
+    }
+    if (name.contains('/') || name.contains('\\')) {
+      throw const FormatException('Egy fájlnév nem tartalmazhat "/" vagy "\\" karaktereket.');
+    }
+    if (name == '.' || name == '..') {
+      throw const FormatException('Egy fájlnév nem lehet ".." vagy "." karaktersorozat.');
+    }
+    if (name.length > 255) {
+      throw const FormatException('Egy fájlnév túl hosszú.');
+    }
+    if (_controlChars.hasMatch(name)) {
+      throw const FormatException('Egy fájlnév nem tartalmazhat vezérlőkaraktereket.');
     }
 
     final type = json['type'];
