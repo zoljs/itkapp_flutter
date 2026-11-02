@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/repositories/videos_repository.dart';
+import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -280,7 +281,7 @@ class _VideosScreenState extends State<VideosScreen> {
         if (n.metrics.extentAfter < 600) _loadMore();
         return false;
       },
-      child: RefreshIndicator(
+      child: RefreshIndicator.adaptive(
         edgeOffset: _FilterBar.height,
         onRefresh: () => _reload(forceReload: true),
         child: CustomScrollView(
@@ -359,12 +360,7 @@ class _VideosScreenState extends State<VideosScreen> {
         ),
         sliver: SliverToBoxAdapter(
           child: Center(
-            child: _loadingMore
-                ? const SizedBox.square(
-                    dimension: 24,
-                    child: CircularProgressIndicator(strokeWidth: 2.5),
-                  )
-                : const SizedBox.shrink(),
+            child: _loadingMore ? const AppSpinner() : const SizedBox.shrink(),
           ),
         ),
       ),

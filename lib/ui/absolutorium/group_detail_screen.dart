@@ -8,6 +8,7 @@ import 'package:itk_app/ui/absolutorium/widgets/progress_widgets.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
+import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/utils/context_extensions.dart';
@@ -67,14 +68,14 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
             onAction: group == null ? null : _openAdd,
           ),
           body: loading
-              ? const Center(child: CircularProgressIndicator.adaptive())
+              ? const Center(child: AppSpinner())
               : group == null
                   ? StateMessage(
                       icon: Icons.info_outline_rounded,
                       message: _viewModel.refresh.errorMessage ?? 'Ez a csoport már nem része a tantervednek.',
                       onRetry: _viewModel.refresh.errorMessage == null ? null : _viewModel.refresh.execute,
                     )
-                  : RefreshIndicator(
+                  : RefreshIndicator.adaptive(
                       onRefresh: _viewModel.refresh.execute,
                       child: _buildList(context, group),
                     ),

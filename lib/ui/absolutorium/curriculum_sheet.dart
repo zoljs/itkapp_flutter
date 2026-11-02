@@ -3,6 +3,7 @@ import 'package:itk_app/data/repositories/absolutorium_repository.dart';
 import 'package:itk_app/ui/absolutorium/viewmodels/curriculum_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
+import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
@@ -59,21 +60,16 @@ class _CurriculumSheetState extends State<CurriculumSheet> {
     final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: 24,
-      child: selected
-          ? Icon(Icons.check_rounded, color: scheme.primary)
-          : const SizedBox.shrink(),
+      child: selected ? Icon(Icons.check_rounded, color: scheme.primary) : const SizedBox.shrink(),
     );
   }
 
   Widget _buildBody(BuildContext context) {
     if (_viewModel.load.running) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      return const Center(child: AppSpinner());
     }
     if (_viewModel.load.errorMessage case final message?) {
-      return StateMessage(
-          icon: Icons.cloud_off_rounded,
-          message: message,
-          onRetry: _viewModel.load.execute);
+      return StateMessage(icon: Icons.cloud_off_rounded, message: message, onRetry: _viewModel.load.execute);
     }
     if (_viewModel.curricula.isEmpty) {
       return const StateMessage(
@@ -109,8 +105,7 @@ class _CurriculumSheetState extends State<CurriculumSheet> {
         if (selected != null && selected.specializations.isNotEmpty)
           SettingsGroup(
             header: 'Specializáció',
-            footer:
-                'Később is megadhatod. Amíg nincs kiválasztva, az abszolutórium nem lehet teljes.',
+            footer: 'Később is megadhatod. Amíg nincs kiválasztva, az abszolutórium nem lehet teljes.',
             children: [
               SettingsTile(
                 title: 'Még nem választottam',
@@ -132,15 +127,15 @@ class _CurriculumSheetState extends State<CurriculumSheet> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable:
-          Listenable.merge([_viewModel, _viewModel.load, _viewModel.save]),
+      listenable: Listenable.merge([_viewModel, _viewModel.load, _viewModel.save]),
       builder: (context, _) => Scaffold(
         backgroundColor: sheetBackgroundColor(context),
         appBar: buildBrandAppBar(
           context: context,
           title: 'Tanterv',
           closesSheet: true,
-          onAction: _viewModel.canSave ? _submit : null,
+          onAction: _submit,
+          actionEnabled: _viewModel.canSave && !_viewModel.save.running,
         ),
         body: _buildBody(context),
       ),

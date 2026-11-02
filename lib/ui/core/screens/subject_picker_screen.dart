@@ -8,6 +8,7 @@ import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/core/screens/viewmodels/subject_picker_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class SubjectPickerScreen extends StatefulWidget {
   final int? selectedId;
@@ -23,6 +24,11 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
   final _searchController = TextEditingController();
   late final SubjectPickerViewModel _viewModel;
 
+  static final _skeletonSubjects = List.generate(
+    10,
+    (i) => Subject(id: -i, code: BoneMock.chars(8), name: BoneMock.words(3)),
+  );
+
   @override
   void initState() {
     super.initState();
@@ -37,9 +43,9 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
   }
 
   Widget _buildList(BuildContext context) {
-    if (_viewModel.load.running) {
-      return const Center(child: CircularProgressIndicator.adaptive());
-    }
+    final loading = _viewModel.load.running;
+    final subjects = loading ? _skeletonSubjects : _viewModel.filteredSubjects;
+
     if (_viewModel.load.errorMessage != null) {
       return StateMessage(
         icon: Icons.cloud_off_rounded,
@@ -48,15 +54,17 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
       );
     }
 
-    final subjects = _viewModel.filteredSubjects;
-    return ListView.separated(
-      controller: widget.scrollController,
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.paddingOf(context).bottom + 80,
+    return Skeletonizer(
+      enabled: loading,
+      child: ListView.separated(
+        controller: widget.scrollController,
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.paddingOf(context).bottom + 80,
+        ),
+        itemCount: subjects.length,
+        itemBuilder: (context, index) => _buildSubjectRow(context, subjects[index]),
+        separatorBuilder: (context, index) => const Divider(height: 1),
       ),
-      itemCount: subjects.length,
-      itemBuilder: (context, index) => _buildSubjectRow(context, subjects[index]),
-      separatorBuilder: (context, index) => const Divider(height: 1),
     );
   }
 

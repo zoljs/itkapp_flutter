@@ -63,8 +63,9 @@ class _HomeScreenState extends State<HomeScreen> {
     final today = DateFormat('MMMM d., EEEE', 'hu').format(DateTime.now());
 
     return Scaffold(
-      body: RefreshIndicator(
+      body: RefreshIndicator.adaptive(
         onRefresh: _refresh,
+        edgeOffset: MediaQuery.paddingOf(context).top,
         child: CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(
             parent: BouncingScrollPhysics(),
@@ -91,8 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     header: 'Következő óra',
                     children: [
                       ListenableBuilder(
-                          listenable:
-                              Listenable.merge([_viewModel.load, _viewModel]),
+                          listenable: Listenable.merge([_viewModel.load, _viewModel]),
                           builder: (context, _) {
                             return _buildNextEvent(scheme);
                           })
@@ -173,15 +173,12 @@ class _HomeScreenState extends State<HomeScreen> {
           );
 
       final isToday = DateUtils.isSameDay(e.start, DateTime.now());
-      final day =
-          isToday ? 'Ma' : DateFormat('MMM d., EEEE', 'hu').format(e.start);
-      final time =
-          '${DateFormat.Hm().format(e.start)}–${DateFormat.Hm().format(e.end)}';
+      final day = isToday ? 'Ma' : DateFormat('MMM d., EEEE', 'hu').format(e.start);
+      final time = '${DateFormat.Hm().format(e.start)}–${DateFormat.Hm().format(e.end)}';
 
       content = Skeletonizer(
         enabled: _viewModel.load.running,
-        child:
-            EventCard(e: e, scheme: scheme, day: day, muted: muted, time: time),
+        child: EventCard(e: e, scheme: scheme, day: day, muted: muted, time: time),
       );
     }
 

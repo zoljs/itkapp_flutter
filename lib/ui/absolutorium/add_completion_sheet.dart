@@ -5,9 +5,7 @@ import 'package:itk_app/ui/absolutorium/semester_picker_screen.dart';
 import 'package:itk_app/ui/absolutorium/subject_search_screen.dart';
 import 'package:itk_app/ui/absolutorium/viewmodels/add_completion_viewmodel.dart';
 import 'package:itk_app/ui/absolutorium/widgets/grade_chip.dart';
-import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
-import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
@@ -231,7 +229,8 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
           context: context,
           title: 'Teljesítés felvétele',
           closesSheet: true,
-          onAction: _viewModel.canSave ? _submit : null,
+          onAction: _submit,
+          actionEnabled: _viewModel.canSave && !_viewModel.save.running,
         ),
         body: _buildForm(context),
       ),
@@ -239,45 +238,45 @@ class _AddCompletionSheetState extends State<AddCompletionSheet> {
   }
 }
 
-class _GradeChip extends StatelessWidget {
-  const _GradeChip({required this.grade, required this.selected, required this.onTap});
+// class _GradeChip extends StatelessWidget {
+//   const _GradeChip({required this.grade, required this.selected, required this.onTap});
 
-  final int? grade;
-  final bool selected;
-  final VoidCallback onTap;
+//   final int? grade;
+//   final bool selected;
+//   final VoidCallback onTap;
 
-  @override
-  Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    final isWide = grade == null;
-    final shape = RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.lg));
+//   @override
+//   Widget build(BuildContext context) {
+//     final scheme = Theme.of(context).colorScheme;
+//     final isWide = grade == null;
+//     final shape = RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.lg));
 
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: grade == null ? 'Aláírás' : 'Jegy: $grade',
-      child: Material(
-        color: selected ? itkPrimary : scheme.surfaceContainerHighest,
-        shape: shape,
-        child: InkWell(
-          customBorder: shape,
-          onTap: onTap,
-          child: SizedBox(
-            height: 48,
-            width: isWide ? 96 : 48,
-            child: Center(
-              child: Text(
-                gradeLabel(grade),
-                style: TextStyle(
-                  fontSize: isWide ? 14 : 18,
-                  fontWeight: FontWeight.w700,
-                  color: selected ? itkDark : scheme.onSurface,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
+//     return Semantics(
+//       button: true,
+//       selected: selected,
+//       label: grade == null ? 'Aláírás' : 'Jegy: $grade',
+//       child: Material(
+//         color: selected ? itkPrimary : scheme.surfaceContainerHighest,
+//         shape: shape,
+//         child: InkWell(
+//           customBorder: shape,
+//           onTap: onTap,
+//           child: SizedBox(
+//             height: 48,
+//             width: isWide ? 96 : 48,
+//             child: Center(
+//               child: Text(
+//                 gradeLabel(grade),
+//                 style: TextStyle(
+//                   fontSize: isWide ? 14 : 18,
+//                   fontWeight: FontWeight.w700,
+//                   color: selected ? itkDark : scheme.onSurface,
+//                 ),
+//               ),
+//             ),
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+// }

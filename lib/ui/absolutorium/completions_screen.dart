@@ -9,6 +9,7 @@ import 'package:itk_app/ui/absolutorium/widgets/completion_dismissible.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
+import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/utils/context_extensions.dart';
@@ -52,7 +53,7 @@ class _CompletionsScreenState extends State<CompletionsScreen> {
 
   Widget _buildBody(BuildContext context) {
     if (_viewModel.initialLoading) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      return const Center(child: AppSpinner());
     }
     if (_viewModel.items.isEmpty && _viewModel.load.errorMessage != null) {
       return StateMessage(
@@ -68,7 +69,7 @@ class _CompletionsScreenState extends State<CompletionsScreen> {
       );
     }
 
-    return RefreshIndicator(
+    return RefreshIndicator.adaptive(
       onRefresh: () => _viewModel.load.execute(true),
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),

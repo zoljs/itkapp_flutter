@@ -12,6 +12,7 @@ import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class AdminRolesScreen extends StatefulWidget {
   const AdminRolesScreen({super.key});
@@ -22,6 +23,11 @@ class AdminRolesScreen extends StatefulWidget {
 
 class _AdminRolesScreenState extends State<AdminRolesScreen> {
   late final AdminRolesViewModel _viewModel;
+
+  static final _skeletonUsers = List.generate(
+    5,
+    (i) => UserSummary(userId: -i, fullName: BoneMock.name, ldapUsername: BoneMock.chars(6)),
+  );
 
   @override
   void initState() {
@@ -93,9 +99,10 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
   }
 
   Widget _buildBody(BuildContext context) {
-    if (_viewModel.initialLoading) {
-      return const Center(child: CircularProgressIndicator.adaptive());
-    }
+    // only display skeleton on first load, otherwise it'll reload every time we view the screen or display the sheet
+    final loading = _viewModel.initialLoading;
+    final users = loading ? _skeletonUsers : _viewModel.roleHolders;
+
     if (_viewModel.load.errorMessage != null) {
       return Padding(
         padding: const EdgeInsets.all(AppSpacing.xxl),
@@ -106,7 +113,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
         ),
       );
     }
-    if (_viewModel.roleHolders.isEmpty) {
+    if (_viewModel.roleHolders.isEmpty && !loading) {
       return const Padding(
         padding: EdgeInsets.all(AppSpacing.xxl),
         child: StateMessage(
@@ -116,7 +123,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
       );
     }
 
-    return RefreshIndicator(
+    return RefreshIndicator.adaptive(
       onRefresh: _viewModel.load.execute,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(
@@ -133,7 +140,13 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
             header: 'Évfolyamfelelősök',
             footer: 'Az évfolyamfelelősök bármely ZH-t felvehetik és törölhetik. '
                 'Balra húzva visszavonhatod a rangot.',
-            children: [for (final u in _viewModel.roleHolders) _buildRow(u)],
+            children: [
+              for (final u in users)
+                Skeletonizer(
+                  enabled: loading,
+                  child: _buildRow(u),
+                ),
+            ],
           ),
         ],
       ),

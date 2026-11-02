@@ -173,7 +173,8 @@ class _AddEventScreenState extends State<AddEventScreen> {
               title: 'Új ${widget.eventLabel}',
               closesSheet: true,
               actionIcon: Icons.check,
-              onAction: _viewModel.canSave && !_viewModel.save.running ? _submit : null,
+              onAction: _submit,
+              actionEnabled: _viewModel.canSave && !_viewModel.save.running,
             ),
             body: _buildForm(context),
           );

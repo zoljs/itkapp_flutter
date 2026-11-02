@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/routing/routes.dart';
+import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -122,8 +123,8 @@ class _WikiScreenState extends State<WikiScreen> {
                 child: _viewModel.checkFiles.running && _viewModel.checkingLogin == site.login
                     ? const Padding(
                         padding: EdgeInsets.all(AppSpacing.sm),
-                        child: CircularProgressIndicator.adaptive(
-                          backgroundColor: Colors.black,
+                        child: AppSpinner(
+                          color: Colors.black87,
                         ),
                       )
                     : const Skeleton.ignore(
@@ -171,7 +172,8 @@ class _WikiScreenState extends State<WikiScreen> {
       body: ListenableBuilder(
           listenable: Listenable.merge([_viewModel, _viewModel.load, _viewModel.checkFiles]),
           builder: (context, _) {
-            return RefreshIndicator(
+            return RefreshIndicator.adaptive(
+              edgeOffset: MediaQuery.paddingOf(context).top + AppSpacing.toolbarHeight,
               onRefresh: () => _viewModel.load.execute(true),
               child: CustomScrollView(
                 // ios bounce physics even if the list does NOT overflow
@@ -220,7 +222,7 @@ class _WikiScreenState extends State<WikiScreen> {
                               height: 80,
                               color: scheme.surfaceContainerHigh,
                               child: const Center(
-                                child: CircularProgressIndicator.adaptive(),
+                                child: AppSpinner(),
                               ),
                             )
                           : MySiteCard(

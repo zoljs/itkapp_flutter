@@ -15,6 +15,7 @@ import 'package:itk_app/ui/absolutorium/widgets/averages_widgets.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
+import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/circles_painter.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
@@ -132,7 +133,7 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
 
     if (_viewModel.initialLoading) {
       return const [
-        SliverFillRemaining(hasScrollBody: false, child: Center(child: CircularProgressIndicator.adaptive())),
+        SliverFillRemaining(hasScrollBody: false, child: Center(child: AppSpinner())),
       ];
     }
     if (p == null && _viewModel.load.errorMessage != null) {
@@ -251,7 +252,7 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
       builder: (context, asFab, _) => ListenableBuilder(
         listenable: Listenable.merge([_viewModel, _viewModel.load]),
         builder: (context, _) => Scaffold(
-          body: RefreshIndicator(
+          body: RefreshIndicator.adaptive(
             onRefresh: () => _viewModel.load.execute(true),
             child: CustomScrollView(
               physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),

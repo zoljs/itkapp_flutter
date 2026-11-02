@@ -285,7 +285,7 @@ class _EventsScreenState extends State<EventsScreen> {
           listenable: Listenable.merge([_viewModel, _viewModel.load]),
           builder: (context, _) {
             return Scaffold(
-              body: RefreshIndicator(
+              body: RefreshIndicator.adaptive(
                 onRefresh: () => _viewModel.load.execute(true),
                 child: CustomScrollView(
                   physics: const AlwaysScrollableScrollPhysics(

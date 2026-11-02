@@ -10,6 +10,7 @@ PreferredSizeWidget buildBrandAppBar({
   String actionLabel = 'Mentés',
   IconData actionIcon = Icons.check_rounded,
   VoidCallback? onAction,
+  bool actionEnabled = true,
 }) {
   final theme = Theme.of(context);
 
@@ -31,7 +32,7 @@ PreferredSizeWidget buildBrandAppBar({
               style: theme.textTheme.titleMedium,
             ),
             // comes in handy when displaying the button conditionally
-            trailing: onAction == null ? null : buildBrandAction(onAction: onAction, label: 'Mentés', actionIcon: actionIcon),
+            trailing: onAction == null ? null : buildBrandAction(onAction: actionEnabled ? onAction : null, label: actionLabel, actionIcon: actionIcon),
           ),
         ),
       ),
@@ -40,7 +41,7 @@ PreferredSizeWidget buildBrandAppBar({
 }
 
 Widget buildBrandAction({
-  required VoidCallback onAction,
+  required VoidCallback? onAction,
   required String label,
   required IconData actionIcon,
 }) {

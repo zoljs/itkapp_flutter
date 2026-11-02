@@ -4,6 +4,7 @@ import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/login/viewmodels/login_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
@@ -232,14 +233,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   backgroundColor: itkPrimary,
                                   child: Center(
                                     child: _viewModel.login.running
-                                        ? SizedBox(
-                                            height: 24,
-                                            width: 24,
-                                            child: CircularProgressIndicator(
-                                              valueColor: AlwaysStoppedAnimation(scheme.onPrimary),
-                                              strokeWidth: 3,
-                                            ),
-                                          )
+                                        ? const AppSpinner(color: itkDark)
                                         : const Text(
                                             'Bejelentkezés',
                                             style: TextStyle(

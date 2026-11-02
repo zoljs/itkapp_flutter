@@ -4,6 +4,7 @@ import 'package:itk_app/domain/models/absolutorium.dart';
 import 'package:itk_app/ui/absolutorium/viewmodels/subject_search_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
+import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +65,7 @@ class _SubjectSearchScreenState extends State<SubjectSearchScreen> {
       );
     }
     if (searching && hits.isEmpty) {
-      return const Center(child: CircularProgressIndicator.adaptive());
+      return const Center(child: AppSpinner());
     }
     if (_viewModel.search.errorMessage case final message?) {
       return StateMessage(
@@ -154,7 +155,7 @@ class _SubjectSearchScreenState extends State<SubjectSearchScreen> {
                   suffixIcon: _viewModel.search.running && _viewModel.hits.isNotEmpty
                       ? const Padding(
                           padding: EdgeInsets.all(AppSpacing.md),
-                          child: SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                          child: AppSpinner(),
                         )
                       : null,
                 ),

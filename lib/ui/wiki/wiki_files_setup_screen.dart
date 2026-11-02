@@ -7,6 +7,7 @@ import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
@@ -15,14 +16,14 @@ import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:provider/provider.dart';
 
-class FilesSetupScreen extends StatefulWidget {
-  const FilesSetupScreen({super.key});
+class WikiFilesSetupScreen extends StatefulWidget {
+  const WikiFilesSetupScreen({super.key});
 
   @override
-  State<FilesSetupScreen> createState() => _FilesSetupScreenState();
+  State<WikiFilesSetupScreen> createState() => _WikiFilesSetupScreenState();
 }
 
-class _FilesSetupScreenState extends State<FilesSetupScreen> {
+class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
   late final WikiFilesSetupViewModel _viewModel;
 
   @override
@@ -104,7 +105,7 @@ class _FilesSetupScreenState extends State<FilesSetupScreen> {
                   backgroundColor: scheme.primaryContainer,
                   child: Center(
                     child: check.running
-                        ? const CircularProgressIndicator.adaptive()
+                        ? AppSpinner(color: scheme.onPrimaryContainer)
                         : Text(
                             'Ellenőrzés',
                             style: TextStyle(

@@ -9,6 +9,7 @@ import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/core/screens/viewmodels/subject_multi_picker_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class SubjectMultiPickerScreen extends StatefulWidget {
   final List<String> currentTags;
@@ -30,6 +31,11 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   final _searchController = TextEditingController();
   late final SubjectMultiPickerViewModel _viewModel;
 
+  static final _skeletonSubjects = List.generate(
+    10,
+    (i) => Subject(id: -i, code: BoneMock.chars(8), name: BoneMock.words(3)),
+  );
+
   @override
   void initState() {
     super.initState();
@@ -49,9 +55,9 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   }
 
   Widget _buildList(BuildContext context) {
-    if (_viewModel.load.running) {
-      return const Center(child: CircularProgressIndicator.adaptive());
-    }
+    final loading = _viewModel.load.running;
+    final subjects = loading ? _skeletonSubjects : _viewModel.filteredSubjects;
+
     if (_viewModel.load.errorMessage != null) {
       return StateMessage(
         icon: Icons.cloud_off_rounded,
@@ -60,22 +66,24 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
       );
     }
 
-    final subjects = _viewModel.filteredSubjects;
-    return ListView.separated(
-      controller: widget.scrollController,
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.paddingOf(context).bottom + 80,
+    return Skeletonizer(
+      enabled: loading,
+      child: ListView.separated(
+        controller: widget.scrollController,
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.paddingOf(context).bottom + 80,
+        ),
+        itemCount: subjects.length,
+        itemBuilder: (context, index) {
+          final subject = subjects[index];
+          return _buildSubjectRow(
+            context,
+            subjects[index],
+            _viewModel.selectedSubjects.contains(subject.name),
+          );
+        },
+        separatorBuilder: (context, index) => const Divider(height: 1),
       ),
-      itemCount: subjects.length,
-      itemBuilder: (context, index) {
-        final subject = subjects[index];
-        return _buildSubjectRow(
-          context,
-          subjects[index],
-          _viewModel.selectedSubjects.contains(subject.name),
-        );
-      },
-      separatorBuilder: (context, index) => const Divider(height: 1),
     );
   }
 

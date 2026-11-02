@@ -52,30 +52,34 @@ class _BrandIconButtonState extends State<BrandIconButton> {
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: widget.onPressed,
-          child: Container(
-            height: widget.size,
-            width: widget.size,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: widget.backgroundColor,
-              shape: BoxShape.circle,
-              boxShadow: widget.elevated
-                  ? [
-                      BoxShadow(
-                        color: widget.backgroundColor!.withValues(alpha: 0.2),
-                        blurRadius: AppSpacing.md,
-                        offset: const Offset(AppSpacing.xs, AppSpacing.xs),
-                      ),
-                    ]
-                  : null,
-            ),
-            child: Icon(
-              widget.icon,
-              size: widget.size * 0.5,
-              color: widget.iconColor ?? scheme.onSurface,
-              semanticLabel: widget.semanticLabel,
-            ),
-          ).animate(target: _pressed ? 1 : 0).scaleXY(end: 0.9, duration: 100.ms).tint(color: Colors.black, end: 0.15, duration: 100.ms),
+          child: AnimatedOpacity(
+            opacity: _enabled ? 1 : 0.4,
+            duration: const Duration(milliseconds: 150),
+            child: Container(
+              height: widget.size,
+              width: widget.size,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: widget.backgroundColor,
+                shape: BoxShape.circle,
+                boxShadow: widget.elevated
+                    ? [
+                        BoxShadow(
+                          color: widget.backgroundColor!.withValues(alpha: 0.2),
+                          blurRadius: AppSpacing.md,
+                          offset: const Offset(AppSpacing.xs, AppSpacing.xs),
+                        ),
+                      ]
+                    : null,
+              ),
+              child: Icon(
+                widget.icon,
+                size: widget.size * 0.5,
+                color: widget.iconColor ?? scheme.onSurface,
+                semanticLabel: widget.semanticLabel,
+              ),
+            ).animate(target: _pressed ? 1 : 0).scaleXY(end: 0.9, duration: 100.ms).tint(color: Colors.black, end: 0.15, duration: 100.ms),
+          ),
         ),
       ),
     );

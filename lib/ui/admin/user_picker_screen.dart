@@ -8,6 +8,7 @@ import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class UserPickerScreen extends StatefulWidget {
   const UserPickerScreen({
@@ -28,6 +29,11 @@ class UserPickerScreen extends StatefulWidget {
 class _UserPickerScreenState extends State<UserPickerScreen> {
   final _searchController = TextEditingController();
   late final UserPickerViewModel _viewModel;
+
+  static final _skeletonUsers = List.generate(
+    10,
+    (i) => UserSummary(userId: -i, fullName: BoneMock.name, ldapUsername: BoneMock.chars(6)),
+  );
 
   @override
   void initState() {
@@ -50,9 +56,9 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
   }
 
   Widget _buildList(BuildContext context) {
-    if (_viewModel.load.running) {
-      return const Center(child: CircularProgressIndicator.adaptive());
-    }
+    final loading = _viewModel.load.running;
+    final users = loading ? _skeletonUsers : _viewModel.filteredUsers;
+
     if (_viewModel.load.errorMessage != null) {
       return StateMessage(
         icon: Icons.cloud_off_rounded,
@@ -61,16 +67,18 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
       );
     }
 
-    final users = _viewModel.filteredUsers;
-    return ListView.separated(
-      controller: widget.scrollController,
-      padding: EdgeInsets.only(
-        top: AppSpacing.sm,
-        bottom: MediaQuery.paddingOf(context).bottom + 80,
+    return Skeletonizer(
+      enabled: loading,
+      child: ListView.separated(
+        controller: widget.scrollController,
+        padding: EdgeInsets.only(
+          top: AppSpacing.sm,
+          bottom: MediaQuery.paddingOf(context).bottom + 80,
+        ),
+        itemCount: users.length,
+        itemBuilder: (context, index) => _buildUserRow(context, users[index]),
+        separatorBuilder: (context, index) => const Divider(height: 1),
       ),
-      itemCount: users.length,
-      itemBuilder: (context, index) => _buildUserRow(context, users[index]),
-      separatorBuilder: (context, index) => const Divider(height: 1),
     );
   }
 

@@ -26,8 +26,7 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
   @override
   void initState() {
     super.initState();
-    _viewModel =
-        DiplomaViewModel(repository: context.read<AbsolutoriumRepository>());
+    _viewModel = DiplomaViewModel(repository: context.read<AbsolutoriumRepository>());
   }
 
   @override
@@ -52,12 +51,7 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
             children: [
-              for (final g in DiplomaViewModel.grades)
-                GradeChip(
-                    grade: g,
-                    selected: g == value,
-                    emptyLabel: 'nincs még',
-                    onTap: () => onChanged(g)),
+              for (final g in DiplomaViewModel.grades) GradeChip(grade: g, selected: g == value, emptyLabel: 'nincs még', onTap: () => onChanged(g)),
             ],
           ),
         ),
@@ -75,8 +69,7 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
 
         return Scaffold(
           backgroundColor: sheetBackgroundColor(context),
-          appBar: buildBrandAppBar(
-              context: context, title: 'Diplomaátlag', closesSheet: true),
+          appBar: buildBrandAppBar(context: context, title: 'Diplomaátlag', closesSheet: true),
           body: ListView(
             controller: widget.scrollController,
             padding: EdgeInsets.fromLTRB(
@@ -91,15 +84,12 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
               if (estimate != null)
                 SettingsGroup(
                   header: 'Összetevők',
-                  footer:
-                      'A még meg nem adott jegyek helyén a jelenlegi súlyozott átlagod szerepel.',
+                  footer: 'A még meg nem adott jegyek helyén a jelenlegi súlyozott átlagod szerepel.',
                   children: [
                     for (final p in estimate.parts)
                       SettingsTile(
                         title: '${p.label} (${(p.weight * 100).round()}%)',
-                        value: p.estimated
-                            ? '≈ ${formatAverage(p.value)}'
-                            : formatAverage(p.value),
+                        value: p.estimated ? '≈ ${formatAverage(p.value)}' : formatAverage(p.value),
                       ),
                   ],
                 ),
@@ -121,10 +111,10 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: Text(
                   'A PPKE ITK TVSZ 1. sz. melléklet 16. §-a szerint (alap- és mesterképzés). '
-                      'Az eredményt két tizedesre csonkolva kell megadni (4,499 → 4,49). '
-                      'A hivatalos eredményt a Tanulmányi Osztály állapítja meg; '
-                      'az elismert (kreditátvitellel befogadott) tárgyak nem számítanak az átlagba. '
-                      'A megadott jegyek csak ezen az eszközön tárolódnak.',
+                  'Az eredményt két tizedesre csonkolva kell megadni (4,499 → 4,49). '
+                  'A hivatalos eredményt a Tanulmányi Osztály állapítja meg; '
+                  'az elismert (kreditátvitellel befogadott) tárgyak nem számítanak az átlagba. '
+                  'A megadott jegyek csak ezen az eszközön tárolódnak.',
                   style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
@@ -152,8 +142,7 @@ class _ResultCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: ShapeDecoration(
         color: scheme.primaryContainer,
-        shape: RoundedSuperellipseBorder(
-            borderRadius: BorderRadius.circular(AppRadius.xxl)),
+        shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
       ),
       child: loading && e == null
           ? const Center(child: CircularProgressIndicator.adaptive())
@@ -161,14 +150,8 @@ class _ResultCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  e == null
-                      ? 'Még nincs elég adat'
-                      : (e.isEstimate
-                          ? 'Becsült diplomaátlag'
-                          : 'Diplomaátlag'),
-                  style: TextStyle(
-                      fontSize: 13,
-                      color: scheme.onPrimaryContainer.withValues(alpha: 0.8)),
+                  e == null ? 'Még nincs elég adat' : (e.isEstimate ? 'Becsült diplomaátlag' : 'Diplomaátlag'),
+                  style: TextStyle(fontSize: 13, color: scheme.onPrimaryContainer.withValues(alpha: 0.8)),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
@@ -181,9 +164,7 @@ class _ResultCard extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  e == null
-                      ? 'Vigyél fel jeggyel zárult tárgyat.'
-                      : 'Minősítés: ${e.classification}',
+                  e == null ? 'Vigyél fel jeggyel zárult tárgyat.' : 'Minősítés: ${e.classification}',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,
@@ -195,6 +176,7 @@ class _ResultCard extends StatelessWidget {
     );
   }
 }
+
 class _HonoursGroup extends StatelessWidget {
   const _HonoursGroup({required this.conditions, required this.met});
 

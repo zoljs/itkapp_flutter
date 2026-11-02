@@ -17,10 +17,10 @@ import 'package:itk_app/ui/events/events_screen.dart';
 import 'package:itk_app/ui/onboarding/onboarding_screen.dart';
 import 'package:itk_app/ui/videos/videos_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
-import 'package:itk_app/ui/wiki/files_setup_screen.dart';
+import 'package:itk_app/ui/wiki/wiki_files_setup_screen.dart';
 import 'package:itk_app/ui/wiki/my_site_screen.dart';
 import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
-import 'package:itk_app/ui/wiki/files_screen.dart';
+import 'package:itk_app/ui/wiki/wiki_files_screen.dart';
 import 'package:itk_app/ui/wiki/wiki_screen.dart';
 import 'package:provider/provider.dart';
 import '../data/repositories/auth_repository.dart';
@@ -107,7 +107,7 @@ GoRouter router(
 
                       return _page(
                         state,
-                        FilesScreen(
+                        WikiFilesScreen(
                           viewModel: WikiFilesViewModel(
                             repository: context.read<WikiFilesRepository>(),
                             user: user,
@@ -180,7 +180,7 @@ GoRouter router(
         ),
         GoRoute(
           path: Routes.wikiSetup,
-          pageBuilder: (context, state) => _page(state, const FilesSetupScreen()),
+          pageBuilder: (context, state) => _page(state, const WikiFilesSetupScreen()),
         ),
       ],
     );

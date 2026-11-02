@@ -15,6 +15,7 @@ import 'package:itk_app/ui/core/screens/subject_multi_picker_screen.dart';
 import 'package:itk_app/ui/wiki/viewmodels/my_site_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class MySiteScreen extends StatefulWidget {
   const MySiteScreen({super.key});
@@ -25,6 +26,7 @@ class MySiteScreen extends StatefulWidget {
 
 class _MySiteScreenState extends State<MySiteScreen> {
   late final MySiteViewModel _viewModel;
+  static const _skeletonTags = ['Címke 1', 'Címke 2', 'Címke 3'];
 
   @override
   void initState() {
@@ -96,12 +98,15 @@ class _MySiteScreenState extends State<MySiteScreen> {
   }
 
   Widget _buildForm(BuildContext context) {
+    final loading = _viewModel.load.running;
+    final tags = loading ? _skeletonTags : _viewModel.tags;
+
     final scheme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
-      padding: EdgeInsets.fromLTRB(
+      padding: const EdgeInsets.fromLTRB(
         AppSpacing.lg,
-        AppSpacing.lg + MediaQuery.paddingOf(context).top + kToolbarHeight,
+        AppSpacing.lg,
         AppSpacing.lg,
         AppSpacing.xxxl,
       ),
@@ -183,13 +188,16 @@ class _MySiteScreenState extends State<MySiteScreen> {
             header: 'Beállítások',
             footer: 'A fájlkezelővel az oldalad fájljai az alkalmazásban is böngészhetők.',
             children: [
-              SettingsTile(
-                title: 'Oldal publikussá tétele',
-                trailing: Switch.adaptive(
-                  value: _viewModel.isPublic,
-                  onChanged: (value) => _viewModel.setPublic(value),
+              Skeletonizer(
+                enabled: loading,
+                child: SettingsTile(
+                  title: 'Oldal publikussá tétele',
+                  trailing: Switch.adaptive(
+                    value: _viewModel.isPublic,
+                    onChanged: (value) => _viewModel.setPublic(value),
+                  ),
+                  onTap: () => _viewModel.setPublic(!_viewModel.isPublic),
                 ),
-                onTap: () => _viewModel.setPublic(!_viewModel.isPublic),
               ),
               SettingsTile(
                 title: 'Fájlkezelő beállítása',
@@ -207,8 +215,11 @@ class _MySiteScreenState extends State<MySiteScreen> {
                 title: 'Új címke hozzáadása',
                 onTap: _openTagPicker,
               ),
-              ..._viewModel.tags.map((tag) {
-                return _buildTagRow(tag);
+              ...tags.map((tag) {
+                return Skeletonizer(
+                  enabled: loading,
+                  child: _buildTagRow(tag),
+                );
               }),
             ],
           ),
@@ -273,18 +284,22 @@ class _MySiteScreenState extends State<MySiteScreen> {
     return ListenableBuilder(
         listenable: Listenable.merge([_viewModel, _viewModel.load]),
         builder: (context, _) {
+          final loading = _viewModel.load.running; // reminder for me, always calculate this inside the listenable
+
           return Scaffold(
-            extendBodyBehindAppBar: true,
             appBar: buildBrandAppBar(
               context: context,
               title: _viewModel.hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása',
-              onAction: () async {
-                await _submit();
-                if (!context.mounted) return;
-                if (_viewModel.save.completed) Navigator.pop(context);
-              },
+              actionEnabled: !loading,
+              onAction: loading
+                  ? null
+                  : () async {
+                      await _submit();
+                      if (!context.mounted) return;
+                      if (_viewModel.save.completed) Navigator.pop(context);
+                    },
             ),
-            body: _viewModel.load.running ? const Center(child: RefreshProgressIndicator()) : _buildForm(context),
+            body: _buildForm(context),
           );
         });
   }
