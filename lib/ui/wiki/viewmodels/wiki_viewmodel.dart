@@ -3,20 +3,24 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class WikiViewModel extends ChangeNotifier {
   WikiViewModel({
-    required SitesRepository repository,
-  })  : _repository = repository,
-        _sites = repository.cached {
+    required SitesRepository sitesRepository,
+    required WikiFilesRepository wikiFilesRepository,
+  })  : _sitesRepository = sitesRepository,
+        _wikiFilesRepository = wikiFilesRepository,
+        _sites = sitesRepository.cached {
     load = Command1<void, bool>(_load);
     unawaited(load.execute(false));
   }
 
-  final SitesRepository _repository;
+  final SitesRepository _sitesRepository;
+  final WikiFilesRepository _wikiFilesRepository;
 
   // State
   List<UserSite> _sites;
@@ -48,8 +52,8 @@ class WikiViewModel extends ChangeNotifier {
   // Methods
   Future<Result<void>> _load(bool forceReload) async {
     final (sitesResult, mySiteResult) = await (
-      _repository.getAll(forceReload: forceReload),
-      _repository.get(),
+      _sitesRepository.getAll(forceReload: forceReload),
+      _sitesRepository.get(),
     ).wait;
 
     // mySite
@@ -60,6 +64,11 @@ class WikiViewModel extends ChangeNotifier {
       notifyListeners();
     }
     return sitesResult;
+  }
+
+  Future<bool> hasFileList(String user) async {
+    final result = await _wikiFilesRepository.listDir('', user);
+    return result is Ok;
   }
 
   void setQuery(String value) {

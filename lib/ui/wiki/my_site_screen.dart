@@ -192,6 +192,10 @@ class _MySiteScreenState extends State<MySiteScreen> {
               ),
               onTap: () => _viewModel.setPhpEnabled(!_viewModel.isPhpEnabled),
             ),
+            SettingsTile(
+              title: 'PHP Fájlkezelő',
+              onTap: () {},
+            ),
           ]),
 
           SettingsGroup(

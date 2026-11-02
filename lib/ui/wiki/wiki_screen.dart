@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
@@ -42,7 +43,10 @@ class _WikiScreenState extends State<WikiScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = WikiViewModel(repository: context.read<SitesRepository>());
+    _viewModel = WikiViewModel(
+      sitesRepository: context.read<SitesRepository>(),
+      wikiFilesRepository: context.read<WikiFilesRepository>(),
+    );
   }
 
   @override
@@ -55,7 +59,7 @@ class _WikiScreenState extends State<WikiScreen> {
   Widget _buildSiteCard(UserSite site, int index) {
     return UserSiteCard(
       color: site.claimed ? itkPrimary : Colors.grey,
-      onTap: () => _onSiteTap(site),
+      onTap: () => unawaited(_onSiteTap(site)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -130,12 +134,23 @@ class _WikiScreenState extends State<WikiScreen> {
     );
   }
 
-  void _onSiteTap(UserSite site) {
+  Future<void> _onSiteTap(UserSite site) async {
+    // A site might be unclaimed meaning it might not have a login field
     final login = site.login;
-    if (site.isPhpEnabled && login != null) {
-      unawaited(context.push(Routes.wikiFilesFor(login)));
+    // If there is no login, it is unclaimed so open the link without looking for a php file, because there is no way its already there if they are not using the app.
+    if (login == null) {
+      await openLink(context, site.url, mode: LaunchMode.inAppWebView);
+      return;
+    }
+
+    // If there is a login, it means theres a possibility they added the php file.
+    final hasFileList = await _viewModel.hasFileList(login);
+    if (!mounted) return;
+
+    if (hasFileList) {
+      await context.push(Routes.wikiFilesFor(login));
     } else {
-      unawaited(openLink(context, site.url, mode: LaunchMode.inAppWebView));
+      await openLink(context, site.url, mode: LaunchMode.inAppWebView);
     }
   }
 
