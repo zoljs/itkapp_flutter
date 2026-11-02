@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
-import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:itk_app/data/repositories/files_repository.dart';
 import 'package:itk_app/ui/absolutorium/absolutorium_screen.dart';
 import 'package:itk_app/ui/absolutorium/completions_screen.dart';
 import 'package:itk_app/ui/absolutorium/group_detail_screen.dart';
@@ -18,8 +18,8 @@ import 'package:itk_app/ui/onboarding/onboarding_screen.dart';
 import 'package:itk_app/ui/videos/videos_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/ui/wiki/my_site_screen.dart';
-import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
-import 'package:itk_app/ui/wiki/wiki_files_screen.dart';
+import 'package:itk_app/ui/wiki/viewmodels/files_viewmodel.dart';
+import 'package:itk_app/ui/wiki/files_screen.dart';
 import 'package:itk_app/ui/wiki/wiki_screen.dart';
 import 'package:provider/provider.dart';
 import '../data/repositories/auth_repository.dart';
@@ -96,8 +96,7 @@ GoRouter router(
                 routes: [
                   GoRoute(
                     path: 'edit',
-                    pageBuilder: (context, state) =>
-                        _page(state, const MySiteScreen()),
+                    pageBuilder: (context, state) => _page(state, const MySiteScreen()),
                   ),
                   GoRoute(
                     path: 'files/:user',
@@ -107,9 +106,9 @@ GoRouter router(
 
                       return _page(
                         state,
-                        WikiFilesScreen(
-                          viewModel: WikiFilesViewModel(
-                            repository: context.read<WikiFilesRepository>(),
+                        FilesScreen(
+                          viewModel: FilesViewModel(
+                            repository: context.read<FilesRepository>(),
                             user: user,
                             dir: dir,
                           ),
@@ -131,8 +130,7 @@ GoRouter router(
         ),
         GoRoute(
           path: Routes.adminRoles,
-          pageBuilder: (context, state) =>
-              _page(state, const AdminRolesScreen()),
+          pageBuilder: (context, state) => _page(state, const AdminRolesScreen()),
         ),
         GoRoute(
           path: Routes.midterms,
@@ -160,24 +158,20 @@ GoRouter router(
         ),
         GoRoute(
           path: Routes.calendarLinks,
-          pageBuilder: (context, state) =>
-              _page(state, const CalendarLinksScreen()),
+          pageBuilder: (context, state) => _page(state, const CalendarLinksScreen()),
         ),
         GoRoute(
           path: Routes.absolutorium,
-          pageBuilder: (context, state) =>
-              _page(state, const AbsolutoriumScreen()),
+          pageBuilder: (context, state) => _page(state, const AbsolutoriumScreen()),
           routes: [
             GoRoute(
               path: 'completions',
-              pageBuilder: (context, state) =>
-                  _page(state, const CompletionsScreen()),
+              pageBuilder: (context, state) => _page(state, const CompletionsScreen()),
             ),
             GoRoute(
               path: 'groups/:id',
               pageBuilder: (context, state) {
-                final groupId =
-                    int.tryParse(state.pathParameters['id'] ?? '') ?? -1;
+                final groupId = int.tryParse(state.pathParameters['id'] ?? '') ?? -1;
                 return _page(state, GroupDetailScreen(groupId: groupId));
               },
             ),
@@ -186,5 +180,4 @@ GoRouter router(
       ],
     );
 
-Page<void> _page(GoRouterState state, Widget child) =>
-    MaterialPage(child: child, key: state.pageKey);
+Page<void> _page(GoRouterState state, Widget child) => MaterialPage(child: child, key: state.pageKey);

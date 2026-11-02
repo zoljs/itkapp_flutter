@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
-import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:itk_app/data/repositories/files_repository.dart';
 import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
@@ -45,7 +45,7 @@ class _WikiScreenState extends State<WikiScreen> {
     super.initState();
     _viewModel = WikiViewModel(
       sitesRepository: context.read<SitesRepository>(),
-      wikiFilesRepository: context.read<WikiFilesRepository>(),
+      filesRepository: context.read<FilesRepository>(),
     );
   }
 
@@ -157,7 +157,7 @@ class _WikiScreenState extends State<WikiScreen> {
     if (!mounted) return;
 
     if (_viewModel.checkFiles.completed) {
-      await context.push(Routes.wikiFilesFor(login));
+      await context.push(Routes.filesFor(login));
     } else {
       await openLink(context, site.url, mode: LaunchMode.inAppWebView);
     }

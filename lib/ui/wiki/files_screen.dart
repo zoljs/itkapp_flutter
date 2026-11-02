@@ -7,20 +7,20 @@ import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
-import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
+import 'package:itk_app/ui/wiki/viewmodels/files_viewmodel.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class WikiFilesScreen extends StatefulWidget {
-  const WikiFilesScreen({super.key, required this.viewModel});
+class FilesScreen extends StatefulWidget {
+  const FilesScreen({super.key, required this.viewModel});
 
-  final WikiFilesViewModel viewModel;
+  final FilesViewModel viewModel;
 
   @override
-  State<WikiFilesScreen> createState() => _WikiFilesScreenState();
+  State<FilesScreen> createState() => _FilesScreenState();
 }
 
-class _WikiFilesScreenState extends State<WikiFilesScreen> {
+class _FilesScreenState extends State<FilesScreen> {
   @override
   void dispose() {
     widget.viewModel.dispose();
@@ -30,7 +30,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
   void _openItem(BuildContext context, WikiFile item) {
     if (item.isDir) {
       final dir = widget.viewModel.childPath(item.name);
-      final uri = Uri(path: Routes.wikiFilesFor(widget.viewModel.user), queryParameters: {'dir': dir}).toString();
+      final uri = Uri(path: Routes.filesFor(widget.viewModel.user), queryParameters: {'dir': dir}).toString();
 
       unawaited(context.push(uri));
     } else {

@@ -16,7 +16,7 @@ import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/repositories/videos_repository.dart';
-import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:itk_app/data/repositories/files_repository.dart';
 import 'package:itk_app/data/services/shared_preferences_service.dart';
 import 'package:itk_app/data/services/users_client.dart';
 import 'package:itk_app/routing/router.dart';
@@ -60,32 +60,17 @@ Future<void> main() async {
           Provider(create: (context) => CalendarLinksRepository(apiClient: context.read<ApiClient>())),
           Provider(create: (context) => CalendarRepository(apiClient: context.read<ApiClient>())),
           Provider(create: (context) => EventRepository(apiClient: context.read<ApiClient>())),
+          Provider(create: (context) => CalendarLinksRepository(apiClient: context.read<ApiClient>())),
+          Provider(create: (context) => CalendarRepository(apiClient: context.read<ApiClient>())),
           Provider(
-              create: (context) => CalendarLinksRepository(
-                  apiClient: context.read<ApiClient>())),
-          Provider(
-              create: (context) =>
-                  CalendarRepository(apiClient: context.read<ApiClient>())),
-          Provider(
-            create: (context) =>
-                SitesRepository(apiClient: context.read<ApiClient>()),
+            create: (context) => SitesRepository(apiClient: context.read<ApiClient>()),
           ),
-          Provider(
-              create: (context) =>
-                  SubjectsRepository(apiClient: context.read<ApiClient>())),
+          Provider(create: (context) => SubjectsRepository(apiClient: context.read<ApiClient>())),
           Provider(create: (_) => UsersClient()),
-          Provider(
-              create: (context) => WikiFilesRepository(
-                  usersClient: context.read<UsersClient>())),
-          Provider(
-              create: (context) =>
-                  AdminRolesRepository(apiClient: context.read<ApiClient>())),
-          Provider(
-              create: (context) =>
-                  AdminUsersRepository(apiClient: context.read<ApiClient>())),
-          Provider(
-              create: (context) =>
-                  VideosRepository(apiClient: context.read<ApiClient>())),
+          Provider(create: (context) => FilesRepository(usersClient: context.read<UsersClient>())),
+          Provider(create: (context) => AdminRolesRepository(apiClient: context.read<ApiClient>())),
+          Provider(create: (context) => AdminUsersRepository(apiClient: context.read<ApiClient>())),
+          Provider(create: (context) => VideosRepository(apiClient: context.read<ApiClient>())),
           Provider(
             create: (context) => AbsolutoriumRepository(
               apiClient: context.read<ApiClient>(),
@@ -126,9 +111,7 @@ ThemeData _buildTheme(ColorScheme scheme) {
     ),
     colorScheme: scheme,
     useMaterial3: true,
-    splashFactory: defaultTargetPlatform == TargetPlatform.iOS
-        ? NoSplash.splashFactory
-        : null,
+    splashFactory: defaultTargetPlatform == TargetPlatform.iOS ? NoSplash.splashFactory : null,
     textTheme: buildITKAppTextTheme(base),
     cupertinoOverrideTheme: CupertinoThemeData(
       textTheme: cupertinoText.copyWith(

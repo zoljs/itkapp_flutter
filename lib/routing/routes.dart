@@ -16,8 +16,7 @@ abstract final class Routes {
   static const absolutoriumCompletions = '/absolutorium/completions';
   static const absolutoriumGroups = '/absolutorium/groups';
 
-  static String wikiFilesFor(String user) => '$wikiFiles/$user';
+  static String filesFor(String user) => '$wikiFiles/$user';
 
-  static String absolutoriumGroupFor(int groupId) =>
-      '$absolutoriumGroups/$groupId';
+  static String absolutoriumGroupFor(int groupId) => '$absolutoriumGroups/$groupId';
 }

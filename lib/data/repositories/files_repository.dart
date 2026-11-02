@@ -2,8 +2,8 @@ import 'package:itk_app/data/services/users_client.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/utils/result.dart';
 
-class WikiFilesRepository {
-  WikiFilesRepository({
+class FilesRepository {
+  FilesRepository({
     required UsersClient usersClient,
   }) : _usersClient = usersClient;
 

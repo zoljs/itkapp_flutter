@@ -8,7 +8,7 @@ import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
-import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:itk_app/data/repositories/files_repository.dart';
 import 'package:itk_app/domain/models/absolutorium.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/domain/models/calendar_link.dart';
@@ -161,7 +161,7 @@ class FakeSubjectsRepository implements SubjectsRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class FakeWikiFilesRepository implements WikiFilesRepository {
+class FakeFilesRepository implements FilesRepository {
   Result<List<WikiFile>> listResult = const Ok([]);
   final calls = <(String dir, String user)>[];
 
