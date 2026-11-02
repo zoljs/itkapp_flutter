@@ -183,6 +183,12 @@ class FakeSitesRepository implements SitesRepository {
   Future<Result<UserSite?>> get() async => getResult;
 
   @override
+  List<UserSite> get cached => const [];
+
+  @override
+  Future<Result<List<UserSite>>> getAll({bool forceReload = false}) async => const Ok([]);
+
+  @override
   Future<Result<UserSite>> save(List<String> tags, bool isPublic, bool isPhpEnabled) async {
     lastSave = (tags: tags, isPublic: isPublic, isPhpEnabled: isPhpEnabled);
     return Ok(UserSite(name: 'Teszt', url: 'https://example.com', tags: tags));
