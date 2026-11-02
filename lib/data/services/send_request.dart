@@ -14,6 +14,7 @@ Future<Result<T>> sendRequest<T>({
   } on DioException catch (e) {
     return Err(apiErrorMessage(e));
   } on FormatException catch (e) {
+    // thrown by a parse method
     return Err(e.message);
   }
 }

@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/api_error.dart';
+import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/data/services/shared_preferences_service.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/utils/result.dart';
@@ -30,57 +30,50 @@ class AuthRepository extends ChangeNotifier {
   LdapUser? get cachedUser => _cachedUser;
   bool get isAuthenticated => _cachedUser != null;
 
+  /// Two-request method, early return if first is Err
   Future<Result<void>> login(String username, String password) async {
-    try {
-      await _dio.post(
-        '$_path/login',
-        data: {'username': username, 'password': password},
-      );
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    }
+    // POST the login, save the result (null or error)
+    final Result<void> loginResult = await sendRequest(
+      send: () => _dio.post('$_path/login', data: {'username': username, 'password': password}),
+      parse: (_) {},
+    );
+    if (loginResult is Err) return loginResult;
 
-    final user = await _fetchUserFromNetwork();
-    if (user == null) {
-      return const Err('Nem sikerült lekérni a felhasználói adatokat.');
-    }
+    // If login POST is OK, get /me, save the result (ldapUser or error, so this void cannot return it)
+    final Result<LdapUser> meResult = await _fetchUserFromNetwork();
+    if (meResult case Err(:final message)) return Err(message); // must return new Err<void> with the extracted message
+
+    // If all passed, return Ok therefore we are logged in
     return const Ok(null);
   }
 
-  // Logged in user, or null if session is invalid
-  Future<LdapUser?> refreshUser() => _fetchUserFromNetwork();
-
+  /// Single request method, however we must extract the message and print it, as the method is NOT of type Result
   Future<void> logout() async {
-    try {
-      await _dio.post('$_path/logout');
-    } on DioException catch (e) {
-      debugPrint('[AuthRepository] logout request failed: ${e.message}');
-    } finally {
-      await _apiClient.clearCookies();
-      _cachedUser = null;
-      notifyListeners();
+    // POST the logout, save the result (null or error)
+    final result = await sendRequest(
+      send: () => _dio.post('$_path/logout'),
+      parse: (_) {},
+    );
+    if (result case Err(:final message)) debugPrint('[AuthRepository] logout request failed: $message');
 
-      await _prefs.remove(_cacheKey);
-    }
-  }
-
-  Future<LdapUser?> _fetchUserFromNetwork() async {
-    final Response<dynamic> response;
-    try {
-      response = await _dio.get('$_path/me');
-    } on DioException catch (e) {
-      debugPrint('[AuthRepository] /me failed: ${apiErrorMessage(e)}');
-      return null;
-    }
-
-    final user = _parseUser(response.data);
-    if (user == null) return null;
-
-    _cachedUser = user;
+    await _apiClient.clearCookies();
+    _cachedUser = null;
     notifyListeners();
 
-    await _prefs.setString(_cacheKey, jsonEncode(user.toJson()));
-    return user;
+    await _prefs.remove(_cacheKey);
+  }
+
+  /// Either returns the user, or returns the thrown FormatExceptions or DioExceptions error message in an Err
+  Future<Result<LdapUser>> refreshUser() => _fetchUserFromNetwork();
+  Future<Result<LdapUser>> _fetchUserFromNetwork() async {
+    final result = await _apiClient.getJson('$_path/me', parse: LdapUser.parse);
+    if (result case Ok(:final value)) {
+      _cachedUser = value;
+      notifyListeners();
+      await _prefs.setString(_cacheKey, jsonEncode(value.toJson()));
+    }
+
+    return result;
   }
 
   LdapUser? _loadUserFromDisk() {

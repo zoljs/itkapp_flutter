@@ -3,6 +3,8 @@ import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/utils/result.dart';
 
 class SubjectsRepository {
+  static const _path = '/api/subjects';
+
   SubjectsRepository({
     required ApiClient apiClient,
   }) : _apiClient = apiClient;
@@ -17,7 +19,7 @@ class SubjectsRepository {
     final cached = _cached;
     if (cached != null && !forceReload) return Ok(cached);
 
-    final result = await _apiClient.getJson('/api/subjects', parse: Subject.parseList);
+    final result = await _apiClient.getJson(_path, parse: Subject.parseList);
     if (result case Ok(:final value)) _cached = value;
     return result;
   }
