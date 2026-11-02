@@ -18,18 +18,23 @@ void main() {
 
   tearDown(() => viewModel.dispose());
 
-  group('hasFileList', () {
-    test('működő PHP esetén true, a gyökérmappát kéri', () async {
+  group('checkFiles', () {
+    test('működő PHP esetén completed, a gyökérmappát kéri, megjegyzi a usert', () async {
       files.listResult = Ok([WikiFile(name: 'zh1.pdf', isDir: false)]);
 
-      expect(await viewModel.hasFileList('perpa4'), isTrue);
+      await viewModel.checkFiles.execute('perpa4');
+
+      expect(viewModel.checkFiles.completed, isTrue);
       expect(files.calls.single, ('', 'perpa4'));
+      expect(viewModel.checkingLogin, 'perpa4');
     });
 
-    test('hiba esetén (nincs PHP, régi PHP, timeout) false', () async {
+    test('hiba esetén (nincs PHP, régi PHP, timeout) nem completed', () async {
       files.listResult = const Err('Hiba.');
 
-      expect(await viewModel.hasFileList('perpa4'), isFalse);
+      await viewModel.checkFiles.execute('perpa4');
+
+      expect(viewModel.checkFiles.completed, isFalse);
     });
   });
 }
