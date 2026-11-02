@@ -13,6 +13,10 @@ const _errorMessages = {
   'LINK_NOT_FOUND': 'Ez a link már nem létezik.',
   'INVALID_ID': 'Érvénytelen azonosító.',
   'ENDPOINT_REMOVED': 'Ez a végpont már nem elérhető.',
+  // files_wiki.php
+  'NO_FILES_DIR': 'Hiányzik a files mappa. Hozd létre itt: ~/public_html/files',
+  'INVALID_DIR': 'Ez a mappa nem létezik vagy nem nyitható meg.',
+  'UNREADABLE_DIR': 'A mappa nem olvasható. Futtasd: chmod 755 ~/public_html/files',
 };
 
 // Sent by server

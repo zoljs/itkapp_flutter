@@ -47,17 +47,17 @@ class WikiFile {
 
   static List<WikiFile> parseObject(Object? data) {
     if (data is! Map<String, dynamic>) {
-      throw const FormatException('A válasz nem objektum formátumú.');
+      throw const FormatException('Régi vagy ismeretlen fájlkezelő. Futtasd újra a telepítő parancsot.');
     }
 
     final app = data['app'];
     if (app != 'itkapp-files') {
-      throw const FormatException('Hibás válasz.');
+      throw const FormatException('Ez nem az ITKApp fájlkezelője. Futtasd újra a telepítő parancsot.');
     }
 
     final version = data['version'];
     if (version != supportedVersion) {
-      throw const FormatException('A verziószám nem támogatott.');
+      throw const FormatException('Nem támogatott fájlkezelő verzió. Futtasd újra a telepítő parancsot.');
     }
 
     return parseList(data['files']);
