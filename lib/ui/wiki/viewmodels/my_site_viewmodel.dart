@@ -37,7 +37,6 @@ class MySiteViewModel extends ChangeNotifier {
   // State
   List<String> _tags = [];
   bool _isPublic = true;
-  bool _isPhpEnabled = false;
   bool _hasExistingSite = false;
 
   // Getters
@@ -56,12 +55,6 @@ class MySiteViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get isPhpEnabled => _isPhpEnabled;
-  void setPhpEnabled(bool value) {
-    _isPhpEnabled = value;
-    notifyListeners();
-  }
-
   // Methods
   Future<Result<void>> _load() async {
     // Mysite
@@ -71,7 +64,6 @@ class MySiteViewModel extends ChangeNotifier {
       _tags = List.of(site.tags);
       _hasExistingSite = true;
       _isPublic = site.isPublic;
-      _isPhpEnabled = site.isPhpEnabled;
       notifyListeners();
     } else if (result case Ok(value: null)) {
       _hasExistingSite = false;
@@ -85,7 +77,7 @@ class MySiteViewModel extends ChangeNotifier {
       return const Err('Nincs bejelentkezett felhasználó.');
     }
 
-    final result = await _sitesRepository.save(_tags, _isPublic, _isPhpEnabled);
+    final result = await _sitesRepository.save(_tags, _isPublic);
 
     return result;
   }

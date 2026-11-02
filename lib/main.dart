@@ -16,7 +16,7 @@ import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/repositories/videos_repository.dart';
-import 'package:itk_app/data/repositories/files_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/data/services/shared_preferences_service.dart';
 import 'package:itk_app/data/services/users_client.dart';
 import 'package:itk_app/routing/router.dart';
@@ -67,7 +67,7 @@ Future<void> main() async {
           ),
           Provider(create: (context) => SubjectsRepository(apiClient: context.read<ApiClient>())),
           Provider(create: (_) => UsersClient()),
-          Provider(create: (context) => FilesRepository(usersClient: context.read<UsersClient>())),
+          Provider(create: (context) => WikiFilesRepository(usersClient: context.read<UsersClient>())),
           Provider(create: (context) => AdminRolesRepository(apiClient: context.read<ApiClient>())),
           Provider(create: (context) => AdminUsersRepository(apiClient: context.read<ApiClient>())),
           Provider(create: (context) => VideosRepository(apiClient: context.read<ApiClient>())),

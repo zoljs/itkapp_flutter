@@ -46,10 +46,10 @@ class SitesRepository {
     }
   }
 
-  Future<Result<UserSite>> save(List<String> tags, bool isPublic, bool isPhpEnabled) async {
+  Future<Result<UserSite>> save(List<String> tags, bool isPublic) async {
     final result = await sendRequest(
       parse: UserSite.parse,
-      send: () => _dio.post(_path, data: {'tags': tags, 'isPublic': isPublic, 'isPhpEnabled': isPhpEnabled}),
+      send: () => _dio.post(_path, data: {'tags': tags, 'isPublic': isPublic}),
     );
     if (result is Ok) clearCache();
 

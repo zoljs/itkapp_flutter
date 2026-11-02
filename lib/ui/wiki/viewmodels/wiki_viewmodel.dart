@@ -3,7 +3,7 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
-import 'package:itk_app/data/repositories/files_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/utils/command.dart';
@@ -12,9 +12,9 @@ import 'package:itk_app/utils/result.dart';
 class WikiViewModel extends ChangeNotifier {
   WikiViewModel({
     required SitesRepository sitesRepository,
-    required FilesRepository filesRepository,
+    required WikiFilesRepository wikiFilesRepository,
   })  : _sitesRepository = sitesRepository,
-        _filesRepository = filesRepository,
+        _wikiFilesRepository = wikiFilesRepository,
         _sites = sitesRepository.cached {
     load = Command1<void, bool>(_load);
     checkFiles = Command1<List<WikiFile>, String>(_checkFiles);
@@ -22,7 +22,7 @@ class WikiViewModel extends ChangeNotifier {
   }
 
   final SitesRepository _sitesRepository;
-  final FilesRepository _filesRepository;
+  final WikiFilesRepository _wikiFilesRepository;
 
   // State
   List<UserSite> _sites;
@@ -75,7 +75,7 @@ class WikiViewModel extends ChangeNotifier {
 
   Future<Result<List<WikiFile>>> _checkFiles(String login) async {
     _checkingLogin = login;
-    return _filesRepository.listDir('', login);
+    return _wikiFilesRepository.listDir('', login);
   }
 
   void setQuery(String value) {

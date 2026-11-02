@@ -6,7 +6,6 @@ class UserSite {
   final List<String> tags;
   final bool claimed;
   final bool isPublic;
-  final bool isPhpEnabled;
 
   const UserSite({
     this.login,
@@ -15,7 +14,6 @@ class UserSite {
     required this.tags,
     this.claimed = false,
     this.isPublic = true,
-    this.isPhpEnabled = false,
   });
 
   factory UserSite.fromJson(Map<String, dynamic> json) {
@@ -45,7 +43,6 @@ class UserSite {
 
     final claimed = _readBool(json['claimed'], 'claimed');
     final isPublic = _readBool(json['isPublic'], 'isPublic');
-    final isPhpEnabled = _readBool(json['isPhpEnabled'], 'isPhpEnabled');
 
     return UserSite(
       login: login,
@@ -54,7 +51,6 @@ class UserSite {
       tags: tagsList,
       claimed: claimed,
       isPublic: isPublic,
-      isPhpEnabled: isPhpEnabled,
     );
   }
 
@@ -69,7 +65,6 @@ class UserSite {
         'url': url,
         'tags': tags,
         'isPublic': isPublic,
-        'isPhpEnabled': isPhpEnabled,
       };
 
   static UserSite parse(Object? data) {

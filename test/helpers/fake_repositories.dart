@@ -8,7 +8,7 @@ import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
-import 'package:itk_app/data/repositories/files_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/absolutorium.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/domain/models/calendar_link.dart';
@@ -161,7 +161,7 @@ class FakeSubjectsRepository implements SubjectsRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class FakeFilesRepository implements FilesRepository {
+class FakeWikiFilesRepository implements WikiFilesRepository {
   Result<List<WikiFile>> listResult = const Ok([]);
   final calls = <(String dir, String user)>[];
 
@@ -177,7 +177,7 @@ class FakeFilesRepository implements FilesRepository {
 
 class FakeSitesRepository implements SitesRepository {
   Result<UserSite?> getResult = const Ok(null);
-  ({List<String> tags, bool isPublic, bool isPhpEnabled})? lastSave;
+  ({List<String> tags, bool isPublic})? lastSave;
 
   @override
   Future<Result<UserSite?>> get() async => getResult;
@@ -189,8 +189,8 @@ class FakeSitesRepository implements SitesRepository {
   Future<Result<List<UserSite>>> getAll({bool forceReload = false}) async => const Ok([]);
 
   @override
-  Future<Result<UserSite>> save(List<String> tags, bool isPublic, bool isPhpEnabled) async {
-    lastSave = (tags: tags, isPublic: isPublic, isPhpEnabled: isPhpEnabled);
+  Future<Result<UserSite>> save(List<String> tags, bool isPublic) async {
+    lastSave = (tags: tags, isPublic: isPublic);
     return Ok(UserSite(name: 'Teszt', url: 'https://example.com', tags: tags));
   }
 

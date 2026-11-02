@@ -2,15 +2,15 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
-import 'package:itk_app/data/repositories/files_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/data/services/users_client.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
-class FilesViewModel extends ChangeNotifier {
-  FilesViewModel({
-    required FilesRepository repository,
+class WikiFilesViewModel extends ChangeNotifier {
+  WikiFilesViewModel({
+    required WikiFilesRepository repository,
     required String dir,
     required String user,
   })  : _repository = repository,
@@ -20,7 +20,7 @@ class FilesViewModel extends ChangeNotifier {
     unawaited(load.execute());
   }
 
-  final FilesRepository _repository;
+  final WikiFilesRepository _repository;
   final String _dir;
   final String _user;
 

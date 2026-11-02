@@ -28,7 +28,6 @@ void main() {
       url: 'https://users.itk.ppke.hu/~perpa4',
       tags: ['Analízis'],
       isPublic: false,
-      isPhpEnabled: true,
     ));
 
     final viewModel = await create();
@@ -36,7 +35,6 @@ void main() {
     expect(viewModel.hasExistingSite, isTrue);
     expect(viewModel.tags, ['Analízis']);
     expect(viewModel.isPublic, isFalse);
-    expect(viewModel.isPhpEnabled, isTrue);
     viewModel.dispose();
   });
 
@@ -52,15 +50,13 @@ void main() {
   test('mentéskor az aktuális beállításokat küldi', () async {
     final viewModel = await create()
       ..setTags(['Fizika'])
-      ..setPublic(false)
-      ..setPhpEnabled(true);
+      ..setPublic(false);
 
     await viewModel.save.execute();
 
     expect(viewModel.save.completed, isTrue);
     expect(sites.lastSave?.tags, ['Fizika']);
     expect(sites.lastSave?.isPublic, isFalse);
-    expect(sites.lastSave?.isPhpEnabled, isTrue);
     viewModel.dispose();
   });
 

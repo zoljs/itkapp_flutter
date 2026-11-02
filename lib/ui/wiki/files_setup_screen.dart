@@ -3,14 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
-import 'package:itk_app/data/repositories/files_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
-import 'package:itk_app/ui/wiki/viewmodels/files_setup_viewmodel.dart';
+import 'package:itk_app/ui/wiki/viewmodels/wiki_files_setup_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:provider/provider.dart';
@@ -23,13 +23,13 @@ class FilesSetupScreen extends StatefulWidget {
 }
 
 class _FilesSetupScreenState extends State<FilesSetupScreen> {
-  late final FilesSetupViewModel _viewModel;
+  late final WikiFilesSetupViewModel _viewModel;
 
   @override
   void initState() {
     super.initState();
-    _viewModel = FilesSetupViewModel(
-      filesRepository: context.read<FilesRepository>(),
+    _viewModel = WikiFilesSetupViewModel(
+      wikiFilesRepository: context.read<WikiFilesRepository>(),
       authRepository: context.read<AuthRepository>(),
     );
   }
@@ -83,8 +83,8 @@ class _FilesSetupScreenState extends State<FilesSetupScreen> {
                   footer: 'Letölti a fájlkezelőt a public_html mappádba. Frissítéshez futtasd újra ugyanezt.',
                   children: [
                     _CommandTile(
-                      command: FilesSetupViewModel.installCommand,
-                      onCopy: () => unawaited(_copy(FilesSetupViewModel.installCommand)),
+                      command: WikiFilesSetupViewModel.installCommand,
+                      onCopy: () => unawaited(_copy(WikiFilesSetupViewModel.installCommand)),
                     ),
                   ],
                 ),

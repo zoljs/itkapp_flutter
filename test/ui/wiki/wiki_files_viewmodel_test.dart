@@ -1,18 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
-import 'package:itk_app/ui/wiki/viewmodels/files_viewmodel.dart';
+import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
 import 'package:itk_app/utils/result.dart';
 
 import '../../helpers/fake_http.dart';
 import '../../helpers/fake_repositories.dart';
 
 void main() {
-  late FakeFilesRepository repository;
+  late FakeWikiFilesRepository repository;
 
-  setUp(() => repository = FakeFilesRepository());
+  setUp(() => repository = FakeWikiFilesRepository());
 
-  Future<FilesViewModel> create({String dir = '', String user = 'perpa4'}) async {
-    final viewModel = FilesViewModel(repository: repository, dir: dir, user: user);
+  Future<WikiFilesViewModel> create({String dir = '', String user = 'perpa4'}) async {
+    final viewModel = WikiFilesViewModel(repository: repository, dir: dir, user: user);
     await flush();
     return viewModel;
   }

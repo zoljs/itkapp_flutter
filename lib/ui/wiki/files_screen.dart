@@ -7,14 +7,14 @@ import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
-import 'package:itk_app/ui/wiki/viewmodels/files_viewmodel.dart';
+import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class FilesScreen extends StatefulWidget {
   const FilesScreen({super.key, required this.viewModel});
 
-  final FilesViewModel viewModel;
+  final WikiFilesViewModel viewModel;
 
   @override
   State<FilesScreen> createState() => _FilesScreenState();

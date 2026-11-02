@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:itk_app/data/repositories/files_repository.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/data/services/users_client.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/utils/result.dart';
@@ -11,12 +11,12 @@ Map<String, dynamic> listing(List<Map<String, dynamic>> files) => {'app': 'itkap
 
 void main() {
   late FakeHttpAdapter adapter;
-  late FilesRepository repository;
+  late WikiFilesRepository repository;
 
   setUp(() {
     adapter = FakeHttpAdapter();
     final client = UsersClient()..dio.httpClientAdapter = adapter;
-    repository = FilesRepository(usersClient: client);
+    repository = WikiFilesRepository(usersClient: client);
   });
 
   test("a user mappájából kér, a 'dir' query paraméterben", () async {

@@ -7,12 +7,12 @@ import '../../helpers/fake_http.dart';
 import '../../helpers/fake_repositories.dart';
 
 void main() {
-  late FakeFilesRepository files;
+  late FakeWikiFilesRepository files;
   late WikiViewModel viewModel;
 
   setUp(() async {
-    files = FakeFilesRepository();
-    viewModel = WikiViewModel(sitesRepository: FakeSitesRepository(), filesRepository: files);
+    files = FakeWikiFilesRepository();
+    viewModel = WikiViewModel(sitesRepository: FakeSitesRepository(), wikiFilesRepository: files);
     await flush();
   });
 
