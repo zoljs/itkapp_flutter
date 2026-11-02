@@ -17,6 +17,7 @@ import 'package:itk_app/ui/events/events_screen.dart';
 import 'package:itk_app/ui/onboarding/onboarding_screen.dart';
 import 'package:itk_app/ui/videos/videos_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
+import 'package:itk_app/ui/wiki/files_setup_screen.dart';
 import 'package:itk_app/ui/wiki/my_site_screen.dart';
 import 'package:itk_app/ui/wiki/viewmodels/files_viewmodel.dart';
 import 'package:itk_app/ui/wiki/files_screen.dart';
@@ -176,6 +177,10 @@ GoRouter router(
               },
             ),
           ],
+        ),
+        GoRoute(
+          path: Routes.wikiSetup,
+          pageBuilder: (context, state) => _page(state, const FilesSetupScreen()),
         ),
       ],
     );

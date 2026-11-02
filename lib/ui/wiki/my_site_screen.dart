@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
@@ -175,28 +179,24 @@ class _MySiteScreenState extends State<MySiteScreen> {
           //     ),
           //   ],
           // ),
-          SettingsGroup(header: 'Beállítások', footer: 'Bekapcsolásával ki lesz listázva a Users oldalad tartalma az alkalmazásban.', children: [
-            SettingsTile(
-              title: 'Oldal publikussá tétele',
-              trailing: Switch.adaptive(
-                value: _viewModel.isPublic,
-                onChanged: (value) => _viewModel.setPublic(value),
+          SettingsGroup(
+            header: 'Beállítások',
+            footer: 'A fájlkezelővel az oldalad fájljai az alkalmazásban is böngészhetők.',
+            children: [
+              SettingsTile(
+                title: 'Oldal publikussá tétele',
+                trailing: Switch.adaptive(
+                  value: _viewModel.isPublic,
+                  onChanged: (value) => _viewModel.setPublic(value),
+                ),
+                onTap: () => _viewModel.setPublic(!_viewModel.isPublic),
               ),
-              onTap: () => _viewModel.setPublic(!_viewModel.isPublic),
-            ),
-            SettingsTile(
-              title: 'PHP Fájlkezelő engedélyezése',
-              trailing: Switch.adaptive(
-                value: _viewModel.isPhpEnabled,
-                onChanged: (value) => _viewModel.setPhpEnabled(value),
+              SettingsTile(
+                title: 'Fájlkezelő beállítása',
+                onTap: () => unawaited(context.push(Routes.wikiSetup)),
               ),
-              onTap: () => _viewModel.setPhpEnabled(!_viewModel.isPhpEnabled),
-            ),
-            SettingsTile(
-              title: 'PHP Fájlkezelő',
-              onTap: () {},
-            ),
-          ]),
+            ],
+          ),
 
           SettingsGroup(
             header: 'Címkék',

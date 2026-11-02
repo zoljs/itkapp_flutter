@@ -7,6 +7,7 @@ abstract final class Routes {
   static const wiki = '/wiki';
   static const wikiEdit = '/wiki/edit';
   static const wikiFiles = '/wiki/files';
+  static const wikiSetup = '/wiki/setup';
   static const settings = '/settings';
   static const adminRoles = '/admin/roles';
   static const midterms = '/midterms';

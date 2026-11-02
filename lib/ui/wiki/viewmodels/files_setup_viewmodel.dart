@@ -1,22 +1,23 @@
 import 'package:flutter/foundation.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/files_repository.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
-class FilesSetupViewmodel extends ChangeNotifier {
-  final FilesRepository _repository;
-  final String _login;
+class FilesSetupViewModel extends ChangeNotifier {
+  final FilesRepository _filesRepository;
+  final AuthRepository _authRepository;
 
   static const installCommand = 'mkdir -p ~/public_html/files && '
       'curl -fsSL https://test.app.itk.ppke.hu/dl/files_wiki.php -o ~/public_html/files_wiki.php && '
       'chmod 644 ~/public_html/files_wiki.php';
 
-  FilesSetupViewmodel({
-    required FilesRepository repository,
-    required String login,
-  })  : _login = login,
-        _repository = repository {
+  FilesSetupViewModel({
+    required FilesRepository filesRepository,
+    required AuthRepository authRepository,
+  })  : _authRepository = authRepository,
+        _filesRepository = filesRepository {
     check = Command0<List<WikiFile>>(_check);
   }
 
@@ -24,10 +25,15 @@ class FilesSetupViewmodel extends ChangeNotifier {
   late final Command0<List<WikiFile>> check;
 
   // Getters
-  String get sshCommand => 'ssh $_login@users.itk.ppke.hu';
+  String? get _login => _authRepository.cachedUser?.login;
+  String get sshCommand => 'ssh ${_login ?? '<shibboleth>'}@users.itk.ppke.hu';
 
   // Methods
-  Future<Result<List<WikiFile>>> _check() => _repository.listDir('', _login);
+  Future<Result<List<WikiFile>>> _check() async {
+    final login = _login;
+    if (login == null) return const Err('Jelentkezz be újra.');
+    return _filesRepository.listDir('', login);
+  }
 
   @override
   void dispose() {
