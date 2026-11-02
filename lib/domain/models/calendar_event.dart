@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:icalendar_parser/icalendar_parser.dart';
 
 class CalendarEvent {
@@ -60,6 +61,18 @@ class CalendarEvent {
       return CalendarEvent.fromJson(json);
     } on FormatException {
       return null;
+    }
+  }
+
+  static List<CalendarEvent> parseIcsResponse(Object? data) {
+    if (data is! String || data.trim().isEmpty) return const [];
+
+    // Parse data from response
+    try {
+      return CalendarEvent.parseIcs(data);
+    } on Exception catch (e) {
+      debugPrint('[CalendarEvent] ICS parse error: $e');
+      throw const FormatException('Nem sikerült feldolgozni a naptárat.');
     }
   }
 

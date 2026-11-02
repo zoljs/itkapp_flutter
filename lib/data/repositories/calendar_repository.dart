@@ -1,6 +1,3 @@
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/utils/result.dart';
@@ -10,9 +7,9 @@ class CalendarRepository {
 
   CalendarRepository({
     required ApiClient apiClient,
-  }) : _dio = apiClient.dio;
+  }) : _apiClient = apiClient;
 
-  final Dio _dio;
+  final ApiClient _apiClient;
 
   List<CalendarEvent>? _cached;
 
@@ -23,29 +20,9 @@ class CalendarRepository {
     if (cached != null && !forceReload) return Ok(cached);
 
     // Reponse try
-    final Response<dynamic> response;
-    try {
-      response = await _dio.get(_path);
-    } on DioException catch (e) {
-      return Err(apiErrorMessage(e));
-    }
-
-    // Extract data from response
-    final data = response.data;
-    if (data is! String || data.trim().isEmpty) {
-      _cached = const [];
-      return const Ok([]);
-    }
-
-    // Parse data from response
-    try {
-      final events = CalendarEvent.parseIcs(data);
-      _cached = events;
-      return Ok(events);
-    } on Exception catch (e) {
-      debugPrint('[CalendarRepository] parse error: $e');
-      return const Err('Nem sikerült feldolgozni a naptárat.');
-    }
+    final result = await _apiClient.getJson(_path, parse: CalendarEvent.parseIcsResponse);
+    if (result case Ok(:final value)) _cached = value;
+    return result;
   }
 
   void clearCache() => _cached = null;
