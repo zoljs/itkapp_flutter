@@ -9,6 +9,7 @@ class WikiFile {
 
   /// The PHP script runs on a server we do not control, so a huge listing is rejected.
   static const maxFiles = 1000;
+  static const supportedVersion = 1;
   static final _controlChars = RegExp(r'[\x00-\x1F\x7F]');
 
   factory WikiFile.fromJson(Map<String, dynamic> json) {
@@ -42,6 +43,24 @@ class WikiFile {
       throw const FormatException('A fájl nem objektum formátumú.');
     }
     return WikiFile.fromJson(data);
+  }
+
+  static List<WikiFile> parseObject(Object? data) {
+    if (data is! Map<String, dynamic>) {
+      throw const FormatException('A válasz nem objektum formátumú.');
+    }
+
+    final app = data['app'];
+    if (app != 'itkapp-files') {
+      throw const FormatException('Hibás válasz.');
+    }
+
+    final version = data['version'];
+    if (version != supportedVersion) {
+      throw const FormatException('A verziószám nem támogatott.');
+    }
+
+    return parseList(data['files']);
   }
 
   static List<WikiFile> parseList(Object? data) {

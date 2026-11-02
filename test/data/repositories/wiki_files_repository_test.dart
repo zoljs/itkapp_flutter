@@ -6,6 +6,9 @@ import 'package:itk_app/utils/result.dart';
 
 import '../../helpers/fake_http.dart';
 
+/// Wraps a file list in the files_wiki.php v1 envelope.
+Map<String, dynamic> listing(List<Map<String, dynamic>> files) => {'app': 'itkapp-files', 'version': 1, 'files': files};
+
 void main() {
   late FakeHttpAdapter adapter;
   late WikiFilesRepository repository;
@@ -17,9 +20,11 @@ void main() {
   });
 
   test("a user mappájából kér, a 'dir' query paraméterben", () async {
-    adapter.handler = (_) => jsonBody(200, [
+    adapter.handler = (_) => jsonBody(
+        200,
+        listing([
           {'name': 'zh1.pdf', 'type': 'file'},
-        ]);
+        ]));
 
     final result = await repository.listDir('Analizis/2025', 'perpa4');
 
@@ -31,7 +36,7 @@ void main() {
   test('túl sok fájl Err, nem fagy le', () async {
     adapter.handler = (_) => jsonBody(
           200,
-          List.generate(WikiFile.maxFiles + 1, (i) => {'name': 'f$i', 'type': 'file'}),
+          listing(List.generate(WikiFile.maxFiles + 1, (i) => {'name': 'f$i', 'type': 'file'})),
         );
 
     final result = await repository.listDir('', 'perpa4');
@@ -42,6 +47,22 @@ void main() {
   test('nem JSON lista (pl. HTML hibaoldal) Err', () async {
     adapter.handler = (_) => textBody(200, '<html>Not Found</html>');
 
+    expect(await repository.listDir('', 'perpa4'), isA<Err<List<WikiFile>>>());
+  });
+
+  test('régi PHP (csupasz lista) Err', () async {
+    adapter.handler = (_) => jsonBody(200, [
+          {'name': 'zh1.pdf', 'type': 'file'},
+        ]);
+
+    expect(await repository.listDir('', 'perpa4'), isA<Err<List<WikiFile>>>());
+  });
+
+  test('idegen app vagy nem támogatott verzió Err', () async {
+    adapter.handler = (_) => jsonBody(200, {...listing([]), 'app': 'masik'});
+    expect(await repository.listDir('', 'perpa4'), isA<Err<List<WikiFile>>>());
+
+    adapter.handler = (_) => jsonBody(200, {...listing([]), 'version': 2});
     expect(await repository.listDir('', 'perpa4'), isA<Err<List<WikiFile>>>());
   });
 }
