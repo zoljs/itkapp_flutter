@@ -16,7 +16,7 @@ class AppSpinner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (Theme.of(context).platform) {
-      TargetPlatform.android => CupertinoActivityIndicator(color: color),
+      TargetPlatform.iOS => CupertinoActivityIndicator(color: color),
       _ => SizedBox.square(
           dimension: size,
           child: CircularProgressIndicator(color: color, strokeWidth: 2.5),

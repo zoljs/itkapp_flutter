@@ -12,7 +12,7 @@ import 'package:itk_app/data/repositories/calendar_links_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
-import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/repositories/videos_repository.dart';
@@ -63,7 +63,7 @@ Future<void> main() async {
           Provider(create: (context) => CalendarLinksRepository(apiClient: context.read<ApiClient>())),
           Provider(create: (context) => CalendarRepository(apiClient: context.read<ApiClient>())),
           Provider(
-            create: (context) => SitesRepository(apiClient: context.read<ApiClient>()),
+            create: (context) => WikiSitesRepository(apiClient: context.read<ApiClient>()),
           ),
           Provider(create: (context) => SubjectsRepository(apiClient: context.read<ApiClient>())),
           Provider(create: (_) => UsersClient()),

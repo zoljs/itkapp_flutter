@@ -12,7 +12,7 @@ void main() {
 
   setUp(() async {
     files = FakeWikiFilesRepository();
-    viewModel = WikiViewModel(sitesRepository: FakeSitesRepository(), wikiFilesRepository: files);
+    viewModel = WikiViewModel(wikiSitesRepository: FakeSitesRepository(), wikiFilesRepository: files);
     await flush();
   });
 

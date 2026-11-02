@@ -17,7 +17,7 @@ void main() {
   });
 
   Future<MySiteViewModel> create() async {
-    final viewModel = MySiteViewModel(sitesRepository: sites, authRepository: auth);
+    final viewModel = MySiteViewModel(wikiSitesRepository: sites, authRepository: auth);
     await flush();
     return viewModel;
   }

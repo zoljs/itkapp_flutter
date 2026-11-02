@@ -1,14 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/api_error.dart';
 import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/result.dart';
 
-class SitesRepository {
+class WikiSitesRepository {
   static const _path = '/api/sites';
 
-  SitesRepository({
+  WikiSitesRepository({
     required ApiClient apiClient,
   })  : _dio = apiClient.dio,
         _apiClient = apiClient;
@@ -16,34 +15,33 @@ class SitesRepository {
   final Dio _dio;
   final ApiClient _apiClient;
 
-  List<UserSite>? _cached;
+  List<UserSite>? _cachedSites;
+  Ok<UserSite?>? _cachedMySite;
 
-  List<UserSite> get cached => _cached ?? const [];
+  List<UserSite> get cachedSites => _cachedSites ?? const [];
+  Ok<UserSite?>? get cachedMySite => _cachedMySite;
 
-  void clearCache() => _cached = null;
+  void clearCache() {
+    _cachedSites = null;
+    _cachedMySite = null;
+  }
 
   Future<Result<List<UserSite>>> getAll({bool forceReload = false}) async {
-    final cached = _cached;
-    if (cached != null && !forceReload) return Ok(cached);
+    final cachedSites = _cachedSites;
+    if (cachedSites != null && !forceReload) return Ok(cachedSites);
 
     final result = await _apiClient.getJson(_path, parse: UserSite.parseList);
-    if (result case Ok(:final value)) _cached = value;
+    if (result case Ok(:final value)) _cachedSites = value;
     return result;
   }
 
-  Future<Result<UserSite?>> get() async {
-    final Response<dynamic> response;
-    try {
-      response = await _dio.get('$_path/me');
-      final data = response.data;
-      if (data is! Map<String, dynamic>) return const Ok(null);
-      return Ok(UserSite.fromJson(data));
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 404) return const Ok(null);
-      return Err(apiErrorMessage(e));
-    } on FormatException catch (e) {
-      return Err(e.message);
-    }
+  Future<Result<UserSite?>> get({bool forceReload = false}) async {
+    final cachedMySite = _cachedMySite;
+    if (cachedMySite != null && !forceReload) return cachedMySite;
+
+    final result = await _apiClient.getJson('$_path/me', parse: UserSite.parseOptional);
+    if (result is Ok<UserSite?>) _cachedMySite = result;
+    return result;
   }
 
   Future<Result<UserSite>> save(List<String> tags, bool isPublic) async {
@@ -51,14 +49,20 @@ class SitesRepository {
       parse: UserSite.parse,
       send: () => _dio.post(_path, data: {'tags': tags, 'isPublic': isPublic}),
     );
-    if (result is Ok) clearCache();
+    if (result is Ok<UserSite>) {
+      clearCache();
+      _cachedMySite = result;
+    }
 
     return result;
   }
 
   Future<Result<void>> delete() async {
     final result = await sendRequest(parse: (_) {}, send: () => _dio.delete(_path));
-    if (result is Ok) clearCache();
+    if (result is Ok) {
+      clearCache();
+      _cachedMySite = const Ok(null);
+    }
     return result;
   }
 }

@@ -6,7 +6,7 @@ import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_links_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
-import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/absolutorium.dart';
@@ -175,15 +175,18 @@ class FakeWikiFilesRepository implements WikiFilesRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class FakeSitesRepository implements SitesRepository {
+class FakeSitesRepository implements WikiSitesRepository {
   Result<UserSite?> getResult = const Ok(null);
   ({List<String> tags, bool isPublic})? lastSave;
 
   @override
-  Future<Result<UserSite?>> get() async => getResult;
+  Future<Result<UserSite?>> get({bool forceReload = false}) async => getResult;
 
   @override
-  List<UserSite> get cached => const [];
+  Ok<UserSite?>? get cachedMySite => null;
+
+  @override
+  List<UserSite> get cachedSites => const [];
 
   @override
   Future<Result<List<UserSite>>> getAll({bool forceReload = false}) async => const Ok([]);

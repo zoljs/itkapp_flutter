@@ -74,6 +74,12 @@ class UserSite {
     return UserSite.fromJson(data);
   }
 
+  // Only used for loading the cache aka mySite
+  static UserSite? parseOptional(Object? data) {
+    if (data == null || data == '') return null;
+    return parse(data);
+  }
+
   static List<UserSite> parseList(Object? data) {
     if (data is! List) {
       throw const FormatException('Az oldal lista nem lista formátumú.');

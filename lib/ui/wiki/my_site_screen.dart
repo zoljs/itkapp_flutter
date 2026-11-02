@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
-import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
@@ -32,7 +32,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
   void initState() {
     super.initState();
     _viewModel = MySiteViewModel(
-      sitesRepository: context.read<SitesRepository>(),
+      wikiSitesRepository: context.read<WikiSitesRepository>(),
       authRepository: context.read<AuthRepository>(),
     );
   }

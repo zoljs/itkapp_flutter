@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/widgets/app_spinner.dart';
@@ -38,14 +38,14 @@ class _WikiScreenState extends State<WikiScreen> {
 
   Future<void> _openMySite() async {
     await context.push(Routes.wikiEdit);
-    await _viewModel.load.execute(true);
+    await _viewModel.load.execute(false);
   }
 
   @override
   void initState() {
     super.initState();
     _viewModel = WikiViewModel(
-      sitesRepository: context.read<SitesRepository>(),
+      wikiSitesRepository: context.read<WikiSitesRepository>(),
       wikiFilesRepository: context.read<WikiFilesRepository>(),
     );
   }
@@ -57,7 +57,7 @@ class _WikiScreenState extends State<WikiScreen> {
     super.dispose();
   }
 
-  Widget _buildSiteCard(UserSite site, int index) {
+  Widget _buildSiteCard(UserSite site) {
     return UserSiteCard(
       color: site.claimed ? itkPrimary : Colors.grey,
       onTap: () => unawaited(_onSiteTap(site)),
@@ -166,8 +166,6 @@ class _WikiScreenState extends State<WikiScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return Scaffold(
       body: ListenableBuilder(
           listenable: Listenable.merge([_viewModel, _viewModel.load, _viewModel.checkFiles]),
@@ -217,23 +215,18 @@ class _WikiScreenState extends State<WikiScreen> {
                     ),
                     centeredWidget: Padding(
                       padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-                      child: _viewModel.load.running
-                          ? UserSiteCard(
-                              height: 80,
-                              color: scheme.surfaceContainerHigh,
-                              child: const Center(
-                                child: AppSpinner(),
-                              ),
-                            )
-                          : MySiteCard(
-                              mySite: _viewModel.mySite,
-                              openMySite: _openMySite,
-                            ),
+                      child: Skeletonizer(
+                        enabled: _viewModel.mySiteInitialLoading,
+                        child: MySiteCard(
+                          mySite: _viewModel.mySite,
+                          openMySite: _openMySite,
+                        ),
+                      ),
                     ),
                   ),
                   Builder(
                     builder: (context) {
-                      final displaySites = _viewModel.load.running && _viewModel.sites.isEmpty
+                      final displaySites = _viewModel.sitesInitialLoading
                           ? List.filled(
                               4,
                               UserSite(
@@ -248,7 +241,7 @@ class _WikiScreenState extends State<WikiScreen> {
                             )
                           : _viewModel.filteredSites;
 
-                      if (!_viewModel.load.running && _viewModel.sites.isEmpty && (_viewModel.load.errorMessage != null || displaySites.isEmpty)) {
+                      if (!_viewModel.sitesInitialLoading && displaySites.isEmpty) {
                         final query = _searchController.text.trim();
 
                         final (icon, message) = switch ((_viewModel.load.errorMessage, query.isEmpty)) {
@@ -278,10 +271,10 @@ class _WikiScreenState extends State<WikiScreen> {
                       return SliverPadding(
                         padding: const EdgeInsets.fromLTRB(AppSpacing.screenHorizontal, 0, AppSpacing.screenHorizontal, AppSpacing.bottomNavClearance),
                         sliver: Skeletonizer.sliver(
-                          enabled: _viewModel.load.running && _viewModel.sites.isEmpty,
+                          enabled: _viewModel.sitesInitialLoading,
                           child: SliverList.separated(
                             itemCount: displaySites.length,
-                            itemBuilder: (context, index) => _buildSiteCard(displaySites[index], index),
+                            itemBuilder: (context, index) => _buildSiteCard(displaySites[index]),
                             separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.lg),
                           ),
                         ),

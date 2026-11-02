@@ -3,16 +3,16 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
-import 'package:itk_app/data/repositories/sites_repository.dart';
+import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class MySiteViewModel extends ChangeNotifier {
   MySiteViewModel({
-    required SitesRepository sitesRepository,
+    required WikiSitesRepository wikiSitesRepository,
     required AuthRepository authRepository,
-  })  : _sitesRepository = sitesRepository,
+  })  : _wikiSitesRepository = wikiSitesRepository,
         _authRepository = authRepository {
     load = Command0<void>(_load);
     unawaited(load.execute());
@@ -20,7 +20,7 @@ class MySiteViewModel extends ChangeNotifier {
     delete = Command0<void>(_delete);
   }
 
-  final SitesRepository _sitesRepository;
+  final WikiSitesRepository _wikiSitesRepository;
   final AuthRepository _authRepository;
   late final Command0<void> load;
   late final Command0<void> save;
@@ -58,7 +58,7 @@ class MySiteViewModel extends ChangeNotifier {
   // Methods
   Future<Result<void>> _load() async {
     // Mysite
-    final result = await _sitesRepository.get();
+    final result = await _wikiSitesRepository.get();
 
     if (result case Ok(value: final UserSite site)) {
       _tags = List.of(site.tags);
@@ -77,13 +77,13 @@ class MySiteViewModel extends ChangeNotifier {
       return const Err('Nincs bejelentkezett felhasználó.');
     }
 
-    final result = await _sitesRepository.save(_tags, _isPublic);
+    final result = await _wikiSitesRepository.save(_tags, _isPublic);
 
     return result;
   }
 
   Future<Result<void>> _delete() async {
-    final result = await _sitesRepository.delete();
+    final result = await _wikiSitesRepository.delete();
     return result;
   }
 }
