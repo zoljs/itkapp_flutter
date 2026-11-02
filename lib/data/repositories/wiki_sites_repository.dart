@@ -1,6 +1,4 @@
-import 'package:dio/dio.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/result.dart';
 
@@ -9,10 +7,8 @@ class WikiSitesRepository {
 
   WikiSitesRepository({
     required ApiClient apiClient,
-  })  : _dio = apiClient.dio,
-        _apiClient = apiClient;
+  }) : _apiClient = apiClient;
 
-  final Dio _dio;
   final ApiClient _apiClient;
 
   List<UserSite>? _cachedSites;
@@ -45,9 +41,10 @@ class WikiSitesRepository {
   }
 
   Future<Result<UserSite>> save(List<String> tags, bool isPublic) async {
-    final result = await sendRequest(
+    final result = await _apiClient.postJson(
+      _path,
       parse: UserSite.parse,
-      send: () => _dio.post(_path, data: {'tags': tags, 'isPublic': isPublic}),
+      data: {'tags': tags, 'isPublic': isPublic},
     );
     if (result is Ok<UserSite>) {
       clearCache();
@@ -58,7 +55,7 @@ class WikiSitesRepository {
   }
 
   Future<Result<void>> delete() async {
-    final result = await sendRequest(parse: (_) {}, send: () => _dio.delete(_path));
+    final result = await _apiClient.delete(_path);
     if (result is Ok) {
       clearCache();
       _cachedMySite = const Ok(null);

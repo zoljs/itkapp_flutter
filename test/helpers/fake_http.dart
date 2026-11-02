@@ -71,6 +71,30 @@ class TestApiClient implements ApiClient {
         parse: parse,
         send: () => dio.get(path, queryParameters: queryParameters),
       );
+
+  @override
+  Future<Result<T>> postJson<T>(
+    String path, {
+    required T Function(Object?) parse,
+    Map<String, dynamic>? data,
+  }) =>
+      sendRequest(
+        parse: parse,
+        send: () => dio.post(path, data: data),
+      );
+
+  @override
+  Future<Result<void>> delete(String path) => sendRequest(parse: (_) {}, send: () => dio.delete(path));
+
+  @override
+  Future<Result<void>> post(
+    String path, {
+    Map<String, dynamic>? data,
+  }) =>
+      sendRequest(
+        parse: (_) {},
+        send: () => dio.post(path, data: data),
+      );
 }
 
 /// Lets the microtasks of fake repositories (and commands awaiting them) finish.

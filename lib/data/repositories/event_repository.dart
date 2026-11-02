@@ -1,6 +1,4 @@
-import 'package:dio/dio.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/utils/result.dart';
 
@@ -9,11 +7,9 @@ class EventRepository {
 
   EventRepository({
     required ApiClient apiClient,
-  })  : _dio = apiClient.dio,
-        _apiClient = apiClient;
+  }) : _apiClient = apiClient;
 
   final ApiClient _apiClient;
-  final Dio _dio;
 
   //List<Event>? _cached;
   final Map<String, List<Event>> _cache = {};
@@ -21,14 +17,6 @@ class EventRepository {
   //void clearCache() => _cached = null;
   void clearCache() => _cache.clear();
 
-  // Future<Result<List<Event>>> get({bool forceReload = false}) async {
-  //   final cached = _cached;
-  //   if (cached != null && !forceReload) return Ok(cached);
-
-  //   final result = await _apiClient.getJson(_path, parse: Event.parseList);
-  //   if (result case Ok(:final value)) _cached = value;
-  //   return result;
-  // }
   Future<Result<List<Event>>> get({
     required Set<EventType> types,
     bool forceReload = false,
@@ -53,17 +41,14 @@ class EventRepository {
     String? location,
     required EventType type,
   }) async {
-    final result = await sendRequest(
-      parse: (_) {},
-      send: () => _dio.post(
-        _path,
-        data: {
-          'subjectId': subjectId,
-          'startsAt': startsAt.toUtc().toIso8601String(),
-          if (location != null) 'location': location,
-          'type': type.wire,
-        },
-      ),
+    final result = await _apiClient.post(
+      _path,
+      data: {
+        'subjectId': subjectId,
+        'startsAt': startsAt.toUtc().toIso8601String(),
+        if (location != null) 'location': location,
+        'type': type.wire,
+      },
     );
     if (result is Ok) clearCache();
     return result;
@@ -72,7 +57,7 @@ class EventRepository {
   Future<Result<void>> delete({
     required int id,
   }) async {
-    final result = await sendRequest(parse: (_) {}, send: () => _dio.delete('$_path/$id'));
+    final result = await _apiClient.delete('$_path/$id');
     if (result is Ok) clearCache();
     return result;
   }

@@ -1,6 +1,4 @@
-import 'package:dio/dio.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/domain/models/calendar_link.dart';
 import 'package:itk_app/utils/result.dart';
 
@@ -9,10 +7,8 @@ class CalendarLinksRepository {
 
   CalendarLinksRepository({
     required ApiClient apiClient,
-  })  : _dio = apiClient.dio,
-        _apiClient = apiClient;
+  }) : _apiClient = apiClient;
 
-  final Dio _dio;
   final ApiClient _apiClient;
 
   Future<Result<List<CalendarLink>>> get() async => _apiClient.getJson(_path, parse: CalendarLink.parseList);
@@ -22,16 +18,13 @@ class CalendarLinksRepository {
     required String url,
     required SyncInterval syncInterval,
   }) async {
-    final result = await sendRequest(
-      parse: (_) {},
-      send: () => _dio.post(
-        _path,
-        data: {
-          'name': name,
-          'url': url,
-          'syncInterval': syncInterval.wire,
-        },
-      ),
+    final result = await _apiClient.post(
+      _path,
+      data: {
+        'name': name,
+        'url': url,
+        'syncInterval': syncInterval.wire,
+      },
     );
     return result;
   }
@@ -39,10 +32,7 @@ class CalendarLinksRepository {
   Future<Result<void>> delete({
     required int id,
   }) async {
-    final result = await sendRequest(
-      parse: (_) {},
-      send: () => _dio.delete('$_path/$id'),
-    );
+    final result = await _apiClient.delete('$_path/$id');
     return result;
   }
 }

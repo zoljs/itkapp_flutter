@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/services/api_client.dart';
-import 'package:itk_app/data/services/send_request.dart';
 import 'package:itk_app/data/services/shared_preferences_service.dart';
 import 'package:itk_app/domain/models/user.dart';
 import 'package:itk_app/utils/result.dart';
@@ -14,7 +12,6 @@ class AuthRepository extends ChangeNotifier {
 
   AuthRepository({required ApiClient apiClient, required SharedPreferencesService prefs})
       : _apiClient = apiClient,
-        _dio = apiClient.dio,
         _prefs = prefs {
     _cachedUser = _loadUserFromDisk();
   }
@@ -23,7 +20,6 @@ class AuthRepository extends ChangeNotifier {
 
   final SharedPreferencesService _prefs;
   final ApiClient _apiClient;
-  final Dio _dio;
   LdapUser? _cachedUser;
 
   // Getters
@@ -33,9 +29,9 @@ class AuthRepository extends ChangeNotifier {
   /// Two-request method, early return if first is Err
   Future<Result<void>> login(String username, String password) async {
     // POST the login, save the result (null or error)
-    final Result<void> loginResult = await sendRequest(
-      send: () => _dio.post('$_path/login', data: {'username': username, 'password': password}),
-      parse: (_) {},
+    final Result<void> loginResult = await _apiClient.post(
+      '$_path/login',
+      data: {'username': username, 'password': password},
     );
     if (loginResult is Err) return loginResult;
 
@@ -50,10 +46,7 @@ class AuthRepository extends ChangeNotifier {
   /// Single request method, however we must extract the message and print it, as the method is NOT of type Result
   Future<void> logout() async {
     // POST the logout, save the result (null or error)
-    final result = await sendRequest(
-      send: () => _dio.post('$_path/logout'),
-      parse: (_) {},
-    );
+    final result = await _apiClient.post('$_path/logout');
     if (result case Err(:final message)) debugPrint('[AuthRepository] logout request failed: $message');
 
     await _apiClient.clearCookies();
