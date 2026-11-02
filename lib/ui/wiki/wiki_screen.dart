@@ -119,13 +119,20 @@ class _WikiScreenState extends State<WikiScreen> {
                   color: Colors.white.withValues(alpha: 0.25),
                   shape: BoxShape.circle,
                 ),
-                child: const Skeleton.ignore(
-                  child: Icon(
-                    Icons.arrow_forward_rounded,
-                    color: Colors.black87,
-                    size: 24,
-                  ),
-                ),
+                child: _viewModel.checkFiles.running && _viewModel.checkingLogin == site.login
+                    ? const Padding(
+                        padding: EdgeInsets.all(AppSpacing.sm),
+                        child: CircularProgressIndicator.adaptive(
+                          backgroundColor: Colors.black,
+                        ),
+                      )
+                    : const Skeleton.ignore(
+                        child: Icon(
+                          Icons.arrow_forward_rounded,
+                          color: Colors.black87,
+                          size: 24,
+                        ),
+                      ),
               ),
             ],
           ),
@@ -135,6 +142,8 @@ class _WikiScreenState extends State<WikiScreen> {
   }
 
   Future<void> _onSiteTap(UserSite site) async {
+    if (_viewModel.checkFiles.running) return;
+
     // A site might be unclaimed meaning it might not have a login field
     final login = site.login;
     // If there is no login, it is unclaimed so open the link without looking for a php file, because there is no way its already there if they are not using the app.
@@ -144,10 +153,10 @@ class _WikiScreenState extends State<WikiScreen> {
     }
 
     // If there is a login, it means theres a possibility they added the php file.
-    final hasFileList = await _viewModel.hasFileList(login);
+    await _viewModel.checkFiles.execute(login);
     if (!mounted) return;
 
-    if (hasFileList) {
+    if (_viewModel.checkFiles.completed) {
       await context.push(Routes.wikiFilesFor(login));
     } else {
       await openLink(context, site.url, mode: LaunchMode.inAppWebView);
@@ -160,7 +169,7 @@ class _WikiScreenState extends State<WikiScreen> {
 
     return Scaffold(
       body: ListenableBuilder(
-          listenable: Listenable.merge([_viewModel, _viewModel.load]),
+          listenable: Listenable.merge([_viewModel, _viewModel.load, _viewModel.checkFiles]),
           builder: (context, _) {
             return RefreshIndicator(
               onRefresh: () => _viewModel.load.execute(true),
