@@ -1,3 +1,5 @@
+import 'package:itk_app/domain/models/site_color.dart';
+
 class UserSite {
   //final int? userId;
   final String? login;
@@ -6,6 +8,7 @@ class UserSite {
   final List<String> tags;
   final bool claimed;
   final bool isPublic;
+  final SiteColor color;
 
   const UserSite({
     this.login,
@@ -14,6 +17,7 @@ class UserSite {
     required this.tags,
     this.claimed = false,
     this.isPublic = true,
+    this.color = SiteColor.fallback,
   });
 
   factory UserSite.fromJson(Map<String, dynamic> json) {
@@ -44,6 +48,12 @@ class UserSite {
     final claimed = _readBool(json['claimed'], 'claimed');
     final isPublic = _readBool(json['isPublic'], 'isPublic');
 
+    final rawColor = json['color'];
+    if (rawColor != null && rawColor is! String) {
+      throw FormatException('$name oldalának hibás a színe.');
+    }
+    final color = SiteColor.fromKey(rawColor);
+
     return UserSite(
       login: login,
       name: name,
@@ -51,6 +61,7 @@ class UserSite {
       tags: tagsList,
       claimed: claimed,
       isPublic: isPublic,
+      color: color,
     );
   }
 
