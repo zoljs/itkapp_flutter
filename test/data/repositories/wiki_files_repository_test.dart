@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
+import 'package:itk_app/domain/models/site_color.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/result.dart';
 
@@ -82,11 +83,19 @@ void main() {
       await repository.get();
 
       api.adapter.handler = (_) => jsonBody(200, _site);
-      await repository.save(['Analizis'], true);
+      await repository.save(['Analizis'], true, SiteColor.itk);
       final result = await repository.get();
 
       expect(mySiteRequests(), 1);
       expect(result, isA<Ok<UserSite?>>().having((r) => r.value?.name, 'name', 'Teszt Elek'));
+    });
+
+    test('save a szín kulcsát küldi', () async {
+      api.adapter.handler = (_) => jsonBody(200, _site);
+      await repository.save(['Analizis'], true, SiteColor.green);
+
+      final post = api.adapter.requests.singleWhere((r) => r.method == 'POST');
+      expect(post.data, containsPair('color', 'green'));
     });
 
     test('save után az oldalak listáját újra kéri', () async {
@@ -94,7 +103,7 @@ void main() {
       await repository.getAll();
 
       api.adapter.handler = (_) => jsonBody(200, _site);
-      await repository.save(['Analizis'], true);
+      await repository.save(['Analizis'], true, SiteColor.itk);
 
       api.adapter.handler = (_) => jsonBody(200, [_site]);
       await repository.getAll();

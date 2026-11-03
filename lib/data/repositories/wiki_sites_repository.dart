@@ -1,4 +1,5 @@
 import 'package:itk_app/data/services/api_client.dart';
+import 'package:itk_app/domain/models/site_color.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/result.dart';
 
@@ -40,11 +41,11 @@ class WikiSitesRepository {
     return result;
   }
 
-  Future<Result<UserSite>> save(List<String> tags, bool isPublic) async {
+  Future<Result<UserSite>> save(List<String> tags, bool isPublic, SiteColor color) async {
     final result = await _apiClient.postJson(
       _path,
       parse: UserSite.parse,
-      data: {'tags': tags, 'isPublic': isPublic},
+      data: {'tags': tags, 'isPublic': isPublic, 'color': color.name},
     );
     if (result is Ok<UserSite>) {
       clearCache();

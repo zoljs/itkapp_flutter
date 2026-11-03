@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:itk_app/domain/models/site_color.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/wiki/viewmodels/my_site_viewmodel.dart';
 import 'package:itk_app/utils/result.dart';
@@ -28,6 +29,7 @@ void main() {
       url: 'https://users.itk.ppke.hu/~perpa4',
       tags: ['Analízis'],
       isPublic: false,
+      color: SiteColor.green,
     ));
 
     final viewModel = await create();
@@ -35,6 +37,31 @@ void main() {
     expect(viewModel.hasExistingSite, isTrue);
     expect(viewModel.tags, ['Analízis']);
     expect(viewModel.isPublic, isFalse);
+    expect(viewModel.color, SiteColor.green);
+    viewModel.dispose();
+  });
+
+  test('a cache-ből indul, még a betöltés vége előtt (hero szín)', () async {
+    const site = UserSite(
+      name: 'Perpa',
+      url: 'https://users.itk.ppke.hu/~perpa4',
+      tags: ['Fizika'],
+      isPublic: false,
+      color: SiteColor.green,
+    );
+    sites.cachedMySite = const Ok(site);
+    sites.getResult = const Ok(site);
+
+    // No flush(): check the state right after the constructor.
+    final viewModel = MySiteViewModel(wikiSitesRepository: sites, authRepository: auth);
+
+    expect(viewModel.color, SiteColor.green);
+    expect(viewModel.tags, ['Fizika']);
+    expect(viewModel.isPublic, isFalse);
+    expect(viewModel.hasExistingSite, isTrue);
+
+    // Let _load finish before dispose, so it doesn't notify a disposed VM.
+    await flush();
     viewModel.dispose();
   });
 
@@ -44,19 +71,22 @@ void main() {
     expect(viewModel.hasExistingSite, isFalse);
     expect(viewModel.tags, isEmpty);
     expect(viewModel.isPublic, isTrue);
+    expect(viewModel.color, SiteColor.fallback);
     viewModel.dispose();
   });
 
   test('mentéskor az aktuális beállításokat küldi', () async {
     final viewModel = await create()
       ..setTags(['Fizika'])
-      ..setPublic(false);
+      ..setPublic(false)
+      ..setColor(SiteColor.amber);
 
     await viewModel.save.execute();
 
     expect(viewModel.save.completed, isTrue);
     expect(sites.lastSave?.tags, ['Fizika']);
     expect(sites.lastSave?.isPublic, isFalse);
+    expect(sites.lastSave?.color, SiteColor.amber);
     viewModel.dispose();
   });
 

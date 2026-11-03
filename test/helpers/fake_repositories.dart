@@ -15,6 +15,7 @@ import 'package:itk_app/domain/models/calendar_link.dart';
 import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/domain/models/user.dart';
+import 'package:itk_app/domain/models/site_color.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
@@ -177,13 +178,13 @@ class FakeWikiFilesRepository implements WikiFilesRepository {
 
 class FakeSitesRepository implements WikiSitesRepository {
   Result<UserSite?> getResult = const Ok(null);
-  ({List<String> tags, bool isPublic})? lastSave;
+  ({List<String> tags, bool isPublic, SiteColor color})? lastSave;
 
   @override
   Future<Result<UserSite?>> get({bool forceReload = false}) async => getResult;
 
   @override
-  Ok<UserSite?>? get cachedMySite => null;
+  Ok<UserSite?>? cachedMySite;
 
   @override
   List<UserSite> get cachedSites => const [];
@@ -192,9 +193,9 @@ class FakeSitesRepository implements WikiSitesRepository {
   Future<Result<List<UserSite>>> getAll({bool forceReload = false}) async => const Ok([]);
 
   @override
-  Future<Result<UserSite>> save(List<String> tags, bool isPublic) async {
-    lastSave = (tags: tags, isPublic: isPublic);
-    return Ok(UserSite(name: 'Teszt', url: 'https://example.com', tags: tags));
+  Future<Result<UserSite>> save(List<String> tags, bool isPublic, SiteColor color) async {
+    lastSave = (tags: tags, isPublic: isPublic, color: color);
+    return Ok(UserSite(name: 'Teszt', url: 'https://example.com', tags: tags, color: color));
   }
 
   @override

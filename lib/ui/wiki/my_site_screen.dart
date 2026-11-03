@@ -9,15 +9,15 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
-import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/screens/subject_multi_picker_screen.dart';
-import 'package:itk_app/ui/core/widgets/swipe_to_delete.dart';
-import 'package:itk_app/ui/core/widgets/user_avatar.dart';
+import 'package:itk_app/ui/wiki/widgets/my_site_header.dart';
 import 'package:itk_app/ui/wiki/viewmodels/my_site_viewmodel.dart';
+import 'package:itk_app/ui/wiki/widgets/my_site_color_picker.dart';
+import 'package:itk_app/ui/wiki/widgets/my_site_settings_group.dart';
+import 'package:itk_app/ui/wiki/widgets/my_site_tags_group.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class MySiteScreen extends StatefulWidget {
   const MySiteScreen({super.key});
@@ -28,7 +28,6 @@ class MySiteScreen extends StatefulWidget {
 
 class _MySiteScreenState extends State<MySiteScreen> {
   late final MySiteViewModel _viewModel;
-  static const _skeletonTags = ['Címke 1', 'Címke 2', 'Címke 3'];
 
   @override
   void initState() {
@@ -44,17 +43,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
     _viewModel.dispose();
     super.dispose();
   }
-
-  // static const List<Color> _colors = [
-  //   itkPrimary,
-  //   Color(0xFF7E57C2),
-  //   Color(0xFFEF5350),
-  //   Color(0xFFFF9800),
-  //   Color(0xFFFFCA28),
-  //   Color(0xFF66BB6A),
-  //   Color.fromARGB(255, 202, 225, 203),
-  // ];
-  // int _selectedIndex = 0;
 
   Future<void> _submit() async {
     await _viewModel.save.execute();
@@ -101,9 +89,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
 
   Widget _buildForm(BuildContext context) {
     final loading = _viewModel.load.running;
-    final tags = loading ? _skeletonTags : _viewModel.tags;
-    final login = _viewModel.login;
-
     final scheme = Theme.of(context).colorScheme;
 
     return SingleChildScrollView(
@@ -116,121 +101,22 @@ class _MySiteScreenState extends State<MySiteScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Hero(
-            tag: 'wiki-mysite-avatar',
-            child: UserAvatar(
-              login: login,
-            ),
+          MySiteHeader(
+            login: _viewModel.login,
+            siteColor: _viewModel.color,
           ),
-          SettingsGroup(
-            header: 'Adatok',
-            footer: 'Az oldal neve és az URL a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
-            children: [
-              SettingsTile(
-                title: 'Név és URL',
-                value: _viewModel.login ?? '',
-              ),
-            ],
+          MySiteColorPicker(selected: _viewModel.color, onSelected: _viewModel.setColor),
+          MySiteSettingsGroup(
+            loading: loading,
+            isPublic: _viewModel.isPublic,
+            onPublicChanged: (value) => _viewModel.setPublic(value),
+            onOpenFileSetup: () => unawaited(context.push(Routes.wikiSetup)),
           ),
-          // SettingsGroup(
-          //   header: 'Megjelenés',
-          //   children: [
-          //     Padding(
-          //       padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
-          //       child: SingleChildScrollView(
-          //         scrollDirection: Axis.horizontal,
-          //         padding:
-          //             const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-          //         child: Row(
-          //           children: _colors.indexed.map((record) {
-          //             final (index, color) = record;
-          //             final isSelected = index == _selectedIndex;
-          //             final double borderRadius = isSelected ? 12.0 : 28.0;
-          //             final double innerBorderRadius = isSelected ? 6.0 : 20.0;
-
-          //             return Padding(
-          //               padding: const EdgeInsets.only(right: 8.0),
-          //               child: AnimatedContainer(
-          //                 curve: Curves.easeInOutCubic,
-          //                 duration: const Duration(milliseconds: 300),
-          //                 height: 56,
-          //                 width: 56,
-          //                 alignment: Alignment.center,
-          //                 decoration: BoxDecoration(
-          //                   borderRadius: BorderRadius.circular(borderRadius),
-          //                   border: Border.all(
-          //                     color: isSelected ? color : Colors.transparent,
-          //                     width: 4,
-          //                   ),
-          //                 ),
-          //                 child: AnimatedContainer(
-          //                   curve: Curves.easeInOutCubic,
-          //                   duration: const Duration(milliseconds: 300),
-          //                   height: 40,
-          //                   width: 40,
-          //                   decoration: BoxDecoration(
-          //                     gradient: LinearGradient(
-          //                       begin: Alignment.topLeft,
-          //                       end: Alignment.bottomRight,
-          //                       colors: [
-          //                         color,
-          //                         Color.lerp(color, Colors.black, 0.4)!,
-          //                       ],
-          //                     ),
-          //                     borderRadius:
-          //                         BorderRadius.circular(innerBorderRadius),
-          //                   ),
-          //                   child: GestureDetector(
-          //                     onTap: () =>
-          //                         setState(() => _selectedIndex = index),
-          //                   ),
-          //                 ),
-          //               ),
-          //             );
-          //           }).toList(),
-          //         ),
-          //       ),
-          //     ),
-          //   ],
-          // ),
-          SettingsGroup(
-            header: 'Beállítások',
-            footer: 'A fájlkezelővel az oldalad fájljai az alkalmazásban is böngészhetők.',
-            children: [
-              Skeletonizer(
-                enabled: loading,
-                child: SettingsTile(
-                  title: 'Oldal publikussá tétele',
-                  trailing: Switch.adaptive(
-                    value: _viewModel.isPublic,
-                    onChanged: (value) => _viewModel.setPublic(value),
-                  ),
-                  onTap: () => _viewModel.setPublic(!_viewModel.isPublic),
-                ),
-              ),
-              SettingsTile(
-                title: 'Fájlkezelő beállítása',
-                onTap: () => unawaited(context.push(Routes.wikiSetup)),
-              ),
-            ],
-          ),
-
-          SettingsGroup(
-            header: 'Címkék',
-            footer: 'A címkék alapján a kereső is listázza az oldalakat.'
-                '\nBalra húzva törölheted a címkét.',
-            children: [
-              SettingsTile(
-                title: 'Új címke hozzáadása',
-                onTap: _openTagPicker,
-              ),
-              ...tags.map((tag) {
-                return Skeletonizer(
-                  enabled: loading,
-                  child: _buildTagRow(tag),
-                );
-              }),
-            ],
+          MySiteTagsGroup(
+            tags: _viewModel.tags,
+            loading: loading,
+            onAdd: _openTagPicker,
+            onDelete: (tag) => _viewModel.setTags(_viewModel.tags.where((t) => t != tag).toList()),
           ),
           if (_viewModel.hasExistingSite) ...[
             BrandButton(
@@ -251,18 +137,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
             const SizedBox(height: AppSpacing.xxl),
           ],
         ],
-      ),
-    );
-  }
-
-  Widget _buildTagRow(String tag) {
-    return SwipeToDelete(
-      id: tag,
-      confirmTitle: 'Címke törlése',
-      confirmMessage: 'Biztosan törlöd a "$tag" címkét?',
-      onDelete: () => _viewModel.setTags(_viewModel.tags.where((t) => t != tag).toList()),
-      child: SettingsTile(
-        title: tag,
       ),
     );
   }

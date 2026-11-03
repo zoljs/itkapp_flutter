@@ -78,7 +78,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'Beállítások',
               style: Theme.of(context).textTheme.headlineSmall?.merge(topBarTitleStyle),
             ),
-            centeredWidget: CircleAvatar(radius: 55, backgroundColor: scheme.surface, child: UserAvatar(login: login)),
+            centeredWidget: CircleAvatar(
+                radius: 55,
+                backgroundColor: scheme.surface,
+                child: UserAvatar(
+                  login: login,
+                  color: itkPrimary,
+                )),
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(

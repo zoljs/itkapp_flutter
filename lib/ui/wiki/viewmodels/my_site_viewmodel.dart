@@ -4,6 +4,7 @@ import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
+import 'package:itk_app/domain/models/site_color.dart';
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
@@ -14,6 +15,20 @@ class MySiteViewModel extends ChangeNotifier {
     required AuthRepository authRepository,
   })  : _wikiSitesRepository = wikiSitesRepository,
         _authRepository = authRepository {
+    // Start from the repository cache, like WikiViewModel does.
+    // The wiki screen already loaded my site, so it is usually here.
+    // Without this the first frame shows the defaults below (blue color, no tags)
+    // until _load finishes, and the hero flies with the wrong color.
+    // `?.value`: the site if it is cached, otherwise null.
+    final cached = wikiSitesRepository.cachedMySite?.value;
+    if (cached != null) {
+      _tags = List.of(cached.tags);
+      _hasExistingSite = true;
+      _isPublic = cached.isPublic;
+      _color = cached.color;
+    }
+
+    // Still refresh from the server; _load overwrites the cached values.
     load = Command0<void>(_load);
     unawaited(load.execute());
     save = Command0<void>(_save);
@@ -35,9 +50,13 @@ class MySiteViewModel extends ChangeNotifier {
   }
 
   // State
+  // Defaults for "no site yet". The constructor overwrites them from the
+  // cache, _load from the server. They need a value here because the
+  // constructor body runs after the fields are created.
   List<String> _tags = [];
   bool _isPublic = true;
   bool _hasExistingSite = false;
+  SiteColor _color = SiteColor.fallback;
 
   // Getters
   UnmodifiableListView<String> get tags => UnmodifiableListView(_tags);
@@ -55,6 +74,12 @@ class MySiteViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  SiteColor get color => _color;
+  void setColor(SiteColor color) {
+    _color = color;
+    notifyListeners();
+  }
+
   // Methods
   Future<Result<void>> _load() async {
     // Mysite
@@ -64,6 +89,7 @@ class MySiteViewModel extends ChangeNotifier {
       _tags = List.of(site.tags);
       _hasExistingSite = true;
       _isPublic = site.isPublic;
+      _color = site.color;
       notifyListeners();
     } else if (result case Ok(value: null)) {
       _hasExistingSite = false;
@@ -77,7 +103,7 @@ class MySiteViewModel extends ChangeNotifier {
       return const Err('Nincs bejelentkezett felhasználó.');
     }
 
-    final result = await _wikiSitesRepository.save(_tags, _isPublic);
+    final result = await _wikiSitesRepository.save(_tags, _isPublic, _color);
 
     return result;
   }

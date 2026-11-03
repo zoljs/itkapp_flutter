@@ -2,6 +2,7 @@ import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/site_colors.dart';
 import 'package:itk_app/ui/core/widgets/user_avatar.dart';
+import 'package:itk_app/ui/wiki/widgets/my_site_header.dart';
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
 
@@ -45,7 +46,7 @@ class MySiteCard extends StatelessWidget {
       child: Row(
         children: [
           Hero(
-            tag: 'wiki-mysite-avatar',
+            tag: MySiteHeader.heroTag,
             child: UserAvatar(
               radius: 22,
               fontSize: 24,

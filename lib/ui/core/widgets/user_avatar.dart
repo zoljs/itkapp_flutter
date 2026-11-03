@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/ui/core/theme/app_themes.dart';
 
 class UserAvatar extends StatelessWidget {
   const UserAvatar({
@@ -7,7 +6,7 @@ class UserAvatar extends StatelessWidget {
     required this.login,
     this.radius = 45,
     this.fontSize = 28,
-    this.color = itkPrimary,
+    required this.color,
   });
 
   final String? login;
