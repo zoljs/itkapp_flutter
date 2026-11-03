@@ -13,8 +13,8 @@ import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/circles_painter.dart';
-import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
+import 'package:itk_app/ui/core/widgets/swipe_to_delete.dart';
 import 'package:itk_app/ui/events/add_event_screen.dart';
 import 'package:itk_app/ui/events/viewmodels/events_viewmodel.dart';
 import 'package:itk_app/ui/events/widgets/event_card.dart';
@@ -191,32 +191,14 @@ class _EventsScreenState extends State<EventsScreen> {
 
   Widget _buildCard(Event m) {
     final card = EventCard(event: m);
-    final scheme = Theme.of(context).colorScheme;
 
     final content = (!_viewModel.canModerate || _viewModel.initialLoading)
         ? card
-        : Dismissible(
-            key: ValueKey(m.id),
-            direction: DismissDirection.endToStart,
-            background: Container(
-              decoration: BoxDecoration(
-                color: scheme.error,
-                borderRadius: BorderRadius.circular(AppRadius.lg),
-              ),
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-              child: Icon(Icons.delete_rounded, color: scheme.onError),
-            ),
-            confirmDismiss: (_) async =>
-                await showConfirmDialog(
-                  context,
-                  title: '${widget.eventLabel} törlése'.capitalize(),
-                  message: 'A ${widget.eventLabel} időpont mindenki számára törlődik. (${m.subject.name})',
-                  confirmLabel: 'Törlés',
-                  isDestructive: true,
-                ) ==
-                true,
-            onDismissed: (_) async {
+        : SwipeToDelete(
+            id: m.id,
+            confirmTitle: '${widget.eventLabel} törlése'.capitalize(),
+            confirmMessage: 'A ${widget.eventLabel} időpont mindenki számára törlődik. (${m.subject.name})',
+            onDelete: () async {
               await _viewModel.delete.execute(m.id);
               if (!mounted) return;
               final error = _viewModel.delete.errorMessage;

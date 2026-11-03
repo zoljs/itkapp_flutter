@@ -7,9 +7,9 @@ import 'package:itk_app/ui/admin/viewmodels/admin_roles_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
-import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
+import 'package:itk_app/ui/core/widgets/swipe_to_delete.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -65,32 +65,18 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
   }
 
   Widget _buildRow(UserSummary user) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Dismissible(
-      key: ValueKey(user.userId),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        color: scheme.error,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        child: Icon(Icons.person_remove_rounded, color: scheme.onError),
-      ),
-      confirmDismiss: (_) async =>
-          await showConfirmDialog(
-            context,
-            title: 'Rang visszavonása',
-            message: '${user.fullName} többé nem lesz évfolyamfelelős.',
-            confirmLabel: 'Visszavonás',
-            isDestructive: true,
-          ) ==
-          true,
-      onDismissed: (_) async {
+    return SwipeToDelete(
+      id: user.userId,
+      onDelete: () async {
         await _viewModel.revoke.execute(user.userId);
         if (!mounted) return;
         final error = _viewModel.revoke.errorMessage;
         if (error != null) context.showMessage(error);
       },
+      icon: Icons.person_remove_rounded,
+      confirmTitle: 'Rang visszavonása',
+      confirmMessage: '${user.fullName} többé nem lesz évfolyamfelelős.',
+      confirmLabel: 'Visszavonás',
       child: SettingsTile(
         title: user.fullName,
         value: user.ldapUsername,

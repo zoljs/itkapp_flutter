@@ -12,6 +12,7 @@ import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/screens/subject_multi_picker_screen.dart';
+import 'package:itk_app/ui/core/widgets/swipe_to_delete.dart';
 import 'package:itk_app/ui/wiki/viewmodels/my_site_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
@@ -246,36 +247,15 @@ class _MySiteScreenState extends State<MySiteScreen> {
     );
   }
 
-  Dismissible _buildTagRow(String tag) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return Dismissible(
-      key: ValueKey(tag),
-      direction: DismissDirection.endToStart,
-      background: Container(
-        color: scheme.error,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        child: Icon(Icons.delete_rounded, color: scheme.onError),
+  Widget _buildTagRow(String tag) {
+    return SwipeToDelete(
+      id: tag,
+      confirmTitle: 'Címke törlése',
+      confirmMessage: 'Biztosan törlöd a "$tag" címkét?',
+      onDelete: () => _viewModel.setTags(_viewModel.tags.where((t) => t != tag).toList()),
+      child: SettingsTile(
+        title: tag,
       ),
-      child: Container(
-        color: scheme.surfaceContainerHigh,
-        child: SettingsTile(
-          title: tag,
-        ),
-      ),
-      confirmDismiss: (_) async =>
-          await showConfirmDialog(
-            context,
-            title: 'Címke törlése',
-            message: 'Biztosan törlöd a "$tag" címkét?',
-            confirmLabel: 'Törlés',
-            isDestructive: true,
-          ) ==
-          true,
-      onDismissed: (_) {
-        _viewModel.setTags(_viewModel.tags.where((t) => t != tag).toList());
-      },
     );
   }
 

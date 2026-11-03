@@ -10,9 +10,9 @@ import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_segmented_control.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
-import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
+import 'package:itk_app/ui/core/widgets/swipe_to_delete.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -138,18 +138,14 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
                     for (final link in links)
                       Skeletonizer(
                         enabled: _viewModel.initialLoading,
-                        child: CalendarLinkTile(
-                          link: link,
-                          onDismissed: (_) => _delete(link.id),
-                          confirmDismiss: (_) async =>
-                              await showConfirmDialog(
-                                context,
-                                title: 'Naptár törlése',
-                                message: 'Biztosan törölni szeretnéd ezt a naptárat?',
-                                confirmLabel: 'Törlés',
-                                isDestructive: true,
-                              ) ==
-                              true,
+                        child: SwipeToDelete(
+                          id: link.id,
+                          confirmTitle: 'Naptár törlése',
+                          confirmMessage: 'Biztosan törölni szeretnéd a ${link.name} naptárat?',
+                          onDelete: () => _delete(link.id),
+                          child: CalendarLinkTile(
+                            link: link,
+                          ),
                         ),
                       ),
                 ],
