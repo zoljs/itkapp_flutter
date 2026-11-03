@@ -7,8 +7,7 @@ InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
     hintStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),
     filled: true,
     fillColor: scheme.surfaceContainerHigh,
-    contentPadding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
+    contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadius.xxxl),
       borderSide: BorderSide.none,
@@ -32,5 +31,7 @@ InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
   );
 }
 
+const itkLight = Color.fromARGB(255, 58, 195, 250);
 const itkPrimary = Color(0xFF00A6E7);
+const itkPrimaryDarker = Color.fromARGB(255, 0, 147, 206);
 const itkDark = Color(0xFF0b3468);

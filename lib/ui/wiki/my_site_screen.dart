@@ -13,6 +13,7 @@ import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/screens/subject_multi_picker_screen.dart';
 import 'package:itk_app/ui/core/widgets/swipe_to_delete.dart';
+import 'package:itk_app/ui/core/widgets/user_avatar.dart';
 import 'package:itk_app/ui/wiki/viewmodels/my_site_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
@@ -101,6 +102,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
   Widget _buildForm(BuildContext context) {
     final loading = _viewModel.load.running;
     final tags = loading ? _skeletonTags : _viewModel.tags;
+    final login = _viewModel.login;
 
     final scheme = Theme.of(context).colorScheme;
 
@@ -114,6 +116,12 @@ class _MySiteScreenState extends State<MySiteScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Hero(
+            tag: 'wiki-mysite-avatar',
+            child: UserAvatar(
+              login: login,
+            ),
+          ),
           SettingsGroup(
             header: 'Adatok',
             footer: 'Az oldal neve és az URL a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',

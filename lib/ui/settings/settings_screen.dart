@@ -8,6 +8,7 @@ import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
+import 'package:itk_app/ui/core/widgets/user_avatar.dart';
 import 'package:itk_app/ui/settings/viewmodels/settings_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/open_link.dart';
@@ -66,6 +67,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final currentUser = _viewModel.currentUser;
+    final login = currentUser?.login;
 
     return Scaffold(
       body: CustomScrollView(
@@ -75,7 +78,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               'Beállítások',
               style: Theme.of(context).textTheme.headlineSmall?.merge(topBarTitleStyle),
             ),
-            centeredWidget: _buildAvatar(_viewModel.currentUser, scheme),
+            centeredWidget: CircleAvatar(radius: 55, backgroundColor: scheme.surface, child: UserAvatar(login: login)),
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
@@ -260,21 +263,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  CircleAvatar _buildAvatar(LdapUser? currentUser, ColorScheme scheme) {
-    return CircleAvatar(
-      backgroundColor: scheme.surface,
-      radius: 55,
-      child: CircleAvatar(
-        backgroundColor: itkPrimary,
-        radius: 45,
-        child: Text(
-          currentUser?.login.substring(0, 1).toUpperCase() ?? 'U',
-          style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w900),
-        ),
       ),
     );
   }

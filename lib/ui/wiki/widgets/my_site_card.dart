@@ -1,6 +1,7 @@
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/core/widgets/user_avatar.dart';
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
 
@@ -38,20 +39,18 @@ class MySiteCard extends StatelessWidget {
 
     // Own site
     return UserSiteCard(
-      color: itkPrimary,
+      color: itkPrimaryDarker,
       height: AppSpacing.mySiteCardHeight,
       onTap: openMySite,
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: Colors.white.withValues(alpha: 0.25),
-            child: Text(
-              mySite!.name.isNotEmpty ? mySite!.name[0].toUpperCase() : '?',
-              style: const TextStyle(
-                fontWeight: FontWeight.w800,
-                color: Colors.black87,
-              ),
+          Hero(
+            tag: 'wiki-mysite-avatar',
+            child: UserAvatar(
+              radius: 22,
+              fontSize: 24,
+              login: mySite!.login,
+              color: itkPrimary,
             ),
           ),
           const SizedBox(width: 14),
