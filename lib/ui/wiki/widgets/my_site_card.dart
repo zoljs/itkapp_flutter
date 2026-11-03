@@ -7,10 +7,11 @@ import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
 
 class MySiteCard extends StatelessWidget {
-  const MySiteCard({super.key, required this.mySite, required this.openMySite});
+  const MySiteCard({super.key, required this.mySite, required this.onOpen, required this.onEdit});
 
   final UserSite? mySite;
-  final void Function() openMySite;
+  final ValueChanged<UserSite> onOpen;
+  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class MySiteCard extends StatelessWidget {
     if (mySite == null) {
       return UserSiteCard(
         color: scheme.surfaceContainerHigh,
-        onTap: openMySite,
+        onTap: onEdit,
         height: 80,
         child: Row(
           children: [
@@ -42,7 +43,7 @@ class MySiteCard extends StatelessWidget {
     return UserSiteCard(
       color: mySite!.color.color,
       height: AppSpacing.mySiteCardHeight,
-      onTap: openMySite,
+      onTap: () => onOpen(mySite!),
       child: Row(
         children: [
           Hero(
@@ -77,7 +78,11 @@ class MySiteCard extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          const Icon(Icons.edit_rounded, color: Colors.black87, size: AppSpacing.minimumAndroid / 2),
+          IconButton(
+            onPressed: onEdit,
+            tooltip: 'Szerkesztés',
+            icon: const Icon(Icons.edit_rounded, color: Colors.black87),
+          ),
         ],
       ),
     );

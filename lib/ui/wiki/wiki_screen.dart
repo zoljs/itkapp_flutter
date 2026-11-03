@@ -219,7 +219,8 @@ class _WikiScreenState extends State<WikiScreen> {
                         enabled: _viewModel.mySiteInitialLoading,
                         child: MySiteCard(
                           mySite: _viewModel.mySite,
-                          openMySite: _openMySite,
+                          onOpen: (site) => unawaited(_onSiteTap(site)),
+                          onEdit: _openMySite,
                         ),
                       ),
                     ),
