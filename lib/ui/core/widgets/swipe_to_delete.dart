@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 
@@ -29,6 +30,7 @@ class SwipeToDelete extends StatefulWidget {
 
 class _SwipeToDeleteState extends State<SwipeToDelete> {
   bool _reached = false;
+  double _progress = 0.0;
 
   @override
   Widget build(BuildContext context) {
@@ -37,20 +39,32 @@ class _SwipeToDeleteState extends State<SwipeToDelete> {
     return Dismissible(
       key: ValueKey(widget.id),
       direction: DismissDirection.endToStart,
-      background: Container(
-        color: scheme.error,
-        alignment: Alignment.centerRight,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        child: AnimatedScale(
-          curve: Curves.bounceOut,
-          scale: _reached ? 2 : 1.0,
-          duration: const Duration(milliseconds: 400),
-          child: Icon(
-            widget.icon,
-            color: scheme.onError,
+      background: LayoutBuilder(builder: (context, constraints) {
+        double width = constraints.maxWidth;
+
+        return Container(
+          color: Theme.of(context).scaffoldBackgroundColor,
+          margin: EdgeInsets.only(left: width - (width * _progress)),
+          child: Container(
+            decoration: ShapeDecoration(
+              color: scheme.error,
+              shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
+            ),
+            margin: const EdgeInsets.only(left: AppSpacing.xs),
+            alignment: Alignment.centerRight,
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: AnimatedScale(
+              curve: Curves.bounceOut,
+              scale: _reached ? 1.75 : 1.0,
+              duration: const Duration(milliseconds: 400),
+              child: Icon(
+                widget.icon,
+                color: scheme.onError,
+              ),
+            ),
           ),
-        ),
-      ),
+        );
+      }),
       confirmDismiss: (_) async =>
           await showConfirmDialog(
             context,
@@ -62,10 +76,11 @@ class _SwipeToDeleteState extends State<SwipeToDelete> {
           true,
       onDismissed: (_) => widget.onDelete(),
       onUpdate: (details) async {
-        if (details.reached != details.previousReached) {
-          setState(() => _reached = details.reached);
-          await HapticFeedback.mediumImpact();
-        }
+        setState(() {
+          _progress = details.progress;
+          if (details.reached != details.previousReached) _reached = details.reached;
+        });
+        if (details.reached != details.previousReached) await HapticFeedback.mediumImpact();
       },
       child: widget.child,
     );

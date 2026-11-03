@@ -94,30 +94,6 @@ GoRouter router(
               GoRoute(
                 path: Routes.wiki,
                 builder: (context, state) => const WikiScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'edit',
-                    pageBuilder: (context, state) => _page(state, const MySiteScreen()),
-                  ),
-                  GoRoute(
-                    path: 'files/:user',
-                    pageBuilder: (context, state) {
-                      final user = state.pathParameters['user']!;
-                      final dir = state.uri.queryParameters['dir'] ?? '';
-
-                      return _page(
-                        state,
-                        WikiFilesScreen(
-                          viewModel: WikiFilesViewModel(
-                            repository: context.read<WikiFilesRepository>(),
-                            user: user,
-                            dir: dir,
-                          ),
-                        ),
-                      );
-                    },
-                  )
-                ],
               ),
             ]),
             // ----------------- [SETTINGS] -----------------
@@ -182,6 +158,28 @@ GoRouter router(
           path: Routes.wikiSetup,
           pageBuilder: (context, state) => _page(state, const WikiFilesSetupScreen()),
         ),
+        GoRoute(
+          path: Routes.wikiEdit,
+          pageBuilder: (context, state) => _page(state, const MySiteScreen()),
+        ),
+        GoRoute(
+          path: Routes.filesFor(':user'),
+          pageBuilder: (context, state) {
+            final user = state.pathParameters['user']!;
+            final dir = state.uri.queryParameters['dir'] ?? '';
+
+            return _page(
+              state,
+              WikiFilesScreen(
+                viewModel: WikiFilesViewModel(
+                  repository: context.read<WikiFilesRepository>(),
+                  user: user,
+                  dir: dir,
+                ),
+              ),
+            );
+          },
+        )
       ],
     );
 

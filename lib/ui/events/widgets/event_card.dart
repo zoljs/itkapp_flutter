@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/domain/models/event.dart';
+import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
 class EventCard extends StatelessWidget {
@@ -37,7 +38,10 @@ class EventCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.lg),
-      color: background,
+      decoration: ShapeDecoration(
+        color: background,
+        shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
