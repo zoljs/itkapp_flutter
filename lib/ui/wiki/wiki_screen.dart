@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/routing/routes.dart';
+import 'package:itk_app/ui/core/theme/site_colors.dart';
 import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,6 @@ import 'package:itk_app/ui/wiki/viewmodels/wiki_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
-import 'package:itk_app/ui/core/theme/app_themes.dart';
 
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
@@ -59,7 +59,7 @@ class _WikiScreenState extends State<WikiScreen> {
 
   Widget _buildSiteCard(UserSite site) {
     return UserSiteCard(
-      color: site.claimed ? itkPrimary : Colors.grey,
+      color: site.claimed ? site.color.color : Colors.grey,
       onTap: () => unawaited(_onSiteTap(site)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,6 +1,6 @@
 import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
-import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/core/theme/site_colors.dart';
 import 'package:itk_app/ui/core/widgets/user_avatar.dart';
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +39,7 @@ class MySiteCard extends StatelessWidget {
 
     // Own site
     return UserSiteCard(
-      color: itkPrimaryDarker,
+      color: mySite!.color.color,
       height: AppSpacing.mySiteCardHeight,
       onTap: openMySite,
       child: Row(
@@ -50,7 +50,10 @@ class MySiteCard extends StatelessWidget {
               radius: 22,
               fontSize: 24,
               login: mySite!.login,
-              color: itkPrimary,
+              color: Color.alphaBlend(
+                Colors.white.withValues(alpha: 0.3),
+                mySite!.color.color,
+              ),
             ),
           ),
           const SizedBox(width: 14),
