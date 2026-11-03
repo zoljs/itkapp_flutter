@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/confirm_dialog.dart';
 
-class SwipeToDelete extends StatelessWidget {
+class SwipeToDelete extends StatefulWidget {
   const SwipeToDelete({
     super.key,
     required this.id,
@@ -24,34 +24,50 @@ class SwipeToDelete extends StatelessWidget {
   final Widget child;
 
   @override
+  State<SwipeToDelete> createState() => _SwipeToDeleteState();
+}
+
+class _SwipeToDeleteState extends State<SwipeToDelete> {
+  bool _reached = false;
+
+  @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
 
     return Dismissible(
-      key: ValueKey(id),
+      key: ValueKey(widget.id),
       direction: DismissDirection.endToStart,
       background: Container(
         color: scheme.error,
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        child: Icon(icon, color: scheme.onError),
+        child: AnimatedScale(
+          curve: Curves.bounceOut,
+          scale: _reached ? 2 : 1.0,
+          duration: const Duration(milliseconds: 400),
+          child: Icon(
+            widget.icon,
+            color: scheme.onError,
+          ),
+        ),
       ),
       confirmDismiss: (_) async =>
           await showConfirmDialog(
             context,
-            title: confirmTitle,
-            message: confirmMessage,
-            confirmLabel: confirmLabel,
+            title: widget.confirmTitle,
+            message: widget.confirmMessage,
+            confirmLabel: widget.confirmLabel,
             isDestructive: true,
           ) ==
           true,
-      onDismissed: (_) => onDelete(),
+      onDismissed: (_) => widget.onDelete(),
       onUpdate: (details) async {
         if (details.reached != details.previousReached) {
+          setState(() => _reached = details.reached);
           await HapticFeedback.mediumImpact();
         }
       },
-      child: child,
+      child: widget.child,
     );
   }
 }
