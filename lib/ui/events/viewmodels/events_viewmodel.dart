@@ -3,18 +3,22 @@ import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
+import 'package:itk_app/utils/semester.dart';
 
 class EventsViewModel extends ChangeNotifier {
   EventsViewModel({
     required EventRepository eventRepository,
+    required CalendarRepository calendarRepository,
     required AuthRepository authRepository,
     required Set<EventType> types,
   })  : _authRepository = authRepository,
         _eventRepository = eventRepository,
+        _calendarRepository = calendarRepository,
         _types = types {
     load = Command1<void, bool>(_load);
     unawaited(load.execute(false));
@@ -22,11 +26,13 @@ class EventsViewModel extends ChangeNotifier {
   }
 
   final EventRepository _eventRepository;
+  final CalendarRepository _calendarRepository;
   final AuthRepository _authRepository;
   late final Command1<void, bool> load;
   late final Command1<void, int> delete;
 
   final Set<EventType> _types;
+  final semesterStart = currentSemesterStart();
 
   @override
   void dispose() {
@@ -38,7 +44,10 @@ class EventsViewModel extends ChangeNotifier {
   // State
   String _query = '';
   List<Event> _events = [];
-  bool get canModerate => _authRepository.cachedUser?.canModerateMidterms ?? false;
+  bool get canModerate =>
+      _authRepository.cachedUser?.canModerateMidterms ?? false;
+  Set<String> _mySubjects = {};
+  bool _onlyMySubjects = false;
 
   // Getters
   UnmodifiableListView<Event> get events => UnmodifiableListView(_events);
@@ -49,22 +58,54 @@ class EventsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Event> get filteredEvents {
-    final q = _query.trim().toLowerCase();
-    if (q.isEmpty) return events;
-    return events.where((m) => m.subject.name.toLowerCase().contains(q) || m.subject.code.toLowerCase().contains(q) || (m.location?.toLowerCase().contains(q) ?? false)).toList();
-  }
-
   bool get initialLoading => load.running && _events.isEmpty;
 
-  Future<Result<void>> _load(bool forceReload) async {
-    final result = await _eventRepository.get(forceReload: forceReload, types: _types);
+  UnmodifiableSetView<String> get mySubjects =>
+      UnmodifiableSetView(_mySubjects);
+  bool get hasMySubjects => _mySubjects.isNotEmpty;
+  bool get onlyMySubjects => _onlyMySubjects;
+  void setOnlyMySubjects(bool value) {
+    _onlyMySubjects = value;
+    notifyListeners();
+  }
 
-    if (result case Ok(:final value)) {
+  bool get isSubjectFilterActive => _onlyMySubjects && hasMySubjects;
+
+  List<Event> get filteredEvents {
+    final q = _query.trim().toLowerCase();
+
+    return events.where((e) {
+      final passes =
+          !isSubjectFilterActive || mySubjects.contains(e.subject.name);
+      final matchesSearch = q.isEmpty ||
+          e.subject.name.toLowerCase().contains(q) ||
+          e.subject.code.toLowerCase().contains(q) ||
+          (e.location?.toLowerCase().contains(q) ?? false);
+      return passes && matchesSearch;
+    }).toList();
+  }
+
+  Future<Result<void>> _load(bool forceReload) async {
+    final calendarFuture = _calendarRepository.get(forceReload: forceReload);
+
+    final eventsResult =
+        await _eventRepository.get(forceReload: forceReload, types: _types);
+    if (eventsResult case Ok(:final value)) {
       _events = value;
       notifyListeners();
     }
-    return result;
+
+    final calendarResult = await calendarFuture;
+    if (calendarResult case Ok(:final value)) {
+      _mySubjects = value
+          .where((event) => !event.start.isBefore(semesterStart))
+          .map((event) => event.subject)
+          .nonNulls
+          .toSet();
+      notifyListeners();
+    }
+
+    return eventsResult;
   }
 
   Future<Result<void>> _delete(int id) async {

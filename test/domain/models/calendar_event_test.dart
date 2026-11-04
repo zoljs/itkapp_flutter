@@ -64,4 +64,44 @@ void main() {
       expect(CalendarEvent.parseIcs(ics([])), isEmpty);
     });
   });
+
+  group('CalendarEvent.subjectFromTitle (Neptun SUMMARY)', () {
+    final cases = <String, String?>{
+      'Computer Controlled Systems ( - 01) - Dr. Pongrácz Barna - Tanóra': 'Computer Controlled Systems',
+      'Információ- és kódelmélet (Írásbeli és szóbeli) - Dr. Oláh András - Vizsga': 'Információ- és kódelmélet',
+      'Fizika (mérnököknek) ( - 00) - Dr. X - Tanóra': 'Fizika (mérnököknek)',
+      'Saját esemény': null,
+      ' ( - 01) - Tanóra': null,
+    };
+    for (final entry in cases.entries) {
+      test('${entry.key} -> ${entry.value}', () {
+        expect(CalendarEvent.subjectFromTitle(entry.key), entry.value);
+      });
+    }
+
+    test('CATEGORIES nélkül a tárgy a címből jön', () {
+      final event = CalendarEvent.parseIcs(ics([
+        vevent([
+          'UID:1',
+          'SUMMARY:Computer Controlled Systems ( - 01) - Dr. Pongrácz Barna - Tanóra',
+          'DTSTART:20261103T080000Z',
+        ]),
+      ])).single;
+
+      expect(event.subject, 'Computer Controlled Systems');
+    });
+
+    test('a CATEGORIES elsőbbséget élvez a címmel szemben', () {
+      final event = CalendarEvent.parseIcs(ics([
+        vevent([
+          'UID:1',
+          'SUMMARY:Valami más ( - 01) - Dr. X - Tanóra',
+          'CATEGORIES:Analízis I.',
+          'DTSTART:20261103T080000Z',
+        ]),
+      ])).single;
+
+      expect(event.subject, 'Analízis I.');
+    });
+  });
 }

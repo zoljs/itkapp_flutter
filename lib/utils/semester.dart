@@ -7,6 +7,15 @@ String currentSemester([DateTime? now]) {
   return _key(y - 1, 2);
 }
 
+DateTime currentSemesterStart([DateTime? now]) {
+  final d = now ?? DateTime.now();
+  final y = d.year;
+  final m = d.month;
+  if (m >= 8) return DateTime(y, 8, 1);
+  if (m == 1) return DateTime(y - 1, 8, 1);
+  return DateTime(y, 2, 1);
+}
+
 String _key(int startYear, int half) =>
     '$startYear/${((startYear + 1) % 100).toString().padLeft(2, '0')}/$half';
 

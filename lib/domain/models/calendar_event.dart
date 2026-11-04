@@ -36,9 +36,10 @@ class CalendarEvent {
     }
 
     final subject = switch (json['categories']) {
-      [final String first, ...] => first,
-      _ => null,
-    };
+          [final String first, ...] => first,
+          _ => null,
+        } ??
+        subjectFromTitle(title);
 
     return CalendarEvent(
       title: title,
@@ -77,4 +78,10 @@ class CalendarEvent {
   }
 
   static DateTime? _readIcsDate(Object? value) => value is IcsDateTime ? value.toDateTime() : null;
+
+  static String? subjectFromTitle(String title) {
+    final i = title.lastIndexOf(' (');
+    if (i <= 0) return null;
+    return title.substring(0, i).trim();
+  }
 }

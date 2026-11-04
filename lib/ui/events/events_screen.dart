@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/event.dart';
@@ -18,6 +19,7 @@ import 'package:itk_app/ui/core/widgets/swipe_to_delete.dart';
 import 'package:itk_app/ui/events/add_event_screen.dart';
 import 'package:itk_app/ui/events/viewmodels/events_viewmodel.dart';
 import 'package:itk_app/ui/events/widgets/event_card.dart';
+import 'package:itk_app/ui/events/widgets/my_subjects_filter.dart';
 import 'package:itk_app/ui/events/widgets/weekstrip.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/string_extensions.dart';
@@ -47,7 +49,11 @@ class _EventsScreenState extends State<EventsScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = EventsViewModel(eventRepository: context.read<EventRepository>(), authRepository: context.read<AuthRepository>(), types: widget.types);
+    _viewModel = EventsViewModel(
+        eventRepository: context.read<EventRepository>(),
+        authRepository: context.read<AuthRepository>(),
+        calendarRepository: context.read<CalendarRepository>(),
+        types: widget.types);
   }
 
   @override
@@ -197,7 +203,8 @@ class _EventsScreenState extends State<EventsScreen> {
         : SwipeToDelete(
             id: m.id,
             confirmTitle: '${widget.eventLabel} törlése'.capitalize(),
-            confirmMessage: 'A ${widget.eventLabel} időpont mindenki számára törlődik. (${m.subject.name})',
+            confirmMessage:
+                'A ${widget.eventLabel} időpont mindenki számára törlődik. (${m.subject.name})',
             onDelete: () async {
               await _viewModel.delete.execute(m.id);
               if (!mounted) return;
@@ -234,11 +241,25 @@ class _EventsScreenState extends State<EventsScreen> {
       );
     }
 
-    final items = _viewModel.initialLoading ? _skeletonItems : _viewModel.filteredEvents;
+    final items =
+        _viewModel.initialLoading ? _skeletonItems : _viewModel.filteredEvents;
     final query = _viewModel.query.trim();
 
+    // If empty, but not initial load
     if (!_viewModel.initialLoading && items.isEmpty) {
-      return query.isEmpty ? _buildMessage(Icons.event_available_rounded, 'Nincs közelgő ${widget.eventLabel}.') : _buildMessage(Icons.search_off_rounded, 'Nincs találat erre: „$query”');
+      // If query not empty = []
+      if (query.isNotEmpty) {
+        return _buildMessage(
+            Icons.search_off_rounded, 'Nincs találat erre: „$query”');
+      }
+      // If query empty && subject filter active = []
+      if (_viewModel.isSubjectFilterActive) {
+        return _buildMessage(Icons.event_available_rounded,
+            'Nincs közelgő ${widget.eventLabel} a tárgyaidból.');
+      }
+      // If query empty && no filter active = []
+      return _buildMessage(
+          Icons.event_available_rounded, 'Nincs közelgő ${widget.eventLabel}.');
     }
 
     return SliverPadding(
@@ -253,7 +274,8 @@ class _EventsScreenState extends State<EventsScreen> {
         child: SliverList.separated(
           itemCount: items.length,
           itemBuilder: (context, index) => _buildCard(items[index]),
-          separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.md),
+          separatorBuilder: (context, index) =>
+              const SizedBox(height: AppSpacing.md),
         ),
       ),
     );
@@ -275,6 +297,18 @@ class _EventsScreenState extends State<EventsScreen> {
                   ),
                   slivers: [
                     _buildHeader(context, asFab: asFab),
+                    if (_viewModel.hasMySubjects)
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.screenHorizontal),
+                          child: MySubjectsFilter(
+                            selected: _viewModel.onlyMySubjects,
+                            onSelected: _viewModel.setOnlyMySubjects,
+                            label: "Tárgyaim",
+                          ),
+                        ),
+                      ),
                     _buildListSliver(context),
                   ],
                 ),
