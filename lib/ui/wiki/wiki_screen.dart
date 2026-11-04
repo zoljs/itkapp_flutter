@@ -1,12 +1,14 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/routing/routes.dart';
-import 'package:itk_app/ui/core/theme/site_colors.dart';
-import 'package:itk_app/ui/core/widgets/app_spinner.dart';
+import 'package:itk_app/ui/core/widgets/app_search_field.dart';
+import 'package:itk_app/ui/core/widgets/sliver_state_message.dart';
+import 'package:itk_app/ui/wiki/widgets/site_list_card.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -16,14 +18,10 @@ import 'package:itk_app/domain/models/user_site.dart';
 import 'package:itk_app/ui/wiki/viewmodels/wiki_viewmodel.dart';
 
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
-import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
-import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/core/widgets/platform_appbar.dart';
 import 'package:itk_app/ui/wiki/widgets/my_site_card.dart';
-
-import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 
 class WikiScreen extends StatefulWidget {
   const WikiScreen({super.key});
@@ -57,91 +55,6 @@ class _WikiScreenState extends State<WikiScreen> {
     super.dispose();
   }
 
-  Widget _buildSiteCard(UserSite site) {
-    return UserSiteCard(
-      color: site.claimed ? site.color.color : Colors.grey,
-      onTap: () => unawaited(_onSiteTap(site)),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  site.name,
-                  style: const TextStyle(
-                    fontSize: 19,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: site.tags.take(4).map((tag) {
-              return Container(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: Skeleton.ignore(
-                  child: Text(
-                    tag,
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  Uri.tryParse(site.url)?.host ?? site.url,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(fontSize: 12, color: Colors.black87),
-                ),
-              ),
-              Container(
-                width: 40,
-                height: 40,
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.25),
-                  shape: BoxShape.circle,
-                ),
-                child: _viewModel.checkFiles.running && _viewModel.checkingLogin == site.login
-                    ? const Padding(
-                        padding: EdgeInsets.all(AppSpacing.sm),
-                        child: AppSpinner(
-                          color: Colors.black87,
-                        ),
-                      )
-                    : const Skeleton.ignore(
-                        child: Icon(
-                          Icons.arrow_forward_rounded,
-                          color: Colors.black87,
-                          size: 24,
-                        ),
-                      ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   Future<void> _onSiteTap(UserSite site) async {
     if (_viewModel.checkFiles.running) return;
 
@@ -166,125 +79,134 @@ class _WikiScreenState extends State<WikiScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
     return Scaffold(
       body: ListenableBuilder(
-          listenable: Listenable.merge([_viewModel, _viewModel.load, _viewModel.checkFiles]),
+          listenable: Listenable.merge(
+              [_viewModel, _viewModel.load, _viewModel.checkFiles]),
           builder: (context, _) {
-            return RefreshIndicator.adaptive(
-              edgeOffset: MediaQuery.paddingOf(context).top + AppSpacing.toolbarHeight,
-              onRefresh: () => _viewModel.load.execute(true),
-              child: CustomScrollView(
-                // ios bounce physics even if the list does NOT overflow
-                physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(),
-                ),
-                slivers: [
-                  ShrinkingSliverAppBar(
-                    centerTitle: true,
-                    title: Text(
-                      'Hallgatói oldalak',
-                      style: Theme.of(context).textTheme.headlineSmall?.merge(topBarTitleStyle),
+            final customScrollView = CustomScrollView(
+              slivers: [
+                ShrinkingSliverAppBar(
+                  centerTitle: true,
+                  title: Text(
+                    'Hallgatói oldalak',
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineSmall
+                        ?.merge(topBarTitleStyle),
+                  ),
+                  bottom: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
+                    child: AppSearchField(
+                      searchController: _searchController,
+                      onChanged: _viewModel.setQuery,
+                      hintText: 'Oldal, tantárgy neve...',
                     ),
-                    preferredSizeChild: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-                      child: SizedBox(
-                        height: AppSpacing.searchFieldHeight,
-                        child: TextField(
-                          expands: true,
-                          minLines: null,
-                          maxLines: null,
-                          textAlignVertical: TextAlignVertical.center,
-                          textInputAction: TextInputAction.search,
-                          controller: _searchController,
-                          onChanged: (value) => _viewModel.setQuery(value),
-                          decoration: InputDecoration(
-                            hintText: 'Oldal, tantárgy neve...',
-                            prefixIcon: const Icon(Icons.search_rounded),
-                            suffixIcon: _searchController.text.isEmpty
-                                ? null
-                                : IconButton(
-                                    icon: const Icon(Icons.close_rounded),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      _viewModel.setQuery('');
-                                    },
-                                  ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    centeredWidget: Padding(
-                      padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
-                      child: Skeletonizer(
-                        enabled: _viewModel.mySiteInitialLoading,
-                        child: MySiteCard(
-                          mySite: _viewModel.mySite,
-                          onOpen: (site) => unawaited(_onSiteTap(site)),
-                          onEdit: _openMySite,
-                        ),
+                  ),
+                  centeredWidget: Padding(
+                    padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
+                    child: Skeletonizer(
+                      enabled: _viewModel.mySiteInitialLoading,
+                      child: MySiteCard(
+                        mySite: _viewModel.mySite,
+                        onOpen: (site) => unawaited(_onSiteTap(site)),
+                        onEdit: _openMySite,
                       ),
                     ),
                   ),
-                  Builder(
-                    builder: (context) {
-                      final displaySites = _viewModel.sitesInitialLoading
-                          ? List.filled(
-                              4,
-                              UserSite(
-                                claimed: true,
-                                name: BoneMock.name,
-                                url: 'https://example.com/${BoneMock.words(1)}',
-                                tags: [
-                                  BoneMock.words(1),
-                                  BoneMock.words(1),
-                                ],
-                              ),
-                            )
-                          : _viewModel.filteredSites;
-
-                      if (!_viewModel.sitesInitialLoading && displaySites.isEmpty) {
-                        final query = _searchController.text.trim();
-
-                        final (icon, message) = switch ((_viewModel.load.errorMessage, query.isEmpty)) {
-                          (final String error, _) => (Icons.cloud_off_rounded, error),
-                          (null, true) => (Icons.hourglass_empty, 'Még nincs oldal.'),
-                          (null, false) => (Icons.search_off_rounded, 'Nincs találat erre: „$query”'),
-                        };
-
-                        return SliverFillRemaining(
-                          hasScrollBody: false,
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              AppSpacing.xxl,
-                              AppSpacing.xxl,
-                              AppSpacing.xxl,
-                              MediaQuery.paddingOf(context).bottom + AppSpacing.lg,
-                            ),
-                            child: StateMessage(
-                              icon: icon,
-                              message: message,
-                              onRetry: _viewModel.load.errorMessage != null ? () => _viewModel.load.execute(true) : null,
-                            ),
-                          ),
-                        );
-                      }
-
-                      return SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(AppSpacing.screenHorizontal, 0, AppSpacing.screenHorizontal, AppSpacing.bottomNavClearance),
-                        sliver: Skeletonizer.sliver(
-                          enabled: _viewModel.sitesInitialLoading,
-                          child: SliverList.separated(
-                            itemCount: displaySites.length,
-                            itemBuilder: (context, index) => _buildSiteCard(displaySites[index]),
-                            separatorBuilder: (context, index) => const SizedBox(height: AppSpacing.lg),
-                          ),
-                        ),
-                      );
+                ),
+                if (isIOS)
+                  CupertinoSliverRefreshControl(
+                    onRefresh: () async {
+                      await _viewModel.load.execute(true);
                     },
                   ),
-                ],
-              ),
+                Builder(
+                  builder: (context) {
+                    final displaySites = _viewModel.sitesInitialLoading
+                        ? List.filled(
+                            4,
+                            UserSite(
+                              claimed: true,
+                              name: BoneMock.name,
+                              url: 'https://example.com/${BoneMock.words(1)}',
+                              tags: [
+                                BoneMock.words(1),
+                                BoneMock.words(1),
+                              ],
+                            ),
+                          )
+                        : _viewModel.filteredSites;
+
+                    if (!_viewModel.sitesInitialLoading &&
+                        displaySites.isEmpty) {
+                      final query = _searchController.text.trim();
+
+                      final (icon, message) = switch ((
+                        _viewModel.load.errorMessage,
+                        query.isEmpty
+                      )) {
+                        (final String error, _) => (
+                            Icons.cloud_off_rounded,
+                            error
+                          ),
+                        (null, true) => (
+                            Icons.hourglass_empty,
+                            'Még nincs oldal.'
+                          ),
+                        (null, false) => (
+                            Icons.search_off_rounded,
+                            'Nincs találat erre: „$query”'
+                          ),
+                      };
+
+                      return SliverStateMessage(
+                        icon: icon,
+                        message: message,
+                        onRetry: _viewModel.load.errorMessage == null
+                            ? null
+                            : () => _viewModel.load.execute(true),
+                      );
+                    }
+
+                    return SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.screenHorizontal,
+                          0,
+                          AppSpacing.screenHorizontal,
+                          AppSpacing.bottomNavClearance),
+                      sliver: Skeletonizer.sliver(
+                        enabled: _viewModel.sitesInitialLoading,
+                        child: SliverList.separated(
+                          itemCount: displaySites.length,
+                          itemBuilder: (context, index) {
+                            final site = displaySites[index];
+                            return SiteListCard(
+                              site: site,
+                              checking: _viewModel.checkFiles.running &&
+                                  _viewModel.checkingLogin == site.login,
+                              onTap: () => unawaited(_onSiteTap(site)),
+                            );
+                          },
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: AppSpacing.lg),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
             );
+            return isIOS
+                ? customScrollView
+                : RefreshIndicator(
+                    edgeOffset: MediaQuery.paddingOf(context).top +
+                        AppSpacing.toolbarHeight,
+                    onRefresh: () => _viewModel.load.execute(true),
+                    child: customScrollView,
+                  );
           }),
     );
   }

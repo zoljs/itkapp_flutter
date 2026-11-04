@@ -57,20 +57,41 @@ Future<void> main() async {
           Provider.value(value: themeRepository),
           Provider.value(value: onboardingRepository),
           ChangeNotifierProvider.value(value: authRepository),
-          Provider(create: (context) => CalendarLinksRepository(apiClient: context.read<ApiClient>())),
-          Provider(create: (context) => CalendarRepository(apiClient: context.read<ApiClient>())),
-          Provider(create: (context) => EventRepository(apiClient: context.read<ApiClient>())),
-          Provider(create: (context) => CalendarLinksRepository(apiClient: context.read<ApiClient>())),
-          Provider(create: (context) => CalendarRepository(apiClient: context.read<ApiClient>())),
           Provider(
-            create: (context) => WikiSitesRepository(apiClient: context.read<ApiClient>()),
+              create: (context) => CalendarLinksRepository(
+                  apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  CalendarRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  EventRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) => CalendarLinksRepository(
+                  apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  CalendarRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+            create: (context) =>
+                WikiSitesRepository(apiClient: context.read<ApiClient>()),
           ),
-          Provider(create: (context) => SubjectsRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  SubjectsRepository(apiClient: context.read<ApiClient>())),
           Provider(create: (_) => UsersClient()),
-          Provider(create: (context) => WikiFilesRepository(usersClient: context.read<UsersClient>())),
-          Provider(create: (context) => AdminRolesRepository(apiClient: context.read<ApiClient>())),
-          Provider(create: (context) => AdminUsersRepository(apiClient: context.read<ApiClient>())),
-          Provider(create: (context) => VideosRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) => WikiFilesRepository(
+                  usersClient: context.read<UsersClient>())),
+          Provider(
+              create: (context) =>
+                  AdminRolesRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  AdminUsersRepository(apiClient: context.read<ApiClient>())),
+          Provider(
+              create: (context) =>
+                  VideosRepository(apiClient: context.read<ApiClient>())),
           Provider(
             create: (context) => AbsolutoriumRepository(
               apiClient: context.read<ApiClient>(),
@@ -99,28 +120,28 @@ ColorScheme _darkSchemeFor(ColorScheme base, {required bool isOled}) {
 }
 
 ThemeData _buildTheme(ColorScheme scheme) {
-  final TextTheme base = ThemeData(colorScheme: scheme, useMaterial3: true).textTheme;
+  final TextTheme base =
+      ThemeData(colorScheme: scheme, useMaterial3: true).textTheme;
   final cupertinoText = const CupertinoThemeData().textTheme;
 
   return ThemeData(
-    pageTransitionsTheme: const PageTransitionsTheme(
-      builders: {
-        TargetPlatform.android: ZoomPageTransitionsBuilder(),
-        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-      },
-    ),
+    //platform: TargetPlatform.android,
     colorScheme: scheme,
     useMaterial3: true,
-    splashFactory: defaultTargetPlatform == TargetPlatform.iOS ? NoSplash.splashFactory : null,
+    splashFactory: defaultTargetPlatform == TargetPlatform.iOS
+        ? NoSplash.splashFactory
+        : null,
     textTheme: buildITKAppTextTheme(base),
     cupertinoOverrideTheme: CupertinoThemeData(
       textTheme: cupertinoText.copyWith(
         textStyle: cupertinoText.textStyle.merge(flexRegular),
         actionTextStyle: cupertinoText.actionTextStyle.merge(flexRegular),
         navTitleTextStyle: cupertinoText.navTitleTextStyle.merge(flexRounded),
-        navLargeTitleTextStyle: cupertinoText.navLargeTitleTextStyle.merge(flexRounded),
+        navLargeTitleTextStyle:
+            cupertinoText.navLargeTitleTextStyle.merge(flexRounded),
         pickerTextStyle: cupertinoText.pickerTextStyle.merge(flexRegular),
-        dateTimePickerTextStyle: cupertinoText.dateTimePickerTextStyle.merge(flexRegular),
+        dateTimePickerTextStyle:
+            cupertinoText.dateTimePickerTextStyle.merge(flexRegular),
       ),
     ),
     inputDecorationTheme: buildITKAppInputDecorationTheme(scheme),

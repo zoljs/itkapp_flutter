@@ -15,7 +15,11 @@ import '../../data/repositories/event_repository.dart';
 import '../../domain/models/event.dart';
 
 class AddEventScreen extends StatefulWidget {
-  const AddEventScreen({super.key, this.scrollController, required this.types, required this.eventLabel});
+  const AddEventScreen(
+      {super.key,
+      this.scrollController,
+      required this.types,
+      required this.eventLabel});
 
   final String eventLabel;
   final Set<EventType> types;
@@ -32,7 +36,9 @@ class _AddEventScreenState extends State<AddEventScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = AddEventViewModel(repository: context.read<EventRepository>(), allowedTypes: widget.types);
+    _viewModel = AddEventViewModel(
+        repository: context.read<EventRepository>(),
+        allowedTypes: widget.types);
   }
 
   @override
@@ -127,12 +133,16 @@ class _AddEventScreenState extends State<AddEventScreen> {
             children: [
               SettingsTile(
                 title: 'Dátum',
-                value: _viewModel.date == null ? 'Válassz' : localizations.formatMediumDate(_viewModel.date!),
+                value: _viewModel.date == null
+                    ? 'Válassz'
+                    : localizations.formatMediumDate(_viewModel.date!),
                 onTap: _pickDate,
               ),
               SettingsTile(
                 title: 'Kezdés',
-                value: _viewModel.time == null ? 'Válassz' : _viewModel.time!.format(context),
+                value: _viewModel.time == null
+                    ? 'Válassz'
+                    : _viewModel.time!.format(context),
                 onTap: _pickTime,
               ),
             ],

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
@@ -8,18 +9,17 @@ import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/domain/models/subject.dart';
-import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
+import 'package:itk_app/ui/core/widgets/app_search_field.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/circles_painter.dart';
-import 'package:itk_app/ui/core/widgets/state_message.dart';
-import 'package:itk_app/ui/core/widgets/swipe_to_delete.dart';
+import 'package:itk_app/ui/core/widgets/sliver_state_message.dart';
 import 'package:itk_app/ui/events/add_event_screen.dart';
 import 'package:itk_app/ui/events/viewmodels/events_viewmodel.dart';
-import 'package:itk_app/ui/events/widgets/event_card.dart';
-import 'package:itk_app/ui/events/widgets/my_subjects_filter.dart';
+import 'package:itk_app/ui/events/widgets/event_filter_chips.dart';
+import 'package:itk_app/ui/events/widgets/event_list_card.dart';
 import 'package:itk_app/ui/events/widgets/weekstrip.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/string_extensions.dart';
@@ -45,6 +45,9 @@ class EventsScreen extends StatefulWidget {
 class _EventsScreenState extends State<EventsScreen> {
   final _searchController = TextEditingController();
   late final EventsViewModel _viewModel;
+
+  double _bottomPadding(bool showChips) =>
+      AppSpacing.searchFieldHeight + AppSpacing.md * 3 + (showChips ? 48 : 0);
 
   @override
   void initState() {
@@ -96,11 +99,11 @@ class _EventsScreenState extends State<EventsScreen> {
 
   Widget _buildHeader(BuildContext context, {required bool asFab}) {
     final scheme = Theme.of(context).colorScheme;
+    final showChips = _viewModel.hasMySubjects || _viewModel.types.length > 1;
 
     return SliverAppBar(
       pinned: true,
-      stretch: true,
-      expandedHeight: 260,
+      expandedHeight: 320,
       collapsedHeight: AppSpacing.searchBarHeight,
       backgroundColor: scheme.surface,
       scrolledUnderElevation: 0,
@@ -121,20 +124,31 @@ class _EventsScreenState extends State<EventsScreen> {
         background: Stack(
           fit: StackFit.expand,
           children: [
-            ColoredBox(color: scheme.primaryContainer),
-            CustomPaint(
-              painter: CirclesPainter([
-                scheme.secondary.withValues(alpha: 0.55),
-                itkDark.withValues(alpha: 0.44),
-                itkPrimary.withValues(alpha: 0.66),
-              ]),
+            Padding(
+              padding: EdgeInsets.only(bottom: _bottomPadding(showChips)),
+              child: ColoredBox(color: scheme.primaryContainer),
             ),
             Padding(
-              padding: const EdgeInsets.fromLTRB(
+              padding: EdgeInsets.only(bottom: _bottomPadding(showChips)),
+              child: ClipRect(
+                child: CustomPaint(
+                  painter: CirclesPainter([
+                    scheme.secondary.withValues(alpha: 0.55),
+                    itkDark.withValues(alpha: 0.44),
+                    itkPrimary.withValues(alpha: 0.66),
+                  ]),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(
                 AppSpacing.lg,
                 0,
                 AppSpacing.lg,
-                AppSpacing.searchBarHeight,
+                AppSpacing.searchFieldHeight +
+                    AppSpacing.md * 3 +
+                    (showChips ? 48 : 0) +
+                    AppSpacing.screenHorizontal,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -156,116 +170,85 @@ class _EventsScreenState extends State<EventsScreen> {
           ],
         ),
       ),
-      bottom: _buildSearch(),
+      bottom: _buildSearch(showChips),
     );
   }
 
-  PreferredSizeWidget _buildSearch() {
+  PreferredSizeWidget _buildSearch(bool showChips) {
+    final scheme = Theme.of(context).colorScheme;
     return PreferredSize(
-      preferredSize: const Size.fromHeight(60),
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: SizedBox(
-          height: AppSpacing.searchFieldHeight,
-          child: TextField(
-            expands: true,
-            minLines: null,
-            maxLines: null,
-            textAlignVertical: TextAlignVertical.center,
-            textInputAction: TextInputAction.search,
-            controller: _searchController,
-            onChanged: _viewModel.setQuery,
-            decoration: InputDecoration(
-              contentPadding: EdgeInsets.zero,
+      preferredSize: Size.fromHeight(60 + (showChips ? 48 : 0)),
+      child: Container(
+        color: scheme.surface,
+        padding: const EdgeInsets.fromLTRB(
+          AppSpacing.screenHorizontal,
+          AppSpacing.screenHorizontal,
+          AppSpacing.screenHorizontal,
+          AppSpacing.md,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppSearchField(
+              searchController: _searchController,
+              onChanged: _viewModel.setQuery,
               hintText: 'Tárgy neve vagy kódja...',
-              prefixIcon: const Icon(Icons.search_rounded),
-              suffixIcon: _searchController.text.isEmpty
-                  ? null
-                  : IconButton(
-                      icon: const Icon(Icons.close_rounded),
-                      onPressed: () {
-                        _searchController.clear();
-                        _viewModel.setQuery('');
-                      },
-                    ),
             ),
-          ),
+            if (showChips) ...[
+              const SizedBox(height: AppSpacing.md),
+              EventFilterChips(
+                showMySubjects: _viewModel.hasMySubjects,
+                onlyMySubjects: _viewModel.onlyMySubjects,
+                onMySubjectsSelected: _viewModel.setOnlyMySubjects,
+                types: _viewModel.types,
+                selectedTypes: _viewModel.selectedTypes,
+                onTypeSelected: _viewModel.setTypeSelected,
+              ),
+            ],
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildCard(Event m) {
-    final card = EventCard(event: m);
-
-    final content = (!_viewModel.canModerate || _viewModel.initialLoading)
-        ? card
-        : SwipeToDelete(
-            id: m.id,
-            confirmTitle: '${widget.eventLabel} törlése'.capitalize(),
-            confirmMessage:
-                'A ${widget.eventLabel} időpont mindenki számára törlődik. (${m.subject.name})',
-            onDelete: () async {
-              await _viewModel.delete.execute(m.id);
-              if (!mounted) return;
-              final error = _viewModel.delete.errorMessage;
-              if (error != null) {
-                context.showMessage(error);
-              }
-            },
-            child: card,
-          );
-
-    return ClipRSuperellipse(
-      borderRadius: BorderRadius.circular(AppRadius.xxl),
-      child: content,
-    );
-  }
-
-  Widget _buildMessage(IconData icon, String message, {VoidCallback? onRetry}) {
-    return SliverFillRemaining(
-      hasScrollBody: false,
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xxl),
-        child: StateMessage(icon: icon, message: message, onRetry: onRetry),
-      ),
-    );
-  }
-
   Widget _buildListSliver(BuildContext context) {
-    if (!_viewModel.initialLoading && _viewModel.load.errorMessage != null) {
-      return _buildMessage(
-        Icons.cloud_off_rounded,
-        _viewModel.load.errorMessage!,
-        onRetry: () => _viewModel.load.execute(true),
-      );
-    }
-
     final items =
         _viewModel.initialLoading ? _skeletonItems : _viewModel.filteredEvents;
     final query = _viewModel.query.trim();
 
-    // If empty, but not initial load
     if (!_viewModel.initialLoading && items.isEmpty) {
-      // If query not empty = []
-      if (query.isNotEmpty) {
-        return _buildMessage(
-            Icons.search_off_rounded, 'Nincs találat erre: „$query”');
-      }
-      // If query empty && subject filter active = []
-      if (_viewModel.isSubjectFilterActive) {
-        return _buildMessage(Icons.event_available_rounded,
-            'Nincs közelgő ${widget.eventLabel} a tárgyaidból.');
-      }
-      // If query empty && no filter active = []
-      return _buildMessage(
-          Icons.event_available_rounded, 'Nincs közelgő ${widget.eventLabel}.');
+      final (icon, message) = switch ((
+        _viewModel.load.errorMessage,
+        query.isEmpty,
+        _viewModel.isSubjectFilterActive,
+      )) {
+        (final String error, _, _) => (Icons.cloud_off_rounded, error),
+        (null, false, _) => (
+            Icons.search_off_rounded,
+            'Nincs találat erre: „$query”'
+          ),
+        (null, true, true) => (
+            Icons.event_available_rounded,
+            'Nincs közelgő ${widget.eventLabel} a tárgyaidból.'
+          ),
+        (null, true, false) => (
+            Icons.event_available_rounded,
+            'Nincs közelgő ${widget.eventLabel}.'
+          ),
+      };
+      return SliverStateMessage(
+        icon: icon,
+        message: message,
+        onRetry: _viewModel.load.errorMessage == null
+            ? null
+            : () => _viewModel.load.execute(true),
+      );
     }
 
     return SliverPadding(
       padding: EdgeInsets.fromLTRB(
         AppSpacing.screenHorizontal,
-        AppSpacing.screenHorizontal,
+        0,
         AppSpacing.screenHorizontal,
         MediaQuery.paddingOf(context).bottom + 120,
       ),
@@ -273,7 +256,24 @@ class _EventsScreenState extends State<EventsScreen> {
         enabled: _viewModel.initialLoading,
         child: SliverList.separated(
           itemCount: items.length,
-          itemBuilder: (context, index) => _buildCard(items[index]),
+          itemBuilder: (context, index) {
+            final event = items[index];
+            return EventListCard(
+              confirmTitle: '${widget.eventLabel} törlése'.capitalize(),
+              confirmMessage:
+                  'A ${widget.eventLabel} időpont mindenki számára törlődik. (${event.subject.name})',
+              event: event,
+              deletable: _viewModel.canModerate && !_viewModel.initialLoading,
+              onDelete: () async {
+                await _viewModel.delete.execute(event.id);
+                if (!context.mounted) return;
+                final error = _viewModel.delete.errorMessage;
+                if (error != null) {
+                  context.showMessage(error);
+                }
+              },
+            );
+          },
           separatorBuilder: (context, index) =>
               const SizedBox(height: AppSpacing.md),
         ),
@@ -283,36 +283,31 @@ class _EventsScreenState extends State<EventsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     return ValueListenableBuilder<bool>(
       valueListenable: context.watch<ThemeRepository>().actionButtonAsFab,
       builder: (context, asFab, _) => ListenableBuilder(
           listenable: Listenable.merge([_viewModel, _viewModel.load]),
           builder: (context, _) {
-            return Scaffold(
-              body: RefreshIndicator.adaptive(
-                onRefresh: () => _viewModel.load.execute(true),
-                child: CustomScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(
-                    parent: BouncingScrollPhysics(),
+            final customScrollView = CustomScrollView(
+              slivers: [
+                _buildHeader(context, asFab: asFab),
+                if (isIOS)
+                  CupertinoSliverRefreshControl(
+                    onRefresh: () async {
+                      await _viewModel.load.execute(true);
+                    },
                   ),
-                  slivers: [
-                    _buildHeader(context, asFab: asFab),
-                    if (_viewModel.hasMySubjects)
-                      SliverToBoxAdapter(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.screenHorizontal),
-                          child: MySubjectsFilter(
-                            selected: _viewModel.onlyMySubjects,
-                            onSelected: _viewModel.setOnlyMySubjects,
-                            label: "Tárgyaim",
-                          ),
-                        ),
-                      ),
-                    _buildListSliver(context),
-                  ],
-                ),
-              ),
+                _buildListSliver(context),
+              ],
+            );
+            return Scaffold(
+              body: isIOS
+                  ? customScrollView
+                  : RefreshIndicator(
+                      onRefresh: () => _viewModel.load.execute(true),
+                      child: customScrollView,
+                    ),
               floatingActionButton: _viewModel.canModerate && asFab
                   ? buildBrandFab(
                       icon: Icons.add_rounded,

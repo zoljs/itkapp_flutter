@@ -48,9 +48,11 @@ class EventsViewModel extends ChangeNotifier {
       _authRepository.cachedUser?.canModerateMidterms ?? false;
   Set<String> _mySubjects = {};
   bool _onlyMySubjects = false;
+  final Set<EventType> _selectedTypes = {};
 
   // Getters
   UnmodifiableListView<Event> get events => UnmodifiableListView(_events);
+  UnmodifiableSetView<EventType> get types => UnmodifiableSetView(_types);
 
   String get query => _query;
   void setQuery(String value) {
@@ -69,6 +71,18 @@ class EventsViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  UnmodifiableSetView<EventType> get selectedTypes =>
+      UnmodifiableSetView(_selectedTypes);
+
+  void setTypeSelected(EventType type, bool selected) {
+    if (selected) {
+      _selectedTypes.add(type);
+    } else {
+      _selectedTypes.remove(type);
+    }
+    notifyListeners();
+  }
+
   bool get isSubjectFilterActive => _onlyMySubjects && hasMySubjects;
 
   List<Event> get filteredEvents {
@@ -81,7 +95,9 @@ class EventsViewModel extends ChangeNotifier {
           e.subject.name.toLowerCase().contains(q) ||
           e.subject.code.toLowerCase().contains(q) ||
           (e.location?.toLowerCase().contains(q) ?? false);
-      return passes && matchesSearch;
+      final matchesType =
+          _selectedTypes.isEmpty || _selectedTypes.contains(e.type);
+      return passes && matchesSearch && matchesType;
     }).toList();
   }
 

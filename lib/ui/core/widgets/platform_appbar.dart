@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class ShrinkingSliverAppBar extends StatelessWidget {
   const ShrinkingSliverAppBar({
     super.key,
-    this.preferredSizeChild,
+    this.bottom,
     this.actions,
     this.title,
     this.centerTitle = false,
@@ -12,7 +12,7 @@ class ShrinkingSliverAppBar extends StatelessWidget {
     this.centeredWidget,
   });
 
-  final Widget? preferredSizeChild;
+  final Widget? bottom;
   final List<Widget>? actions;
   final Widget? title;
   final Widget? flexibleSpaceBarTitle;
@@ -27,11 +27,12 @@ class ShrinkingSliverAppBar extends StatelessWidget {
     const expandedHeight = 260.0;
 
     return SliverAppBar(
-      stretch: true,
+      //stretch: true,
       centerTitle: centerTitle,
       title: title,
       expandedHeight: expandedHeight,
-      collapsedHeight: preferredSizeChild != null ? AppSpacing.searchBarHeight : kToolbarHeight,
+      collapsedHeight:
+          bottom != null ? AppSpacing.searchBarHeight : kToolbarHeight,
       floating: true,
       pinned: true,
       scrolledUnderElevation: 0,
@@ -39,12 +40,14 @@ class ShrinkingSliverAppBar extends StatelessWidget {
       actions: [
         ...?actions,
       ],
-      actionsPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
-      bottom: preferredSizeChild == null
+      actionsPadding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+      bottom: bottom == null
           ? null
           : PreferredSize(
-              preferredSize: const Size.fromHeight(AppSpacing.searchFieldHeight),
-              child: preferredSizeChild!,
+              preferredSize:
+                  const Size.fromHeight(AppSpacing.searchFieldHeight),
+              child: bottom!,
             ),
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [
@@ -56,9 +59,12 @@ class ShrinkingSliverAppBar extends StatelessWidget {
         background: LayoutBuilder(
           builder: (context, constraints) {
             // Standard searchbar height + half of card
-            final bottomHeight = preferredSizeChild == null ? 130.0 : AppSpacing.searchBarHeight + AppSpacing.mySiteCardHeight / 2;
+            final bottomHeight = bottom == null
+                ? 130.0
+                : AppSpacing.searchBarHeight + AppSpacing.mySiteCardHeight / 2;
 
-            final separatorHeight = (constraints.maxHeight - bottomHeight).clamp(0.0, double.infinity);
+            final separatorHeight = (constraints.maxHeight - bottomHeight)
+                .clamp(0.0, double.infinity);
 
             return Align(
               alignment: Alignment.topCenter,
