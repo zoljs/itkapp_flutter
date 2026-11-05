@@ -17,13 +17,13 @@ void main() {
     await flush();
 
     viewModel.setQuery('anna');
-    expect(viewModel.filteredUsers.map((u) => u.userId), [2]);
+    expect(viewModel.filteredItems.map((u) => u.userId), [2]);
 
     viewModel.setQuery('TESEL');
-    expect(viewModel.filteredUsers.map((u) => u.userId), [1]);
+    expect(viewModel.filteredItems.map((u) => u.userId), [1]);
 
     viewModel.setQuery('');
-    expect(viewModel.filteredUsers, hasLength(2));
+    expect(viewModel.filteredItems, hasLength(2));
     viewModel.dispose();
   });
 }

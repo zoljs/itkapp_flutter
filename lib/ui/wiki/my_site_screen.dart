@@ -146,7 +146,7 @@ class _MySiteScreenState extends State<MySiteScreen> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-        listenable: Listenable.merge([_viewModel, _viewModel.load]),
+        listenable: _viewModel,
         builder: (context, _) {
           final loading = _viewModel.load
               .running; // reminder for me, always calculate this inside the listenable

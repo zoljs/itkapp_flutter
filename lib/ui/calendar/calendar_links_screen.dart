@@ -91,12 +91,7 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
     final scheme = Theme.of(context).colorScheme;
 
     return ListenableBuilder(
-      listenable: Listenable.merge([
-        _viewModel,
-        _viewModel.load,
-        _viewModel.add,
-        _viewModel.delete,
-      ]),
+      listenable: _viewModel,
       builder: (context, v_) {
         final links =
             _viewModel.initialLoading ? _skeletonLinks : _viewModel.links;

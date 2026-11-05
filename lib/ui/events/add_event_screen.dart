@@ -174,7 +174,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-        listenable: Listenable.merge([_viewModel, _viewModel.save]),
+        listenable: _viewModel,
         builder: (context, _) {
           return Scaffold(
             backgroundColor: sheetBackgroundColor(context),

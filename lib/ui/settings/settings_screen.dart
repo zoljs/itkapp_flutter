@@ -119,7 +119,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 // Display
                 ListenableBuilder(
-                    listenable: Listenable.merge([_viewModel]),
+                    listenable: _viewModel,
                     builder: (context, _) {
                       return SettingsGroup(
                         header: 'Megjelenés',

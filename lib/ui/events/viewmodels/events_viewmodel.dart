@@ -21,9 +21,9 @@ class EventsViewModel extends ChangeNotifier {
         _eventRepository = eventRepository,
         _calendarRepository = calendarRepository,
         _types = types {
-    load = Command1<void, bool>(_load);
+    load = Command1<void, bool>(_load)..addListener(notifyListeners);
     unawaited(load.execute(false));
-    delete = Command1<void, int>(_delete);
+    delete = Command1<void, int>(_delete)..addListener(notifyListeners);
   }
 
   final EventRepository _eventRepository;

@@ -20,7 +20,7 @@ void main() {
       final viewModel = SubjectPickerViewModel(repository: subjects);
       await flush();
 
-      expect(viewModel.subjects, [analysis, programming]);
+      expect(viewModel.items, [analysis, programming]);
       viewModel.dispose();
     });
 
@@ -29,13 +29,13 @@ void main() {
       await flush();
 
       viewModel.setQuery('prog');
-      expect(viewModel.filteredSubjects, [programming]);
+      expect(viewModel.filteredItems, [programming]);
 
       viewModel.setQuery('itk101');
-      expect(viewModel.filteredSubjects, [analysis]);
+      expect(viewModel.filteredItems, [analysis]);
 
       viewModel.setQuery('');
-      expect(viewModel.filteredSubjects, hasLength(2));
+      expect(viewModel.filteredItems, hasLength(2));
       viewModel.dispose();
     });
   });

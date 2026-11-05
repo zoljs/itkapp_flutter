@@ -13,7 +13,7 @@ class LoginViewModel extends ChangeNotifier {
   LoginViewModel({
     required AuthRepository authRepository,
   }) : _authRepository = authRepository {
-    login = Command1<void, Credentials>(_login);
+    login = Command1<void, Credentials>(_login)..addListener(notifyListeners);
   }
 
   @override

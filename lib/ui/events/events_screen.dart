@@ -81,7 +81,7 @@ class _EventsScreenState extends State<EventsScreen> {
     return ValueListenableBuilder<bool>(
       valueListenable: context.watch<ThemeRepository>().actionButtonAsFab,
       builder: (context, asFab, _) => ListenableBuilder(
-          listenable: Listenable.merge([_viewModel, _viewModel.load]),
+          listenable: _viewModel,
           builder: (context, _) {
             final customScrollView = CustomScrollView(
               slivers: [

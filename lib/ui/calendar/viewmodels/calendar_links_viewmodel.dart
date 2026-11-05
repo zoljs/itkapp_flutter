@@ -20,9 +20,9 @@ class CalendarLinksViewmodel extends ChangeNotifier {
     required CalendarRepository calendarRepository,
   })  : _repository = repository,
         _calendarRepository = calendarRepository {
-    load = Command0<void>(_load);
-    add = Command0<void>(_add);
-    delete = Command1<void, int>(_delete);
+    load = Command0<void>(_load)..addListener(notifyListeners);
+    add = Command0<void>(_add)..addListener(notifyListeners);
+    delete = Command1<void, int>(_delete)..addListener(notifyListeners);
     unawaited(load.execute());
   }
 

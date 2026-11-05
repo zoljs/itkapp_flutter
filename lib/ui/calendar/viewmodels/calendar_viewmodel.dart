@@ -14,7 +14,7 @@ class CalendarViewModel extends ChangeNotifier {
   CalendarViewModel({
     required CalendarRepository repository,
   }) : _repository = repository {
-    load = Command1<void, bool>(_load);
+    load = Command1<void, bool>(_load)..addListener(notifyListeners);
     unawaited(load.execute(false));
   }
 

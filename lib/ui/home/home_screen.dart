@@ -92,8 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     header: 'Következő óra',
                     children: [
                       ListenableBuilder(
-                          listenable:
-                              Listenable.merge([_viewModel.load, _viewModel]),
+                          listenable: _viewModel,
                           builder: (context, _) {
                             return _buildNextEvent(scheme);
                           })

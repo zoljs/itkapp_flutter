@@ -52,7 +52,7 @@ class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
     final scheme = Theme.of(context).colorScheme;
 
     return ListenableBuilder(
-      listenable: _viewModel.check,
+      listenable: _viewModel,
       builder: (context, _) {
         final check = _viewModel.check;
 

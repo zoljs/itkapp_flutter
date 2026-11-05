@@ -57,7 +57,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
       extendBodyBehindAppBar: false,
       appBar: buildBrandAppBar(title: widget.viewModel.title, context: context),
       body: ListenableBuilder(
-        listenable: Listenable.merge([widget.viewModel, widget.viewModel.load]),
+        listenable: widget.viewModel,
         builder: (context, _) {
           final load = widget.viewModel.load;
           final items = widget.viewModel.items;

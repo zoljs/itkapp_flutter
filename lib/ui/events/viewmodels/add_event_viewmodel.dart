@@ -11,7 +11,7 @@ class AddEventViewModel extends ChangeNotifier {
     required Set<EventType> allowedTypes,
   })  : _repository = repository,
         _allowedTypes = allowedTypes {
-    save = Command0<void>(_save);
+    save = Command0<void>(_save)..addListener(notifyListeners);
   }
 
   // State

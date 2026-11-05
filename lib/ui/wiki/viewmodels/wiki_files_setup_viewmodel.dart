@@ -18,7 +18,7 @@ class WikiFilesSetupViewModel extends ChangeNotifier {
     required AuthRepository authRepository,
   })  : _authRepository = authRepository,
         _wikiFilesRepository = wikiFilesRepository {
-    check = Command0<List<WikiFile>>(_check);
+    check = Command0<List<WikiFile>>(_check)..addListener(notifyListeners);
   }
 
   // State

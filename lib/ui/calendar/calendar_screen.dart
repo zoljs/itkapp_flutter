@@ -115,7 +115,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             ),
                             // Error message
                             ListenableBuilder(
-                              listenable: _viewModel.load,
+                              listenable: _viewModel,
                               builder: (context, _) =>
                                   switch (_viewModel.load.errorMessage) {
                                 null => const SizedBox.shrink(),

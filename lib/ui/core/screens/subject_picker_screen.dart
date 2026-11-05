@@ -47,7 +47,7 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
   Widget _buildList(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final loading = _viewModel.load.running;
-    final subjects = loading ? _skeletonSubjects : _viewModel.filteredSubjects;
+    final subjects = loading ? _skeletonSubjects : _viewModel.filteredItems;
 
     if (_viewModel.load.errorMessage != null) {
       return StateMessage(
@@ -93,7 +93,7 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
         children: [
           Positioned.fill(
               child: ListenableBuilder(
-                  listenable: Listenable.merge([_viewModel, _viewModel.load]),
+                  listenable: _viewModel,
                   builder: (context, _) {
                     return _buildList(context);
                   })),

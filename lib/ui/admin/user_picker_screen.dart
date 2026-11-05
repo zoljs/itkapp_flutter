@@ -60,7 +60,7 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
   Widget _buildList(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final loading = _viewModel.load.running;
-    final users = loading ? _skeletonUsers : _viewModel.filteredUsers;
+    final users = loading ? _skeletonUsers : _viewModel.filteredItems;
 
     if (_viewModel.load.errorMessage != null) {
       return StateMessage(

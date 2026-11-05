@@ -82,8 +82,7 @@ class _WikiScreenState extends State<WikiScreen> {
 
     return Scaffold(
       body: ListenableBuilder(
-          listenable: Listenable.merge(
-              [_viewModel, _viewModel.load, _viewModel.checkFiles]),
+          listenable: _viewModel,
           builder: (context, _) {
             final customScrollView = CustomScrollView(
               slivers: [

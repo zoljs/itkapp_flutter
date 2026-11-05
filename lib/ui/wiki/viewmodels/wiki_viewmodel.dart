@@ -17,8 +17,9 @@ class WikiViewModel extends ChangeNotifier {
         _wikiFilesRepository = wikiFilesRepository,
         _sites = wikiSitesRepository.cachedSites,
         _mySite = wikiSitesRepository.cachedMySite {
-    load = Command1<void, bool>(_load);
-    checkFiles = Command1<List<WikiFile>, String>(_checkFiles);
+    load = Command1<void, bool>(_load)..addListener(notifyListeners);
+    checkFiles = Command1<List<WikiFile>, String>(_checkFiles)
+      ..addListener(notifyListeners);
     unawaited(load.execute(false));
   }
 

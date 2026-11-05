@@ -235,7 +235,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           const SizedBox(height: AppSpacing.xxxl),
                           ListenableBuilder(
-                              listenable: _viewModel.login,
+                              listenable: _viewModel,
                               builder: (context, _) {
                                 return BrandButton(
                                   height: 56,

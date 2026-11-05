@@ -16,7 +16,7 @@ class WikiFilesViewModel extends ChangeNotifier {
   })  : _repository = repository,
         _dir = dir,
         _user = user {
-    load = Command0<void>(_load);
+    load = Command0<void>(_load)..addListener(notifyListeners);
     unawaited(load.execute());
   }
 

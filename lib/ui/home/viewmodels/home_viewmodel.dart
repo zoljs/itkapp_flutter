@@ -16,7 +16,7 @@ class HomeViewModel extends ChangeNotifier {
   })  : _authRepository = authRepository,
         _calendarRepository = calendarRepository,
         _absolutoriumRepository = absolutoriumRepository {
-    load = Command1<void, bool>(_load);
+    load = Command1<void, bool>(_load)..addListener(notifyListeners);
     _absolutoriumRepository.progress.addListener(notifyListeners);
     unawaited(load.execute(false));
   }

@@ -60,7 +60,7 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   Widget _buildList(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final loading = _viewModel.load.running;
-    final subjects = loading ? _skeletonSubjects : _viewModel.filteredSubjects;
+    final subjects = loading ? _skeletonSubjects : _viewModel.filteredItems;
 
     if (_viewModel.load.errorMessage != null) {
       return StateMessage(

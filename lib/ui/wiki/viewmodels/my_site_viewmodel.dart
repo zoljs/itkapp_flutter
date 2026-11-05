@@ -29,10 +29,10 @@ class MySiteViewModel extends ChangeNotifier {
     }
 
     // Still refresh from the server; _load overwrites the cached values.
-    load = Command0<void>(_load);
+    load = Command0<void>(_load)..addListener(notifyListeners);
     unawaited(load.execute());
-    save = Command0<void>(_save);
-    delete = Command0<void>(_delete);
+    save = Command0<void>(_save)..addListener(notifyListeners);
+    delete = Command0<void>(_delete)..addListener(notifyListeners);
   }
 
   final WikiSitesRepository _wikiSitesRepository;

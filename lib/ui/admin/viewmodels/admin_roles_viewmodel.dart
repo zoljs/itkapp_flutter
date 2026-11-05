@@ -10,10 +10,10 @@ import 'package:itk_app/utils/result.dart';
 class AdminRolesViewModel extends ChangeNotifier {
   AdminRolesViewModel({required AdminRolesRepository repository})
       : _repository = repository {
-    load = Command0<void>(_load);
+    load = Command0<void>(_load)..addListener(notifyListeners);
     unawaited(load.execute());
-    assign = Command1<void, int>(_assign);
-    revoke = Command1<void, int>(_revoke);
+    assign = Command1<void, int>(_assign)..addListener(notifyListeners);
+    revoke = Command1<void, int>(_revoke)..addListener(notifyListeners);
   }
 
   final AdminRolesRepository _repository;

@@ -154,7 +154,7 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
           onAction: asFab ? null : _openUserPicker,
         ),
         body: ListenableBuilder(
-          listenable: Listenable.merge([_viewModel, _viewModel.load]),
+          listenable: _viewModel,
           builder: (context, _) => _buildBody(context),
         ),
         floatingActionButton: asFab
