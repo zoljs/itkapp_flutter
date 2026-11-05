@@ -29,15 +29,18 @@ class AppSearchField extends StatelessWidget {
           contentPadding: EdgeInsets.zero,
           hintText: hintText,
           prefixIcon: const Icon(Icons.search_rounded),
-          suffixIcon: searchController.text.isEmpty
-              ? null
-              : IconButton(
-                  icon: const Icon(Icons.close_rounded),
-                  onPressed: () {
-                    searchController.clear();
-                    onChanged('');
-                  },
-                ),
+          suffixIcon: ValueListenableBuilder(
+            valueListenable: searchController,
+            builder: (context, value, _) => searchController.text.isEmpty
+                ? const SizedBox.shrink()
+                : IconButton(
+                    icon: const Icon(Icons.close_rounded),
+                    onPressed: () {
+                      searchController.clear();
+                      onChanged('');
+                    },
+                  ),
+          ),
         ),
       ),
     );

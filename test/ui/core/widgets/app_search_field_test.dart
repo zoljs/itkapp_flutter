@@ -59,4 +59,31 @@ void main() {
     expect(controller.text, isEmpty);
     expect(changes, ['']);
   });
+
+
+  testWidgets(
+      'gépelésre megjelenik a törlés gomb, a szülő újraépítése nélkül',
+      (tester) async {
+    final controller = TextEditingController();
+    addTearDown(controller.dispose);
+    // onChanged does nothing, so nothing rebuilds the parent.
+    await _pump(tester, controller: controller, onChanged: (_) {});
+    expect(find.byIcon(Icons.close_rounded), findsNothing);
+
+    await tester.enterText(find.byType(TextField), 'anal');
+    await tester.pump();
+
+    expect(find.byIcon(Icons.close_rounded), findsOneWidget);
+  });
+
+  testWidgets('a törlés gomb eltűnik, ha kiürül a mező', (tester) async {
+    final controller = TextEditingController(text: 'anal');
+    addTearDown(controller.dispose);
+    await _pump(tester, controller: controller, onChanged: (_) {});
+
+    await tester.tap(find.byIcon(Icons.close_rounded));
+    await tester.pump();
+
+    expect(find.byIcon(Icons.close_rounded), findsNothing);
+  });
 }
