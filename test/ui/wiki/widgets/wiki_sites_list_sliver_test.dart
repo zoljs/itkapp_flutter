@@ -23,14 +23,11 @@ Future<void> _pump(
   String? checkingLogin,
   ValueChanged<UserSite>? onSiteTap,
 }) {
-  final searchController = TextEditingController();
-  addTearDown(searchController.dispose);
   return tester.pumpWidget(MaterialApp(
     home: Scaffold(
       body: CustomScrollView(
         slivers: [
           WikiSitesListSliver(
-            searchController: searchController,
             sites: sites,
             loading: loading,
             query: query,

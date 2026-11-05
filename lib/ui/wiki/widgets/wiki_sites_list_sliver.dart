@@ -8,7 +8,6 @@ import 'package:skeletonizer/skeletonizer.dart';
 class WikiSitesListSliver extends StatelessWidget {
   const WikiSitesListSliver({
     super.key,
-    required this.searchController,
     required this.loading,
     this.loadError,
     this.checkingLogin,
@@ -18,7 +17,6 @@ class WikiSitesListSliver extends StatelessWidget {
     required this.onSiteTap,
   });
 
-  final TextEditingController searchController;
   final bool loading; // _viewModel.sitesInitialLoading;
   final String? loadError; // _viewModel.load.errorMessage
   final String? checkingLogin;

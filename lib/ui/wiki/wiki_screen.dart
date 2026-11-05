@@ -123,7 +123,6 @@ class _WikiScreenState extends State<WikiScreen> {
                     },
                   ),
                 WikiSitesListSliver(
-                  searchController: _searchController,
                   loading: _viewModel.sitesInitialLoading,
                   loadError: _viewModel.load.errorMessage,
                   query: _viewModel.query.trim(),
