@@ -6,7 +6,7 @@ import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/home/viewmodels/home_viewmodel.dart';
-import 'package:itk_app/ui/home/widgets/event_card.dart';
+import 'package:itk_app/ui/home/widgets/next_class_card.dart';
 import 'package:itk_app/ui/home/widgets/home_screen_app_bar.dart';
 import 'package:itk_app/ui/home/widgets/quick_links_grid.dart';
 import 'package:itk_app/utils/open_link.dart';
@@ -182,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> {
       content = Skeletonizer(
         enabled: _viewModel.load.running,
         child:
-            EventCard(e: e, scheme: scheme, day: day, muted: muted, time: time),
+            NextClassCard(e: e, scheme: scheme, day: day, muted: muted, time: time),
       );
     }
 

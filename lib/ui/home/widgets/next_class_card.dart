@@ -3,8 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
-class EventCard extends StatelessWidget {
-  const EventCard({
+class NextClassCard extends StatelessWidget {
+  const NextClassCard({
     super.key,
     required this.e,
     required this.scheme,
