@@ -19,6 +19,7 @@ class EventsListSliver extends StatelessWidget {
     required this.canDelete,
     required this.onRetry,
     required this.onDelete,
+    required this.timeRangeActive,
   });
 
   final List<Event> events;
@@ -30,6 +31,7 @@ class EventsListSliver extends StatelessWidget {
   final bool canDelete;
   final VoidCallback onRetry;
   final Future<void> Function(Event event) onDelete;
+  final bool timeRangeActive;
 
   List<Event> get _skeletonItems => List.generate(
         4,
@@ -50,23 +52,28 @@ class EventsListSliver extends StatelessWidget {
     final items = loading ? _skeletonItems : events;
 
     if (!loading && items.isEmpty) {
+      final scope = switch ((
+        subjectFilterActive,
+        timeRangeActive,
+      )) {
+        (true, true) => ' a tárgyaidból a kiválasztott időszakban',
+        (true, false) => ' a tárgyaidból',
+        (false, true) => ' a kiválasztott időszakban',
+        (false, false) => '',
+      };
+
       final (icon, message) = switch ((
         loadError,
         query.isEmpty,
-        subjectFilterActive,
       )) {
-        (final String error, _, _) => (Icons.cloud_off_rounded, error),
-        (null, false, _) => (
+        (final String error, _) => (Icons.cloud_off_rounded, error),
+        (null, false) => (
             Icons.search_off_rounded,
             'Nincs találat erre: „$query”'
           ),
-        (null, true, true) => (
+        (null, true) => (
             Icons.event_available_rounded,
-            'Nincs közelgő $eventLabel a tárgyaidból.'
-          ),
-        (null, true, false) => (
-            Icons.event_available_rounded,
-            'Nincs közelgő $eventLabel.'
+            'Nincs közelgő $eventLabel$scope.'
           ),
       };
       return SliverStateMessage(

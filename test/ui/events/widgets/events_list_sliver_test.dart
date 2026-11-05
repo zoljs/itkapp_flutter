@@ -7,6 +7,7 @@ Widget _wrap({
   String query = '',
   String? loadError,
   bool subjectFilterActive = false,
+  bool timeRangeActive = false,
 }) =>
     MaterialApp(
       home: Scaffold(
@@ -18,6 +19,7 @@ Widget _wrap({
               query: query,
               loadError: loadError,
               subjectFilterActive: subjectFilterActive,
+              timeRangeActive: timeRangeActive,
               eventLabel: 'zh',
               canDelete: false,
               onRetry: () {},
@@ -59,6 +61,44 @@ void main() {
       await tester.pumpWidget(_wrap(subjectFilterActive: true));
 
       expect(find.textContaining('a tárgyaidból'), findsOneWidget);
+    });
+
+    testWidgets('icons: error, search and empty each have their own',
+        (tester) async {
+      await tester.pumpWidget(_wrap(loadError: 'Hiba történt'));
+      expect(_message(tester).icon, Icons.cloud_off_rounded);
+
+      await tester.pumpWidget(_wrap(query: 'abc'));
+      expect(_message(tester).icon, Icons.search_off_rounded);
+
+      await tester.pumpWidget(_wrap());
+      expect(_message(tester).icon, Icons.event_available_rounded);
+    });
+
+    testWidgets('time range active names the range', (tester) async {
+      await tester.pumpWidget(_wrap(timeRangeActive: true));
+
+      expect(find.text('Nincs közelgő zh a kiválasztott időszakban.'),
+          findsOneWidget);
+      expect(_message(tester).onRetry, isNull);
+    });
+
+    testWidgets('subject filter and time range both named', (tester) async {
+      await tester.pumpWidget(
+          _wrap(subjectFilterActive: true, timeRangeActive: true));
+
+      expect(
+          find.text(
+              'Nincs közelgő zh a tárgyaidból a kiválasztott időszakban.'),
+          findsOneWidget);
+    });
+
+    testWidgets('query wins over the filter flags', (tester) async {
+      await tester.pumpWidget(_wrap(
+          query: 'abc', subjectFilterActive: true, timeRangeActive: true));
+
+      expect(find.textContaining('Nincs találat erre'), findsOneWidget);
+      expect(find.textContaining('kiválasztott időszakban'), findsNothing);
     });
 
     testWidgets('plain empty state', (tester) async {

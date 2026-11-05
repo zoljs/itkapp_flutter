@@ -117,6 +117,7 @@ class _EventsScreenState extends State<EventsScreen> {
                   canDelete: _viewModel.canModerate,
                   onRetry: () => _viewModel.load.execute(true),
                   onDelete: _deleteEvent,
+                  timeRangeActive: _viewModel.selectedTimeRange != null,
                 ),
               ],
             );
