@@ -7,8 +7,7 @@ import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/widgets/app_search_field.dart';
-import 'package:itk_app/ui/core/widgets/sliver_state_message.dart';
-import 'package:itk_app/ui/wiki/widgets/site_list_card.dart';
+import 'package:itk_app/ui/wiki/widgets/wiki_sites_list_sliver.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -123,79 +122,17 @@ class _WikiScreenState extends State<WikiScreen> {
                       await _viewModel.load.execute(true);
                     },
                   ),
-                Builder(
-                  builder: (context) {
-                    final displaySites = _viewModel.sitesInitialLoading
-                        ? List.filled(
-                            4,
-                            UserSite(
-                              claimed: true,
-                              name: BoneMock.name,
-                              url: 'https://example.com/${BoneMock.words(1)}',
-                              tags: [
-                                BoneMock.words(1),
-                                BoneMock.words(1),
-                              ],
-                            ),
-                          )
-                        : _viewModel.filteredSites;
-
-                    if (!_viewModel.sitesInitialLoading &&
-                        displaySites.isEmpty) {
-                      final query = _searchController.text.trim();
-
-                      final (icon, message) = switch ((
-                        _viewModel.load.errorMessage,
-                        query.isEmpty
-                      )) {
-                        (final String error, _) => (
-                            Icons.cloud_off_rounded,
-                            error
-                          ),
-                        (null, true) => (
-                            Icons.hourglass_empty,
-                            'Még nincs oldal.'
-                          ),
-                        (null, false) => (
-                            Icons.search_off_rounded,
-                            'Nincs találat erre: „$query”'
-                          ),
-                      };
-
-                      return SliverStateMessage(
-                        icon: icon,
-                        message: message,
-                        onRetry: _viewModel.load.errorMessage == null
-                            ? null
-                            : () => _viewModel.load.execute(true),
-                      );
-                    }
-
-                    return SliverPadding(
-                      padding: const EdgeInsets.fromLTRB(
-                          AppSpacing.screenHorizontal,
-                          0,
-                          AppSpacing.screenHorizontal,
-                          AppSpacing.bottomNavClearance),
-                      sliver: Skeletonizer.sliver(
-                        enabled: _viewModel.sitesInitialLoading,
-                        child: SliverList.separated(
-                          itemCount: displaySites.length,
-                          itemBuilder: (context, index) {
-                            final site = displaySites[index];
-                            return SiteListCard(
-                              site: site,
-                              checking: _viewModel.checkFiles.running &&
-                                  _viewModel.checkingLogin == site.login,
-                              onTap: () => unawaited(_onSiteTap(site)),
-                            );
-                          },
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(height: AppSpacing.lg),
-                        ),
-                      ),
-                    );
-                  },
+                WikiSitesListSliver(
+                  searchController: _searchController,
+                  loading: _viewModel.sitesInitialLoading,
+                  loadError: _viewModel.load.errorMessage,
+                  query: _viewModel.query.trim(),
+                  sites: _viewModel.filteredSites,
+                  onRetry: () => _viewModel.load.execute(true),
+                  onSiteTap: (site) => unawaited(_onSiteTap(site)),
+                  checkingLogin: _viewModel.checkFiles.running
+                      ? _viewModel.checkingLogin
+                      : null,
                 ),
               ],
             );
