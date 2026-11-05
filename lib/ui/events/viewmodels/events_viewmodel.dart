@@ -95,6 +95,8 @@ class EventsViewModel extends ChangeNotifier {
 
   List<Event> get filteredEvents {
     final q = _query.trim().toLowerCase();
+    final now = DateTime.now();
+    final range = _selectedTimeRange;
 
     return events.where((e) {
       final passes =
@@ -105,8 +107,7 @@ class EventsViewModel extends ChangeNotifier {
           (e.location?.toLowerCase().contains(q) ?? false);
       final matchesType =
           _selectedTypes.isEmpty || _selectedTypes.contains(e.type);
-      final matchesTime = selectedTimeRange == null ||
-          selectedTimeRange!.contains(e.startsAt, now: DateTime.now());
+      final matchesTime = range == null || range.contains(e.startsAt, now: now);
       return passes && matchesSearch && matchesType && matchesTime;
     }).toList();
   }
