@@ -10,14 +10,12 @@ import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
-import 'package:itk_app/ui/core/widgets/app_search_field.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/sliver_state_message.dart';
 import 'package:itk_app/ui/events/add_event_screen.dart';
 import 'package:itk_app/ui/events/viewmodels/events_viewmodel.dart';
-import 'package:itk_app/ui/events/widgets/event_filter_chips.dart';
 import 'package:itk_app/ui/events/widgets/event_list_card.dart';
-import 'package:itk_app/ui/events/widgets/events_header_background.dart';
+import 'package:itk_app/ui/events/widgets/events_header.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/string_extensions.dart';
 import 'package:provider/provider.dart';
@@ -42,11 +40,6 @@ class EventsScreen extends StatefulWidget {
 class _EventsScreenState extends State<EventsScreen> {
   final _searchController = TextEditingController();
   late final EventsViewModel _viewModel;
-
-  double _searchAreaHeight(bool showChips) =>
-      AppSpacing.md * 2 +
-      AppSpacing.searchFieldHeight +
-      (showChips ? AppSpacing.md + AppSpacing.chipHeight : 0);
 
   @override
   void initState() {
@@ -89,74 +82,6 @@ class _EventsScreenState extends State<EventsScreen> {
       ),
     );
     await _viewModel.load.execute(true);
-  }
-
-  Widget _buildHeader(BuildContext context, {required bool asFab}) {
-    final scheme = Theme.of(context).colorScheme;
-    final showChips = _viewModel.hasMySubjects || _viewModel.types.length > 1;
-
-    return SliverAppBar(
-      pinned: true,
-      expandedHeight: 320,
-      backgroundColor: scheme.surface,
-      scrolledUnderElevation: 0,
-      title: Text(widget.title),
-      leading: buildBrandLeading(context),
-      leadingWidth: AppSpacing.minimumAndroid + 2 * AppSpacing.sm,
-      actionsPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
-      actions: [
-        if (_viewModel.canModerate && !asFab)
-          buildBrandAction(
-            actionIcon: Icons.add_rounded,
-            label: 'Új ${widget.eventLabel} felvétele',
-            onAction: () => _openAddEvent(),
-          ),
-      ],
-      flexibleSpace: FlexibleSpaceBar(
-        stretchModes: const [StretchMode.zoomBackground],
-        background:
-            EventsHeaderBackground(bottomInset: _searchAreaHeight(showChips)),
-      ),
-      bottom: _buildSearch(showChips),
-    );
-  }
-
-  PreferredSizeWidget _buildSearch(bool showChips) {
-    final scheme = Theme.of(context).colorScheme;
-    return PreferredSize(
-      preferredSize: Size.fromHeight(_searchAreaHeight(showChips)),
-      child: Container(
-        height: _searchAreaHeight(showChips),
-        color: scheme.surface,
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.screenHorizontal,
-          AppSpacing.md,
-          AppSpacing.screenHorizontal,
-          AppSpacing.md,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AppSearchField(
-              searchController: _searchController,
-              onChanged: _viewModel.setQuery,
-              hintText: 'Tárgy neve vagy kódja...',
-            ),
-            if (showChips) ...[
-              const SizedBox(height: AppSpacing.md),
-              EventFilterChips(
-                showMySubjects: _viewModel.hasMySubjects,
-                onlyMySubjects: _viewModel.onlyMySubjects,
-                onMySubjectsSelected: _viewModel.setOnlyMySubjects,
-                types: _viewModel.types,
-                selectedTypes: _viewModel.selectedTypes,
-                onTypeSelected: _viewModel.setTypeSelected,
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
   }
 
   Widget _buildListSliver(BuildContext context) {
@@ -232,6 +157,7 @@ class _EventsScreenState extends State<EventsScreen> {
   @override
   Widget build(BuildContext context) {
     final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
     return ValueListenableBuilder<bool>(
       valueListenable: context.watch<ThemeRepository>().actionButtonAsFab,
       builder: (context, asFab, _) => ListenableBuilder(
@@ -239,7 +165,20 @@ class _EventsScreenState extends State<EventsScreen> {
           builder: (context, _) {
             final customScrollView = CustomScrollView(
               slivers: [
-                _buildHeader(context, asFab: asFab),
+                EventsHeader(
+                  title: widget.title,
+                  eventLabel: widget.eventLabel,
+                  canModerate: _viewModel.canModerate && !asFab,
+                  onAction: _openAddEvent,
+                  showMySubjects: _viewModel.hasMySubjects,
+                  types: _viewModel.types,
+                  searchController: _searchController,
+                  onQueryChanged: _viewModel.setQuery,
+                  onlyMySubjects: _viewModel.onlyMySubjects,
+                  onMySubjectsSelected: _viewModel.setOnlyMySubjects,
+                  selectedTypes: _viewModel.selectedTypes,
+                  onTypeSelected: _viewModel.setTypeSelected,
+                ),
                 if (isIOS)
                   CupertinoSliverRefreshControl(
                     onRefresh: () async {
