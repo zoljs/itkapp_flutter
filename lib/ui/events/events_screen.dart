@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
@@ -10,17 +9,15 @@ import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/domain/models/subject.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
-import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/app_search_field.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
-import 'package:itk_app/ui/core/widgets/circles_painter.dart';
 import 'package:itk_app/ui/core/widgets/sliver_state_message.dart';
 import 'package:itk_app/ui/events/add_event_screen.dart';
 import 'package:itk_app/ui/events/viewmodels/events_viewmodel.dart';
 import 'package:itk_app/ui/events/widgets/event_filter_chips.dart';
 import 'package:itk_app/ui/events/widgets/event_list_card.dart';
-import 'package:itk_app/ui/events/widgets/weekstrip.dart';
+import 'package:itk_app/ui/events/widgets/events_header_background.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:itk_app/utils/string_extensions.dart';
 import 'package:provider/provider.dart';
@@ -64,11 +61,6 @@ class _EventsScreenState extends State<EventsScreen> {
     _searchController.dispose();
     _viewModel.dispose();
     super.dispose();
-  }
-
-  String get _todayLabel {
-    final n = DateTime.now();
-    return '${toBeginningOfSentenceCase(DateFormat('EEEE', 'hu').format(n))}, ${DateFormat('MMM d.', 'hu').format(n)}';
   }
 
   List<Event> get _skeletonItems => List.generate(
@@ -121,54 +113,8 @@ class _EventsScreenState extends State<EventsScreen> {
       ],
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [StretchMode.zoomBackground],
-        background: Stack(
-          fit: StackFit.expand,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(bottom: _bottomPadding(showChips)),
-              child: ColoredBox(color: scheme.primaryContainer),
-            ),
-            Padding(
-              padding: EdgeInsets.only(bottom: _bottomPadding(showChips)),
-              child: ClipRect(
-                child: CustomPaint(
-                  painter: CirclesPainter([
-                    scheme.secondary.withValues(alpha: 0.55),
-                    itkDark.withValues(alpha: 0.44),
-                    itkPrimary.withValues(alpha: 0.66),
-                  ]),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                0,
-                AppSpacing.lg,
-                AppSpacing.searchFieldHeight +
-                    AppSpacing.md * 3 +
-                    (showChips ? 48 : 0) +
-                    AppSpacing.screenHorizontal,
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    _todayLabel,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.w700,
-                      color: scheme.onPrimary,
-                    ),
-                  ),
-                  const SizedBox(height: AppSpacing.md),
-                  const WeekStrip(),
-                ],
-              ),
-            ),
-          ],
-        ),
+        background:
+            EventsHeaderBackground(bottomInset: _bottomPadding(showChips)),
       ),
       bottom: _buildSearch(showChips),
     );
