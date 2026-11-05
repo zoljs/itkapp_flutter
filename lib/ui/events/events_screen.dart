@@ -99,7 +99,7 @@ class _EventsScreenState extends State<EventsScreen> {
                   selectedTypes: _viewModel.selectedTypes,
                   onTypeSelected: _viewModel.setTypeSelected,
                   selectedTimeRange: _viewModel.selectedTimeRange,
-                  onChangedTimeRange: _viewModel.setSelectedTimeRange,
+                  onTimeRangeChanged: _viewModel.setSelectedTimeRange,
                 ),
                 if (isIOS)
                   CupertinoSliverRefreshControl(

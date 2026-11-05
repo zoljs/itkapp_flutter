@@ -13,7 +13,7 @@ Future<void> _pump(
   Set<EventType> selectedTypes = const {},
   void Function(EventType, bool)? onTypeSelected,
   TimeRange? selectedTimeRange,
-  ValueChanged<TimeRange>? onChangedTimeRange,
+  ValueChanged<TimeRange>? onTimeRangeChanged,
 }) =>
     tester.pumpWidget(MaterialApp(
       home: Scaffold(
@@ -25,7 +25,7 @@ Future<void> _pump(
           selectedTypes: selectedTypes,
           onTypeSelected: onTypeSelected ?? (_, __) {},
           selectedTimeRange: selectedTimeRange,
-          onChangedTimeRange: onChangedTimeRange ?? (_) {},
+          onTimeRangeChanged: onTimeRangeChanged ?? (_) {},
         ),
       ),
     ));
@@ -108,7 +108,7 @@ void main() {
 
   testWidgets('időszak chip koppintás az időszakot adja át', (tester) async {
     final calls = <TimeRange>[];
-    await _pump(tester, onChangedTimeRange: calls.add);
+    await _pump(tester, onTimeRangeChanged: calls.add);
 
     await tester.tap(find.text(TimeRange.thisWeek.label));
 

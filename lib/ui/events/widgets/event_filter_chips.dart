@@ -15,7 +15,7 @@ class EventFilterChips extends StatelessWidget {
     required this.selectedTypes,
     required this.onTypeSelected,
     this.selectedTimeRange,
-    required this.onChangedTimeRange,
+    required this.onTimeRangeChanged,
   });
 
   final bool showMySubjects;
@@ -27,7 +27,7 @@ class EventFilterChips extends StatelessWidget {
   final Set<EventType> selectedTypes;
   final ValueChangedOf<EventType, bool> onTypeSelected;
   final TimeRange? selectedTimeRange;
-  final ValueChanged<TimeRange> onChangedTimeRange;
+  final ValueChanged<TimeRange> onTimeRangeChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,7 @@ class EventFilterChips extends StatelessWidget {
           for (final range in TimeRange.values)
             AppFilterChip(
               selected: range == selectedTimeRange,
-              onSelected: (_) => onChangedTimeRange(range),
+              onSelected: (_) => onTimeRangeChanged(range),
               label: range.label,
             ),
           if (types.length > 1)

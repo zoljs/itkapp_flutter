@@ -24,7 +24,7 @@ class EventsHeader extends StatelessWidget {
     required this.selectedTypes,
     required this.onTypeSelected,
     this.selectedTimeRange,
-    required this.onChangedTimeRange,
+    required this.onTimeRangeChanged,
   });
 
   final String title;
@@ -40,7 +40,7 @@ class EventsHeader extends StatelessWidget {
   final Set<EventType> selectedTypes;
   final ValueChangedOf<EventType, bool> onTypeSelected;
   final TimeRange? selectedTimeRange;
-  final ValueChanged<TimeRange> onChangedTimeRange;
+  final ValueChanged<TimeRange> onTimeRangeChanged;
 
   double get _searchAreaHeight =>
       AppSpacing.md * 2 +
@@ -100,7 +100,7 @@ class EventsHeader extends StatelessWidget {
                 selectedTypes: selectedTypes,
                 onTypeSelected: onTypeSelected,
                 selectedTimeRange: selectedTimeRange,
-                onChangedTimeRange: onChangedTimeRange,
+                onTimeRangeChanged: onTimeRangeChanged,
               ),
             ],
           ),
