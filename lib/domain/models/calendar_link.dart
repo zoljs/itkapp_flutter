@@ -51,11 +51,14 @@ class CalendarLink {
 
     final rawLastSyncedAt = json['lastSyncedAt'];
     if (rawLastSyncedAt is! String?) {
-      throw const FormatException('Egy naptárnak hibás az utolsó frissítési ideje.');
+      throw const FormatException(
+          'Egy naptárnak hibás az utolsó frissítési ideje.');
     }
-    final lastSyncedAt = rawLastSyncedAt != null ? DateTime.tryParse(rawLastSyncedAt) : null;
+    final lastSyncedAt =
+        rawLastSyncedAt != null ? DateTime.tryParse(rawLastSyncedAt) : null;
     if (rawLastSyncedAt != null && lastSyncedAt == null) {
-      throw const FormatException('Egy naptárnak hibás az utolsó frissítési ideje.');
+      throw const FormatException(
+          'Egy naptárnak hibás az utolsó frissítési ideje.');
     }
 
     final lastError = json['lastError'];

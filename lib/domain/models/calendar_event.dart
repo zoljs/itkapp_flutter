@@ -54,7 +54,12 @@ class CalendarEvent {
   /// We filter with where to only include VEVENT items, and use tryParseIcsEvent to skip events that cannot be parsed.
   /// Since that one returns null on failure, we can use nonNulls to filter them out.
   static List<CalendarEvent> parseIcs(String ics) {
-    return ICalendar.fromString(ics).data.where((item) => item['type'] == 'VEVENT').map(tryParseIcsEvent).nonNulls.toList();
+    return ICalendar.fromString(ics)
+        .data
+        .where((item) => item['type'] == 'VEVENT')
+        .map(tryParseIcsEvent)
+        .nonNulls
+        .toList();
   }
 
   static CalendarEvent? tryParseIcsEvent(Map<String, dynamic> json) {
@@ -77,7 +82,8 @@ class CalendarEvent {
     }
   }
 
-  static DateTime? _readIcsDate(Object? value) => value is IcsDateTime ? value.toDateTime() : null;
+  static DateTime? _readIcsDate(Object? value) =>
+      value is IcsDateTime ? value.toDateTime() : null;
 
   static String? subjectFromTitle(String title) {
     final i = title.lastIndexOf(' (');

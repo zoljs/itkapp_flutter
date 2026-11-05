@@ -20,7 +20,8 @@ PreferredSizeWidget buildBrandAppBar({
       child: ColoredBox(
         color: Colors.transparent,
         child: Padding(
-          padding: const EdgeInsets.only(left: AppSpacing.sm, right: AppSpacing.sm),
+          padding:
+              const EdgeInsets.only(left: AppSpacing.sm, right: AppSpacing.sm),
           child: NavigationToolbar(
             centerMiddle: true,
             middleSpacing: AppSpacing.md,
@@ -32,7 +33,12 @@ PreferredSizeWidget buildBrandAppBar({
               style: theme.textTheme.titleMedium,
             ),
             // comes in handy when displaying the button conditionally
-            trailing: onAction == null ? null : buildBrandAction(onAction: actionEnabled ? onAction : null, label: actionLabel, actionIcon: actionIcon),
+            trailing: onAction == null
+                ? null
+                : buildBrandAction(
+                    onAction: actionEnabled ? onAction : null,
+                    label: actionLabel,
+                    actionIcon: actionIcon),
           ),
         ),
       ),
@@ -68,7 +74,9 @@ Widget buildBrandLeading(
       semanticLabel: closesSheet ? "Mégse" : "Vissza",
       backgroundColor: scheme.surfaceContainerHigh,
       iconColor: scheme.onSurface,
-      onPressed: closesSheet ? () => closeSheet(context) : () => Navigator.pop(context),
+      onPressed: closesSheet
+          ? () => closeSheet(context)
+          : () => Navigator.pop(context),
     ),
   );
 }

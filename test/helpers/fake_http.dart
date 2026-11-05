@@ -9,7 +9,8 @@ import 'package:itk_app/utils/result.dart';
 /// Answers every request with [handler] and records what was sent.
 class FakeHttpAdapter implements HttpClientAdapter {
   final requests = <RequestOptions>[];
-  ResponseBody Function(RequestOptions options) handler = (_) => jsonBody(200, null);
+  ResponseBody Function(RequestOptions options) handler =
+      (_) => jsonBody(200, null);
 
   RequestOptions get last => requests.last;
 
@@ -84,7 +85,8 @@ class TestApiClient implements ApiClient {
       );
 
   @override
-  Future<Result<void>> delete(String path) => sendRequest(parse: (_) {}, send: () => dio.delete(path));
+  Future<Result<void>> delete(String path) =>
+      sendRequest(parse: (_) {}, send: () => dio.delete(path));
 
   @override
   Future<Result<void>> post(

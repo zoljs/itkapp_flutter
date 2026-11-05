@@ -48,7 +48,8 @@ void main() {
 
   test('az új futás törli az előző eredményt', () async {
     var fail = true;
-    final command = Command0<void>(() async => fail ? const Err('hiba') : const Ok(null));
+    final command =
+        Command0<void>(() async => fail ? const Err('hiba') : const Ok(null));
 
     await command.execute();
     expect(command.errorMessage, 'hiba');

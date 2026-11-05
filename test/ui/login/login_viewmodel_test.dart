@@ -17,7 +17,8 @@ void main() {
   });
 
   test('a hibás jelszó üzenete átjön', () async {
-    final auth = FakeAuthRepository()..loginResult = const Err('Hibás felhasználónév vagy jelszó!');
+    final auth = FakeAuthRepository()
+      ..loginResult = const Err('Hibás felhasználónév vagy jelszó!');
     final viewModel = LoginViewModel(authRepository: auth);
 
     await viewModel.login.execute((username: 'perpa4', password: 'rossz'));

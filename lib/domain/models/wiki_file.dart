@@ -18,16 +18,19 @@ class WikiFile {
       throw const FormatException('A fájlnév üres.');
     }
     if (name.contains('/') || name.contains('\\')) {
-      throw const FormatException('Egy fájlnév nem tartalmazhat "/" vagy "\\" karaktereket.');
+      throw const FormatException(
+          'Egy fájlnév nem tartalmazhat "/" vagy "\\" karaktereket.');
     }
     if (name == '.' || name == '..') {
-      throw const FormatException('Egy fájlnév nem lehet ".." vagy "." karaktersorozat.');
+      throw const FormatException(
+          'Egy fájlnév nem lehet ".." vagy "." karaktersorozat.');
     }
     if (name.length > 255) {
       throw const FormatException('Egy fájlnév túl hosszú.');
     }
     if (_controlChars.hasMatch(name)) {
-      throw const FormatException('Egy fájlnév nem tartalmazhat vezérlőkaraktereket.');
+      throw const FormatException(
+          'Egy fájlnév nem tartalmazhat vezérlőkaraktereket.');
     }
 
     final type = json['type'];
@@ -47,17 +50,20 @@ class WikiFile {
 
   static List<WikiFile> parseObject(Object? data) {
     if (data is! Map<String, dynamic>) {
-      throw const FormatException('Régi vagy ismeretlen fájlkezelő. Futtasd újra a telepítő parancsot.');
+      throw const FormatException(
+          'Régi vagy ismeretlen fájlkezelő. Futtasd újra a telepítő parancsot.');
     }
 
     final app = data['app'];
     if (app != 'itkapp-files') {
-      throw const FormatException('Ez nem az ITKApp fájlkezelője. Futtasd újra a telepítő parancsot.');
+      throw const FormatException(
+          'Ez nem az ITKApp fájlkezelője. Futtasd újra a telepítő parancsot.');
     }
 
     final version = data['version'];
     if (version != supportedVersion) {
-      throw const FormatException('Nem támogatott fájlkezelő verzió. Futtasd újra a telepítő parancsot.');
+      throw const FormatException(
+          'Nem támogatott fájlkezelő verzió. Futtasd újra a telepítő parancsot.');
     }
 
     return parseList(data['files']);

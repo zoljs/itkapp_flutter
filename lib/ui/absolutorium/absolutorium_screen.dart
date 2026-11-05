@@ -36,7 +36,8 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = AbsolutoriumViewModel(repository: context.read<AbsolutoriumRepository>());
+    _viewModel = AbsolutoriumViewModel(
+        repository: context.read<AbsolutoriumRepository>());
   }
 
   @override
@@ -60,21 +61,25 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
   Future<void> _openDiploma() async {
     await showAdaptiveSheet<void>(
       context: context,
-      builder: (context, controller) => DiplomaSheet(scrollController: controller),
+      builder: (context, controller) =>
+          DiplomaSheet(scrollController: controller),
     );
   }
 
   Future<void> _openAdd() async {
     await showAdaptiveSheet<void>(
       context: context,
-      builder: (context, controller) => AddCompletionSheet(scrollController: controller),
+      builder: (context, controller) =>
+          AddCompletionSheet(scrollController: controller),
     );
   }
 
   Future<void> _delete(int completionId) async {
     await _viewModel.delete.execute(completionId);
     if (!mounted) return;
-    if (_viewModel.delete.errorMessage case final message?) context.showMessage(message);
+    if (_viewModel.delete.errorMessage case final message?) {
+      context.showMessage(message);
+    }
   }
 
   Widget _buildHeader(BuildContext context, {required bool asFab}) {
@@ -93,7 +98,11 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
       leadingWidth: AppSpacing.minimumAndroid + 2 * AppSpacing.sm,
       actionsPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       actions: [
-        if (p != null && !asFab) buildBrandAction(actionIcon: Icons.add_rounded, label: 'Teljesítés felvétele', onAction: _openAdd),
+        if (p != null && !asFab)
+          buildBrandAction(
+              actionIcon: Icons.add_rounded,
+              label: 'Teljesítés felvétele',
+              onAction: _openAdd),
       ],
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [StretchMode.zoomBackground],
@@ -118,7 +127,9 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
                       AppSpacing.xl,
                       AppSpacing.xl,
                     ),
-                    child: Align(alignment: Alignment.bottomLeft, child: HeaderSummary(progress: p)),
+                    child: Align(
+                        alignment: Alignment.bottomLeft,
+                        child: HeaderSummary(progress: p)),
                   ),
                 ),
             ],
@@ -133,7 +144,8 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
 
     if (_viewModel.initialLoading) {
       return const [
-        SliverFillRemaining(hasScrollBody: false, child: Center(child: AppSpinner())),
+        SliverFillRemaining(
+            hasScrollBody: false, child: Center(child: AppSpinner())),
       ];
     }
     if (p == null && _viewModel.load.errorMessage != null) {
@@ -153,7 +165,9 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
     }
     if (p == null) {
       return [
-        SliverFillRemaining(hasScrollBody: false, child: NoCurriculumView(onChoose: _openCurriculum)),
+        SliverFillRemaining(
+            hasScrollBody: false,
+            child: NoCurriculumView(onChoose: _openCurriculum)),
       ];
     }
 
@@ -182,7 +196,8 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
                 icon: Icons.alt_route_rounded,
                 color: scheme.tertiary,
                 title: 'Válassz specializációt',
-                message: 'Amíg nincs kiválasztva, a specializáció tárgyai nem számítanak bele.',
+                message:
+                    'Amíg nincs kiválasztva, a specializáció tárgyai nem számítanak bele.',
                 onTap: _openCurriculum,
               ),
             TypeTotalsRow(byType: p.byType),
@@ -191,18 +206,24 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
               averages: _viewModel.averages,
               diploma: _viewModel.diploma,
               onOpenDiploma: _openDiploma,
-              onOpenCompletions: () => context.push(Routes.absolutoriumCompletions),
+              onOpenCompletions: () =>
+                  context.push(Routes.absolutoriumCompletions),
             ),
             SettingsGroup(
               header: 'Mintatanterv csoportok',
               children: [
-                for (final g in p.groups) GroupTile(group: g, onTap: () => context.push(Routes.absolutoriumGroupFor(g.id))),
+                for (final g in p.groups)
+                  GroupTile(
+                      group: g,
+                      onTap: () =>
+                          context.push(Routes.absolutoriumGroupFor(g.id))),
               ],
             ),
             if (uncategorized.isNotEmpty)
               SettingsGroup(
                 header: 'Nem besorolt tárgyak',
-                footer: 'Ezek a teljesítések egyik tárgycsoportba sem illeszthetők, de a kreditösszegbe '
+                footer:
+                    'Ezek a teljesítések egyik tárgycsoportba sem illeszthetők, de a kreditösszegbe '
                     'beleszámítanak. Törléshez húzd balra a sort.',
                 children: [
                   for (final c in uncategorized)
@@ -234,7 +255,11 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
                   icon: Icons.school_rounded,
                   iconColor: scheme.tertiary,
                   title: 'Tanterv',
-                  value: [p.curriculum.code, if (p.chosenSpecialization != null) p.chosenSpecialization!.name].join(' · '),
+                  value: [
+                    p.curriculum.code,
+                    if (p.chosenSpecialization != null)
+                      p.chosenSpecialization!.name
+                  ].join(' · '),
                   onTap: _openCurriculum,
                 ),
               ],
@@ -255,14 +280,20 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
           body: RefreshIndicator.adaptive(
             onRefresh: () => _viewModel.load.execute(true),
             child: CustomScrollView(
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics()),
               slivers: [
                 _buildHeader(context, asFab: asFab),
                 ..._buildContent(context),
               ],
             ),
           ),
-          floatingActionButton: _viewModel.progress != null && asFab ? buildBrandFab(icon: Icons.add_rounded, semanticLabel: 'Teljesítés felvétele', onPressed: _openAdd) : null,
+          floatingActionButton: _viewModel.progress != null && asFab
+              ? buildBrandFab(
+                  icon: Icons.add_rounded,
+                  semanticLabel: 'Teljesítés felvétele',
+                  onPressed: _openAdd)
+              : null,
         ),
       ),
     );

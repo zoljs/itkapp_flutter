@@ -59,8 +59,7 @@ void main() {
     final chips =
         tester.widgetList<FilterChip>(find.byType(FilterChip)).toList();
     // Order: Tárgyaim, Ez a hét, Ez a hónap, midterm, retake
-    expect(chips.map((c) => c.selected),
-        [false, false, false, false, true]);
+    expect(chips.map((c) => c.selected), [false, false, false, false, true]);
   });
 
   testWidgets('típus chip koppintás a típust és az új állapotot adja át',
@@ -91,8 +90,7 @@ void main() {
 
   testWidgets('az időszak chip saját tárgy és több típus nélkül is látszik',
       (tester) async {
-    await _pump(tester,
-        showMySubjects: false, types: {EventType.consultation});
+    await _pump(tester, showMySubjects: false, types: {EventType.consultation});
 
     expect(find.text(TimeRange.thisWeek.label), findsOneWidget);
     expect(find.text(TimeRange.thisMonth.label), findsOneWidget);
@@ -101,8 +99,8 @@ void main() {
   testWidgets('a kiválasztott időszak chipje be van kapcsolva', (tester) async {
     await _pump(tester, selectedTimeRange: TimeRange.thisMonth);
 
-    FilterChip chip(TimeRange range) => tester.widget<FilterChip>(
-        find.widgetWithText(FilterChip, range.label));
+    FilterChip chip(TimeRange range) =>
+        tester.widget<FilterChip>(find.widgetWithText(FilterChip, range.label));
 
     expect(chip(TimeRange.thisMonth).selected, isTrue);
     expect(chip(TimeRange.thisWeek).selected, isFalse);

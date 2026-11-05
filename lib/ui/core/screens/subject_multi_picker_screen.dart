@@ -24,7 +24,8 @@ class SubjectMultiPickerScreen extends StatefulWidget {
   });
 
   @override
-  State<SubjectMultiPickerScreen> createState() => _SubjectMultiPickerScreenState();
+  State<SubjectMultiPickerScreen> createState() =>
+      _SubjectMultiPickerScreenState();
 }
 
 class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
@@ -39,7 +40,9 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = SubjectMultiPickerViewModel(repository: context.read<SubjectsRepository>(), initialSubjects: widget.currentTags);
+    _viewModel = SubjectMultiPickerViewModel(
+        repository: context.read<SubjectsRepository>(),
+        initialSubjects: widget.currentTags);
   }
 
   @override
@@ -87,7 +90,8 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
     );
   }
 
-  Widget _buildSubjectRow(BuildContext context, Subject subject, bool selected) {
+  Widget _buildSubjectRow(
+      BuildContext context, Subject subject, bool selected) {
     final scheme = Theme.of(context).colorScheme;
 
     return InkWell(
@@ -120,7 +124,9 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
                 ),
               ),
               Icon(
-                selected ? CupertinoIcons.checkmark_circle_fill : CupertinoIcons.circle,
+                selected
+                    ? CupertinoIcons.checkmark_circle_fill
+                    : CupertinoIcons.circle,
                 color: selected ? scheme.primary : scheme.outline,
                 size: 24,
               )

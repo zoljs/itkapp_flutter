@@ -51,10 +51,16 @@ class FakeEventRepository implements EventRepository {
 
   final getCalls = <({Set<EventType> types, bool forceReload})>[];
   final deletedIds = <int>[];
-  ({int subjectId, DateTime startsAt, String? location, EventType type})? lastAdd;
+  ({
+    int subjectId,
+    DateTime startsAt,
+    String? location,
+    EventType type
+  })? lastAdd;
 
   @override
-  Future<Result<List<Event>>> get({required Set<EventType> types, bool forceReload = false}) async {
+  Future<Result<List<Event>>> get(
+      {required Set<EventType> types, bool forceReload = false}) async {
     getCalls.add((types: types, forceReload: forceReload));
     return getResult;
   }
@@ -66,7 +72,12 @@ class FakeEventRepository implements EventRepository {
     String? location,
     required EventType type,
   }) async {
-    lastAdd = (subjectId: subjectId, startsAt: startsAt, location: location, type: type);
+    lastAdd = (
+      subjectId: subjectId,
+      startsAt: startsAt,
+      location: location,
+      type: type
+    );
     return addResult;
   }
 
@@ -123,7 +134,8 @@ class FakeCalendarRepository implements CalendarRepository {
   int clearCount = 0;
 
   @override
-  Future<Result<List<CalendarEvent>>> get({bool forceReload = false}) async => getResult;
+  Future<Result<List<CalendarEvent>>> get({bool forceReload = false}) async =>
+      getResult;
 
   @override
   void clearCache() => clearCount++;
@@ -153,7 +165,8 @@ class FakeSubjectsRepository implements SubjectsRepository {
   Result<List<Subject>> getResult = const Ok([]);
 
   @override
-  Future<Result<List<Subject>>> get({bool forceReload = false}) async => getResult;
+  Future<Result<List<Subject>>> get({bool forceReload = false}) async =>
+      getResult;
 
   @override
   void clearCache() {}
@@ -190,12 +203,15 @@ class FakeSitesRepository implements WikiSitesRepository {
   List<UserSite> get cachedSites => const [];
 
   @override
-  Future<Result<List<UserSite>>> getAll({bool forceReload = false}) async => const Ok([]);
+  Future<Result<List<UserSite>>> getAll({bool forceReload = false}) async =>
+      const Ok([]);
 
   @override
-  Future<Result<UserSite>> save(List<String> tags, bool isPublic, SiteColor color) async {
+  Future<Result<UserSite>> save(
+      List<String> tags, bool isPublic, SiteColor color) async {
     lastSave = (tags: tags, isPublic: isPublic, color: color);
-    return Ok(UserSite(name: 'Teszt', url: 'https://example.com', tags: tags, color: color));
+    return Ok(UserSite(
+        name: 'Teszt', url: 'https://example.com', tags: tags, color: color));
   }
 
   @override

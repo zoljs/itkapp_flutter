@@ -29,7 +29,8 @@ class _CompletionsScreenState extends State<CompletionsScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = CompletionsViewModel(repository: context.read<AbsolutoriumRepository>());
+    _viewModel = CompletionsViewModel(
+        repository: context.read<AbsolutoriumRepository>());
   }
 
   @override
@@ -41,14 +42,17 @@ class _CompletionsScreenState extends State<CompletionsScreen> {
   Future<void> _openAdd() async {
     await showAdaptiveSheet<void>(
       context: context,
-      builder: (context, controller) => AddCompletionSheet(scrollController: controller),
+      builder: (context, controller) =>
+          AddCompletionSheet(scrollController: controller),
     );
   }
 
   Future<void> _delete(int id) async {
     await _viewModel.delete.execute(id);
     if (!mounted) return;
-    if (_viewModel.delete.errorMessage case final message?) context.showMessage(message);
+    if (_viewModel.delete.errorMessage case final message?) {
+      context.showMessage(message);
+    }
   }
 
   Widget _buildBody(BuildContext context) {
@@ -72,7 +76,8 @@ class _CompletionsScreenState extends State<CompletionsScreen> {
     return RefreshIndicator.adaptive(
       onRefresh: () => _viewModel.load.execute(true),
       child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics()),
         padding: EdgeInsets.fromLTRB(
           AppSpacing.screenHorizontal,
           AppSpacing.sm,
@@ -93,7 +98,9 @@ class _CompletionsScreenState extends State<CompletionsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             child: Text(
               'Törléshez húzd balra a sort.',
-              style: TextStyle(fontSize: 13, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              style: TextStyle(
+                  fontSize: 13,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant),
             ),
           ),
         ],
@@ -131,7 +138,8 @@ class _OverallSummary extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: ShapeDecoration(
         color: scheme.surfaceContainerHigh,
-        shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
+        shape: RoundedSuperellipseBorder(
+            borderRadius: BorderRadius.circular(AppRadius.xxl)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -139,9 +147,13 @@ class _OverallSummary extends StatelessWidget {
           StatRow(
             large: true,
             values: [
-              StatValue('Halmozott átlag', formatAverage(averages.overallWeightedAverage), highlight: true),
-              StatValue('Össz. korr. KI', formatAverage(averages.cumulativeCorrectedCreditIndex)),
-              StatValue('Teljesített', '${averages.totalCompletedCredits}/${averages.totalEnrolledCredits} kr'),
+              StatValue('Halmozott átlag',
+                  formatAverage(averages.overallWeightedAverage),
+                  highlight: true),
+              StatValue('Össz. korr. KI',
+                  formatAverage(averages.cumulativeCorrectedCreditIndex)),
+              StatValue('Teljesített',
+                  '${averages.totalCompletedCredits}/${averages.totalEnrolledCredits} kr'),
             ],
           ),
           const SizedBox(height: AppSpacing.sm),
@@ -159,7 +171,11 @@ class _OverallSummary extends StatelessWidget {
 }
 
 class _SemesterSection extends StatelessWidget {
-  const _SemesterSection({required this.semester, required this.items, required this.stats, required this.onDelete});
+  const _SemesterSection(
+      {required this.semester,
+      required this.items,
+      required this.stats,
+      required this.onDelete});
 
   final String semester;
   final List<Completion> items;
@@ -177,11 +193,17 @@ class _SemesterSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
             child: Row(
               children: [
-                Expanded(child: Text(semesterLabel(semester), style: muted.copyWith(letterSpacing: 0.4))),
-                if (stats != null) Text('${stats!.completedCredits}/${stats!.enrolledCredits} kr', style: muted),
+                Expanded(
+                    child: Text(semesterLabel(semester),
+                        style: muted.copyWith(letterSpacing: 0.4))),
+                if (stats != null)
+                  Text(
+                      '${stats!.completedCredits}/${stats!.enrolledCredits} kr',
+                      style: muted),
               ],
             ),
           ),
@@ -196,10 +218,16 @@ class _SemesterSection extends StatelessWidget {
                       padding: const EdgeInsets.all(AppSpacing.lg),
                       child: StatRow(values: semesterStatValues(stats!)),
                     ),
-                    Divider(height: 1, color: scheme.outlineVariant.withValues(alpha: 0.5)),
+                    Divider(
+                        height: 1,
+                        color: scheme.outlineVariant.withValues(alpha: 0.5)),
                   ],
                   for (var i = 0; i < items.length; i++) ...[
-                    if (i > 0) Divider(height: 1, indent: AppSpacing.lg, color: scheme.outlineVariant.withValues(alpha: 0.5)),
+                    if (i > 0)
+                      Divider(
+                          height: 1,
+                          indent: AppSpacing.lg,
+                          color: scheme.outlineVariant.withValues(alpha: 0.5)),
                     CompletionDismissible(
                       completionId: items[i].id,
                       name: items[i].name,
@@ -232,7 +260,8 @@ class _CompletionRow extends StatelessWidget {
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 60),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
         child: Row(
           children: [
             Expanded(
@@ -243,7 +272,8 @@ class _CompletionRow extends StatelessWidget {
                     c.name,
                     style: TextStyle(
                       fontSize: 15,
-                      color: failed ? scheme.onSurfaceVariant : scheme.onSurface,
+                      color:
+                          failed ? scheme.onSurfaceVariant : scheme.onSurface,
                       decoration: failed ? TextDecoration.lineThrough : null,
                     ),
                   ),
@@ -254,7 +284,8 @@ class _CompletionRow extends StatelessWidget {
                       '${c.credits} kr',
                       if (c.isCustom && c.code != null) 'saját',
                     ].join(' · '),
-                    style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+                    style:
+                        TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
                   ),
                 ],
               ),
@@ -282,7 +313,8 @@ class _GradeBubble extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(minWidth: 36),
       height: 36,
-      padding: EdgeInsets.symmetric(horizontal: value == null ? AppSpacing.sm : 0),
+      padding:
+          EdgeInsets.symmetric(horizontal: value == null ? AppSpacing.sm : 0),
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: failed ? scheme.errorContainer : scheme.surfaceContainerHighest,
@@ -292,7 +324,10 @@ class _GradeBubble extends StatelessWidget {
           ? Icon(Icons.draw_rounded, size: 18, color: scheme.onSurfaceVariant)
           : Text(
               '$value',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: failed ? scheme.error : scheme.onSurface),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: failed ? scheme.error : scheme.onSurface),
             ),
     );
   }

@@ -11,5 +11,6 @@ class AdminUsersRepository {
 
   final ApiClient _apiClient;
 
-  Future<Result<List<UserSummary>>> get() async => _apiClient.getJson(_path, parse: UserSummary.parseList);
+  Future<Result<List<UserSummary>>> get() async =>
+      _apiClient.getJson(_path, parse: UserSummary.parseList);
 }

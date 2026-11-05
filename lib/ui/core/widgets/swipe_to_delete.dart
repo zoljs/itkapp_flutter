@@ -48,7 +48,8 @@ class _SwipeToDeleteState extends State<SwipeToDelete> {
           child: Container(
             decoration: ShapeDecoration(
               color: scheme.error,
-              shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
+              shape: RoundedSuperellipseBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.xxl)),
             ),
             margin: const EdgeInsets.only(left: AppSpacing.xs),
             alignment: Alignment.centerRight,
@@ -78,9 +79,13 @@ class _SwipeToDeleteState extends State<SwipeToDelete> {
       onUpdate: (details) async {
         setState(() {
           _progress = details.progress;
-          if (details.reached != details.previousReached) _reached = details.reached;
+          if (details.reached != details.previousReached) {
+            _reached = details.reached;
+          }
         });
-        if (details.reached != details.previousReached) await HapticFeedback.mediumImpact();
+        if (details.reached != details.previousReached) {
+          await HapticFeedback.mediumImpact();
+        }
       },
       child: widget.child,
     );

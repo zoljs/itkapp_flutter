@@ -12,14 +12,16 @@ void main() {
 
   setUp(() async {
     files = FakeWikiFilesRepository();
-    viewModel = WikiViewModel(wikiSitesRepository: FakeSitesRepository(), wikiFilesRepository: files);
+    viewModel = WikiViewModel(
+        wikiSitesRepository: FakeSitesRepository(), wikiFilesRepository: files);
     await flush();
   });
 
   tearDown(() => viewModel.dispose());
 
   group('checkFiles', () {
-    test('működő PHP esetén completed, a gyökérmappát kéri, megjegyzi a usert', () async {
+    test('működő PHP esetén completed, a gyökérmappát kéri, megjegyzi a usert',
+        () async {
       files.listResult = Ok([WikiFile(name: 'zh1.pdf', isDir: false)]);
 
       await viewModel.checkFiles.execute('perpa4');

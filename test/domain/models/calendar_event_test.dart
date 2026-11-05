@@ -9,7 +9,8 @@ String ics(List<String> events) => [
       'END:VCALENDAR',
     ].join('\r\n');
 
-String vevent(List<String> lines) => ['BEGIN:VEVENT', ...lines, 'END:VEVENT'].join('\r\n');
+String vevent(List<String> lines) =>
+    ['BEGIN:VEVENT', ...lines, 'END:VEVENT'].join('\r\n');
 
 void main() {
   group('CalendarEvent.parseIcs', () {
@@ -67,8 +68,10 @@ void main() {
 
   group('CalendarEvent.subjectFromTitle (Neptun SUMMARY)', () {
     final cases = <String, String?>{
-      'Computer Controlled Systems ( - 01) - Dr. Pongrácz Barna - Tanóra': 'Computer Controlled Systems',
-      'Információ- és kódelmélet (Írásbeli és szóbeli) - Dr. Oláh András - Vizsga': 'Információ- és kódelmélet',
+      'Computer Controlled Systems ( - 01) - Dr. Pongrácz Barna - Tanóra':
+          'Computer Controlled Systems',
+      'Információ- és kódelmélet (Írásbeli és szóbeli) - Dr. Oláh András - Vizsga':
+          'Információ- és kódelmélet',
       'Fizika (mérnököknek) ( - 00) - Dr. X - Tanóra': 'Fizika (mérnököknek)',
       'Saját esemény': null,
       ' ( - 01) - Tanóra': null,

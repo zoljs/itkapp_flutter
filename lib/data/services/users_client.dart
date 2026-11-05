@@ -18,6 +18,8 @@ class UsersClient {
     required T Function(Object?) parse,
     Map<String, dynamic>? queryParameters,
   }) async {
-    return sendRequest(parse: parse, send: () => dio.get(path, queryParameters: queryParameters));
+    return sendRequest(
+        parse: parse,
+        send: () => dio.get(path, queryParameters: queryParameters));
   }
 }

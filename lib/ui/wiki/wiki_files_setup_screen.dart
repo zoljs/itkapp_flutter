@@ -58,11 +58,14 @@ class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
 
         return Scaffold(
           extendBodyBehindAppBar: true,
-          appBar: buildBrandAppBar(context: context, title: 'Fájlkezelő beállítása'),
+          appBar: buildBrandAppBar(
+              context: context, title: 'Fájlkezelő beállítása'),
           body: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
               AppSpacing.lg,
-              AppSpacing.lg + MediaQuery.paddingOf(context).top + kToolbarHeight,
+              AppSpacing.lg +
+                  MediaQuery.paddingOf(context).top +
+                  kToolbarHeight,
               AppSpacing.lg,
               AppSpacing.xxxl,
             ),
@@ -81,17 +84,20 @@ class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
                 ),
                 SettingsGroup(
                   header: '2. Telepítés',
-                  footer: 'Letölti a fájlkezelőt a public_html mappádba. Frissítéshez futtasd újra ugyanezt.',
+                  footer:
+                      'Letölti a fájlkezelőt a public_html mappádba. Frissítéshez futtasd újra ugyanezt.',
                   children: [
                     _CommandTile(
                       command: WikiFilesSetupViewModel.installCommand,
-                      onCopy: () => unawaited(_copy(WikiFilesSetupViewModel.installCommand)),
+                      onCopy: () => unawaited(
+                          _copy(WikiFilesSetupViewModel.installCommand)),
                     ),
                   ],
                 ),
                 SettingsGroup(
                   header: '3. Fájlok',
-                  footer: 'Ide tedd a megosztani kívánt fájlokat. Az almappák is megjelennek.',
+                  footer:
+                      'Ide tedd a megosztani kívánt fájlokat. Az almappák is megjelennek.',
                   children: [
                     _CommandTile(
                       command: '~/public_html/files',
@@ -100,7 +106,8 @@ class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
                   ],
                 ),
                 BrandButton(
-                  onTap: check.running ? null : () => unawaited(check.execute()),
+                  onTap:
+                      check.running ? null : () => unawaited(check.execute()),
                   height: 52,
                   backgroundColor: scheme.primaryContainer,
                   child: Center(
@@ -139,7 +146,8 @@ class _CommandTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.xs, AppSpacing.sm),
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg, AppSpacing.sm, AppSpacing.xs, AppSpacing.sm),
       child: Row(
         children: [
           Expanded(
@@ -176,7 +184,9 @@ class _ResultBox extends StatelessWidget {
     final (icon, message, background, foreground) = switch (result) {
       Ok(:final value) => (
           Icons.check_circle_rounded,
-          value.isEmpty ? 'Működik! A files mappa még üres.' : 'Működik! ${value.length} elem van a files mappában.',
+          value.isEmpty
+              ? 'Működik! A files mappa még üres.'
+              : 'Működik! ${value.length} elem van a files mappában.',
           scheme.primaryContainer,
           scheme.onPrimaryContainer,
         ),

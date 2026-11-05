@@ -25,7 +25,8 @@ class OnlineVideo {
     return OnlineVideo(
       id: json['id'] as int,
       semester: json['semester'] as String,
-      semesterLabel: (json['semesterLabel'] as String?) ?? json['semester'] as String,
+      semesterLabel:
+          (json['semesterLabel'] as String?) ?? json['semester'] as String,
       subject: json['subject'] as String,
       title: json['title'] as String,
       uploader: json['uploader'] as String?,
@@ -41,7 +42,8 @@ class VideoPage {
   final int offset;
   final List<OnlineVideo> items;
 
-  const VideoPage({required this.total, required this.offset, required this.items});
+  const VideoPage(
+      {required this.total, required this.offset, required this.items});
 
   bool get hasMore => offset + items.length < total;
 
@@ -49,7 +51,9 @@ class VideoPage {
     return VideoPage(
       total: json['total'] as int,
       offset: json['offset'] as int,
-      items: (json['items'] as List).map((e) => OnlineVideo.fromJson(e as Map<String, dynamic>)).toList(),
+      items: (json['items'] as List)
+          .map((e) => OnlineVideo.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }
@@ -59,7 +63,8 @@ class SemesterFacet {
   final String label;
   final int count;
 
-  const SemesterFacet({required this.key, required this.label, required this.count});
+  const SemesterFacet(
+      {required this.key, required this.label, required this.count});
 
   factory SemesterFacet.fromJson(Map<String, dynamic> json) => SemesterFacet(
         key: json['key'] as String,
@@ -89,7 +94,11 @@ class VideoFilters {
   static const empty = VideoFilters(semesters: [], subjects: []);
 
   factory VideoFilters.fromJson(Map<String, dynamic> json) => VideoFilters(
-        semesters: (json['semesters'] as List).map((e) => SemesterFacet.fromJson(e as Map<String, dynamic>)).toList(),
-        subjects: (json['subjects'] as List).map((e) => SubjectFacet.fromJson(e as Map<String, dynamic>)).toList(),
+        semesters: (json['semesters'] as List)
+            .map((e) => SemesterFacet.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        subjects: (json['subjects'] as List)
+            .map((e) => SubjectFacet.fromJson(e as Map<String, dynamic>))
+            .toList(),
       );
 }

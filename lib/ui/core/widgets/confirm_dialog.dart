@@ -37,7 +37,11 @@ Future<bool?> showConfirmDialog(
               ),
               FilledButton(
                 onPressed: () => Navigator.pop(context, true),
-                style: isDestructive ? FilledButton.styleFrom(backgroundColor: scheme.errorContainer, foregroundColor: scheme.error) : null,
+                style: isDestructive
+                    ? FilledButton.styleFrom(
+                        backgroundColor: scheme.errorContainer,
+                        foregroundColor: scheme.error)
+                    : null,
                 child: Text(
                   confirmLabel,
                 ),

@@ -62,7 +62,8 @@ void main() {
 
   group('firstName', () {
     test('a keresztnév első szava', () {
-      final user = LdapUser.fromJson({...validJson(), 'givenName': 'Elek János'});
+      final user =
+          LdapUser.fromJson({...validJson(), 'givenName': 'Elek János'});
       expect(user.firstName, 'Elek');
     });
 

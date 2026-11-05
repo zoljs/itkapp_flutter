@@ -10,7 +10,8 @@ abstract class Command<T> extends ChangeNotifier {
 
   bool get completed => result is Ok;
 
-  String? get errorMessage => switch (_result) { Err(:final message) => message, _ => null };
+  String? get errorMessage =>
+      switch (_result) { Err(:final message) => message, _ => null };
 
   Future<void> _execute(Future<Result<T>> Function() action) async {
     if (_running) return;

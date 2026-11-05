@@ -45,7 +45,8 @@ class CalendarLinkTile extends StatelessWidget {
                   Text(
                     _syncLabel(link.lastSyncedAt),
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
+                    style:
+                        TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
                   ),
                 ],
               ),

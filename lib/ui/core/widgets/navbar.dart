@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
 class NavBarItem {
-  const NavBarItem({required this.icon, required this.label, required this.selectedIcon});
+  const NavBarItem(
+      {required this.icon, required this.label, required this.selectedIcon});
   final IconData icon;
   final IconData selectedIcon;
   final String label;
@@ -56,14 +57,16 @@ class AppNavBar extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(selected ? item.selectedIcon : item.icon, color: color, size: 28),
+                      Icon(selected ? item.selectedIcon : item.icon,
+                          color: color, size: 28),
                       const SizedBox(height: 4),
                       Text(
                         item.label,
                         style: TextStyle(
                           color: color,
                           fontSize: 11,
-                          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                          fontWeight:
+                              selected ? FontWeight.w600 : FontWeight.w400,
                         ),
                       ),
                     ],

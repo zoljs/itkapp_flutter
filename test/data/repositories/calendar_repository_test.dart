@@ -29,7 +29,10 @@ void main() {
 
     final result = await repository.get();
 
-    expect(result, isA<Ok<List<CalendarEvent>>>().having((r) => r.value.single.title, 'title', 'Analízis'));
+    expect(
+        result,
+        isA<Ok<List<CalendarEvent>>>()
+            .having((r) => r.value.single.title, 'title', 'Analízis'));
   });
 
   test('üres válasz üres naptár, nem hiba', () async {
@@ -37,7 +40,10 @@ void main() {
 
     final result = await repository.get();
 
-    expect(result, isA<Ok<List<CalendarEvent>>>().having((r) => r.value, 'value', isEmpty));
+    expect(
+        result,
+        isA<Ok<List<CalendarEvent>>>()
+            .having((r) => r.value, 'value', isEmpty));
   });
 
   test('cache-el, a forceReload újratölt', () async {

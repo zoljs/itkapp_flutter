@@ -20,7 +20,8 @@ class MySiteSettingsGroup extends StatelessWidget {
   Widget build(BuildContext context) {
     return SettingsGroup(
       header: 'Beállítások',
-      footer: 'A fájlkezelővel az oldalad fájljai az alkalmazásban is böngészhetők.',
+      footer:
+          'A fájlkezelővel az oldalad fájljai az alkalmazásban is böngészhetők.',
       children: [
         Skeletonizer(
           enabled: loading,

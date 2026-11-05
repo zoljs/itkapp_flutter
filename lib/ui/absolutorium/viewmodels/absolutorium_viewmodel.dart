@@ -59,7 +59,8 @@ class AbsolutoriumViewModel extends ChangeNotifier {
     return _averages;
   }
 
-  DiplomaEstimate? get diploma => estimateDiploma(averages.diplomaWeightedAverage, _repository.diplomaInputs.value);
+  DiplomaEstimate? get diploma => estimateDiploma(
+      averages.diplomaWeightedAverage, _repository.diplomaInputs.value);
 
   Future<Result<void>> _load(bool forceReload) async {
     unawaited(_repository.getCompletions(

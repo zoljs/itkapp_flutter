@@ -34,9 +34,12 @@ void main() {
   test('a legkorábbi, még nem véget ért esemény a következő', () async {
     final now = DateTime.now();
     calendar.getResult = Ok([
-      calendarEvent('Holnapután', now.add(const Duration(days: 2)), const Duration(hours: 1)),
-      calendarEvent('Tegnap', now.subtract(const Duration(days: 1)), const Duration(hours: 1)),
-      calendarEvent('Holnap', now.add(const Duration(days: 1)), const Duration(hours: 1)),
+      calendarEvent('Holnapután', now.add(const Duration(days: 2)),
+          const Duration(hours: 1)),
+      calendarEvent('Tegnap', now.subtract(const Duration(days: 1)),
+          const Duration(hours: 1)),
+      calendarEvent(
+          'Holnap', now.add(const Duration(days: 1)), const Duration(hours: 1)),
     ]);
 
     final viewModel = await create();
@@ -48,8 +51,10 @@ void main() {
   test('a most zajló esemény is számít', () async {
     final now = DateTime.now();
     calendar.getResult = Ok([
-      calendarEvent('Most', now.subtract(const Duration(minutes: 30)), const Duration(hours: 1)),
-      calendarEvent('Holnap', now.add(const Duration(days: 1)), const Duration(hours: 1)),
+      calendarEvent('Most', now.subtract(const Duration(minutes: 30)),
+          const Duration(hours: 1)),
+      calendarEvent(
+          'Holnap', now.add(const Duration(days: 1)), const Duration(hours: 1)),
     ]);
 
     final viewModel = await create();
@@ -61,7 +66,8 @@ void main() {
   test('csak múltbeli eseményeknél nincs következő', () async {
     final now = DateTime.now();
     calendar.getResult = Ok([
-      calendarEvent('Tegnap', now.subtract(const Duration(days: 1)), const Duration(hours: 1)),
+      calendarEvent('Tegnap', now.subtract(const Duration(days: 1)),
+          const Duration(hours: 1)),
     ]);
 
     final viewModel = await create();

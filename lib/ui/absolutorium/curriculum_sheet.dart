@@ -60,7 +60,9 @@ class _CurriculumSheetState extends State<CurriculumSheet> {
     final scheme = Theme.of(context).colorScheme;
     return SizedBox(
       width: 24,
-      child: selected ? Icon(Icons.check_rounded, color: scheme.primary) : const SizedBox.shrink(),
+      child: selected
+          ? Icon(Icons.check_rounded, color: scheme.primary)
+          : const SizedBox.shrink(),
     );
   }
 
@@ -69,7 +71,10 @@ class _CurriculumSheetState extends State<CurriculumSheet> {
       return const Center(child: AppSpinner());
     }
     if (_viewModel.load.errorMessage case final message?) {
-      return StateMessage(icon: Icons.cloud_off_rounded, message: message, onRetry: _viewModel.load.execute);
+      return StateMessage(
+          icon: Icons.cloud_off_rounded,
+          message: message,
+          onRetry: _viewModel.load.execute);
     }
     if (_viewModel.curricula.isEmpty) {
       return const StateMessage(
@@ -105,7 +110,8 @@ class _CurriculumSheetState extends State<CurriculumSheet> {
         if (selected != null && selected.specializations.isNotEmpty)
           SettingsGroup(
             header: 'Specializáció',
-            footer: 'Később is megadhatod. Amíg nincs kiválasztva, az abszolutórium nem lehet teljes.',
+            footer:
+                'Később is megadhatod. Amíg nincs kiválasztva, az abszolutórium nem lehet teljes.',
             children: [
               SettingsTile(
                 title: 'Még nem választottam',
@@ -127,7 +133,8 @@ class _CurriculumSheetState extends State<CurriculumSheet> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([_viewModel, _viewModel.load, _viewModel.save]),
+      listenable:
+          Listenable.merge([_viewModel, _viewModel.load, _viewModel.save]),
       builder: (context, _) => Scaffold(
         backgroundColor: sheetBackgroundColor(context),
         appBar: buildBrandAppBar(

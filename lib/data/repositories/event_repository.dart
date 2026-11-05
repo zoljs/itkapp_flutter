@@ -22,7 +22,8 @@ class EventRepository {
     bool forceReload = false,
   }) async {
     // types: [MIDTERM, RETAKE] -> "MIDTERM,RETAKE"
-    final String key = (types.map((type) => type.wire).toList()..sort()).join(',');
+    final String key =
+        (types.map((type) => type.wire).toList()..sort()).join(',');
     final cache = _cache[key];
     if (cache != null && !forceReload) return Ok(cache);
 

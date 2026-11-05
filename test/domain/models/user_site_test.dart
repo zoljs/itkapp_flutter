@@ -22,11 +22,13 @@ void main() {
     });
 
     test('null szín -> alapértelmezett', () {
-      expect(UserSite.fromJson({...validJson(), 'color': null}).color, SiteColor.fallback);
+      expect(UserSite.fromJson({...validJson(), 'color': null}).color,
+          SiteColor.fallback);
     });
 
     test('ismeretlen szín -> alapértelmezett (újabb backend, régi app)', () {
-      expect(UserSite.fromJson({...validJson(), 'color': 'pink'}).color, SiteColor.fallback);
+      expect(UserSite.fromJson({...validJson(), 'color': 'pink'}).color,
+          SiteColor.fallback);
     });
 
     final invalid = <String, Object>{
@@ -36,12 +38,18 @@ void main() {
     };
     for (final entry in invalid.entries) {
       test('FormatException, ha a szín ${entry.key}', () {
-        expect(() => UserSite.fromJson({...validJson(), 'color': entry.value}), throwsFormatException);
+        expect(() => UserSite.fromJson({...validJson(), 'color': entry.value}),
+            throwsFormatException);
       });
     }
   });
 
   test('a parseList a hibás színt is FormatException-ként jelzi', () {
-    expect(() => UserSite.parseList([validJson(), {...validJson(), 'color': 42}]), throwsFormatException);
+    expect(
+        () => UserSite.parseList([
+              validJson(),
+              {...validJson(), 'color': 42}
+            ]),
+        throwsFormatException);
   });
 }

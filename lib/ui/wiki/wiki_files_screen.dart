@@ -37,7 +37,9 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
   void _openItem(BuildContext context, WikiFile item) {
     if (item.isDir) {
       final dir = widget.viewModel.childPath(item.name);
-      final uri = Uri(path: Routes.filesFor(widget.viewModel.user), queryParameters: {'dir': dir}).toString();
+      final uri = Uri(
+          path: Routes.filesFor(widget.viewModel.user),
+          queryParameters: {'dir': dir}).toString();
 
       unawaited(context.push(uri));
     } else {
@@ -45,7 +47,9 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
     }
   }
 
-  Future<void> _openFile(BuildContext context, String name) async => openLink(context, widget.viewModel.fileUrl(name), mode: LaunchMode.inAppWebView);
+  Future<void> _openFile(BuildContext context, String name) async =>
+      openLink(context, widget.viewModel.fileUrl(name),
+          mode: LaunchMode.inAppWebView);
 
   @override
   Widget build(BuildContext context) {
@@ -80,7 +84,8 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
           return RefreshIndicator.adaptive(
             onRefresh: load.execute,
             child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+              physics: const AlwaysScrollableScrollPhysics(
+                  parent: BouncingScrollPhysics()),
               padding: EdgeInsets.fromLTRB(
                 AppSpacing.lg,
                 AppSpacing.lg,
@@ -96,7 +101,9 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
                       for (final file in shown)
                         _FileTile(
                           file: file,
-                          onTap: showSkeleton ? null : () => _openItem(context, file),
+                          onTap: showSkeleton
+                              ? null
+                              : () => _openItem(context, file),
                         ),
                     ],
                   ),
@@ -147,13 +154,42 @@ class _FileTile extends StatelessWidget {
 
     return switch (ext) {
       'pdf' => (Icons.picture_as_pdf_rounded, Colors.red.shade600),
-      'png' || 'jpg' || 'jpeg' || 'gif' || 'webp' || 'svg' => (Icons.image_rounded, Colors.purple.shade400),
-      'zip' || 'rar' || '7z' || 'tar' || 'gz' => (Icons.folder_zip_rounded, Colors.brown.shade400),
-      'doc' || 'docx' || 'odt' || 'txt' || 'md' => (Icons.description_rounded, Colors.indigo.shade400),
-      'ppt' || 'pptx' || 'odp' => (Icons.slideshow_rounded, Colors.orange.shade700),
-      'xls' || 'xlsx' || 'ods' || 'csv' => (Icons.table_chart_rounded, Colors.green.shade600),
-      'mp4' || 'mov' || 'mkv' || 'webm' => (Icons.movie_rounded, Colors.pink.shade400),
-      'c' || 'cpp' || 'h' || 'java' || 'py' || 'js' || 'ts' || 'dart' || 'html' || 'css' || 'php' => (Icons.code_rounded, Colors.teal.shade600),
+      'png' || 'jpg' || 'jpeg' || 'gif' || 'webp' || 'svg' => (
+          Icons.image_rounded,
+          Colors.purple.shade400
+        ),
+      'zip' || 'rar' || '7z' || 'tar' || 'gz' => (
+          Icons.folder_zip_rounded,
+          Colors.brown.shade400
+        ),
+      'doc' || 'docx' || 'odt' || 'txt' || 'md' => (
+          Icons.description_rounded,
+          Colors.indigo.shade400
+        ),
+      'ppt' || 'pptx' || 'odp' => (
+          Icons.slideshow_rounded,
+          Colors.orange.shade700
+        ),
+      'xls' || 'xlsx' || 'ods' || 'csv' => (
+          Icons.table_chart_rounded,
+          Colors.green.shade600
+        ),
+      'mp4' || 'mov' || 'mkv' || 'webm' => (
+          Icons.movie_rounded,
+          Colors.pink.shade400
+        ),
+      'c' ||
+      'cpp' ||
+      'h' ||
+      'java' ||
+      'py' ||
+      'js' ||
+      'ts' ||
+      'dart' ||
+      'html' ||
+      'css' ||
+      'php' =>
+        (Icons.code_rounded, Colors.teal.shade600),
       _ => (Icons.insert_drive_file_rounded, Colors.blueGrey.shade400),
     };
   }

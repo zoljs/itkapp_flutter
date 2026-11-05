@@ -32,7 +32,8 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
 
   static final _skeletonUsers = List.generate(
     10,
-    (i) => UserSummary(userId: -i, fullName: BoneMock.name, ldapUsername: BoneMock.chars(6)),
+    (i) => UserSummary(
+        userId: -i, fullName: BoneMock.name, ldapUsername: BoneMock.chars(6)),
   );
 
   @override
@@ -105,11 +106,15 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
                       user.fullName,
                       style: TextStyle(
                         fontSize: 15,
-                        color: isExcluded ? scheme.onSurfaceVariant : scheme.onSurface,
+                        color: isExcluded
+                            ? scheme.onSurfaceVariant
+                            : scheme.onSurface,
                       ),
                     ),
                     Text(
-                      isExcluded ? '${user.ldapUsername} · már évfolyamfelelős' : user.ldapUsername,
+                      isExcluded
+                          ? '${user.ldapUsername} · már évfolyamfelelős'
+                          : user.ldapUsername,
                       style: TextStyle(
                         fontSize: 13,
                         color: scheme.onSurfaceVariant,
@@ -118,7 +123,8 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
                   ],
                 ),
               ),
-              if (isExcluded) Icon(Icons.check_rounded, color: scheme.onSurfaceVariant),
+              if (isExcluded)
+                Icon(Icons.check_rounded, color: scheme.onSurfaceVariant),
             ],
           ),
         ),

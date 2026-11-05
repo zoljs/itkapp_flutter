@@ -7,7 +7,8 @@ InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
     hintStyle: TextStyle(color: scheme.onSurfaceVariant, fontSize: 15),
     filled: true,
     fillColor: scheme.surfaceContainerHigh,
-    contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
+    contentPadding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm, vertical: AppSpacing.sm),
     border: OutlineInputBorder(
       borderRadius: BorderRadius.circular(AppRadius.xxxl),
       borderSide: BorderSide.none,

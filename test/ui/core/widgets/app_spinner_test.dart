@@ -12,15 +12,18 @@ void main() {
   testWidgets('iOS-en Cupertino pörgő, a megadott színnel', (tester) async {
     await tester.pumpWidget(_app(TargetPlatform.iOS, color: Colors.black87));
 
-    final spinner = tester.widget<CupertinoActivityIndicator>(find.byType(CupertinoActivityIndicator));
+    final spinner = tester.widget<CupertinoActivityIndicator>(
+        find.byType(CupertinoActivityIndicator));
     expect(spinner.color, Colors.black87);
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 
   testWidgets('Androidon Material pörgő, a megadott színnel', (tester) async {
-    await tester.pumpWidget(_app(TargetPlatform.android, color: Colors.black87));
+    await tester
+        .pumpWidget(_app(TargetPlatform.android, color: Colors.black87));
 
-    final spinner = tester.widget<CircularProgressIndicator>(find.byType(CircularProgressIndicator));
+    final spinner = tester.widget<CircularProgressIndicator>(
+        find.byType(CircularProgressIndicator));
     expect(spinner.color, Colors.black87);
     expect(find.byType(CupertinoActivityIndicator), findsNothing);
   });

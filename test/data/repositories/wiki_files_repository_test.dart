@@ -7,7 +7,8 @@ import 'package:itk_app/utils/result.dart';
 import '../../helpers/fake_http.dart';
 
 /// Wraps a file list in the files_wiki.php v1 envelope.
-Map<String, dynamic> listing(List<Map<String, dynamic>> files) => {'app': 'itkapp-files', 'version': 1, 'files': files};
+Map<String, dynamic> listing(List<Map<String, dynamic>> files) =>
+    {'app': 'itkapp-files', 'version': 1, 'files': files};
 
 void main() {
   late FakeHttpAdapter adapter;
@@ -30,13 +31,17 @@ void main() {
 
     expect(adapter.last.path, '/~perpa4/files_wiki.php');
     expect(adapter.last.queryParameters['dir'], 'Analizis/2025');
-    expect(result, isA<Ok<List<WikiFile>>>().having((r) => r.value.single.name, 'name', 'zh1.pdf'));
+    expect(
+        result,
+        isA<Ok<List<WikiFile>>>()
+            .having((r) => r.value.single.name, 'name', 'zh1.pdf'));
   });
 
   test('túl sok fájl Err, nem fagy le', () async {
     adapter.handler = (_) => jsonBody(
           200,
-          listing(List.generate(WikiFile.maxFiles + 1, (i) => {'name': 'f$i', 'type': 'file'})),
+          listing(List.generate(
+              WikiFile.maxFiles + 1, (i) => {'name': 'f$i', 'type': 'file'})),
         );
 
     final result = await repository.listDir('', 'perpa4');

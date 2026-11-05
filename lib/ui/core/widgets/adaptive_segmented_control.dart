@@ -2,7 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AdaptiveSegmentedControl<T extends Object> extends StatelessWidget {
-  const AdaptiveSegmentedControl({super.key, required this.values, required this.selected, required this.onChanged, required this.labelOf});
+  const AdaptiveSegmentedControl(
+      {super.key,
+      required this.values,
+      required this.selected,
+      required this.onChanged,
+      required this.labelOf});
 
   final List<T> values;
   final T selected;
@@ -18,7 +23,8 @@ class AdaptiveSegmentedControl<T extends Object> extends StatelessWidget {
             children: {
               for (final item in values)
                 item: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   child: Text(labelOf(item)),
                 ),
             },
@@ -28,7 +34,8 @@ class AdaptiveSegmentedControl<T extends Object> extends StatelessWidget {
         : SegmentedButton<T>(
             showSelectedIcon: false,
             segments: [
-              for (final item in values) ButtonSegment(value: item, label: Text(labelOf(item))),
+              for (final item in values)
+                ButtonSegment(value: item, label: Text(labelOf(item))),
             ],
             selected: {selected},
             onSelectionChanged: (selection) => onChanged(selection.first),

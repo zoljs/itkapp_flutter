@@ -10,7 +10,8 @@ import 'package:itk_app/utils/result.dart';
 class AuthRepository extends ChangeNotifier {
   static const _path = '/api/auth';
 
-  AuthRepository({required ApiClient apiClient, required SharedPreferencesService prefs})
+  AuthRepository(
+      {required ApiClient apiClient, required SharedPreferencesService prefs})
       : _apiClient = apiClient,
         _prefs = prefs {
     _cachedUser = _loadUserFromDisk();
@@ -37,7 +38,10 @@ class AuthRepository extends ChangeNotifier {
 
     // If login POST is OK, get /me, save the result (ldapUser or error, so this void cannot return it)
     final Result<LdapUser> meResult = await _fetchUserFromNetwork();
-    if (meResult case Err(:final message)) return Err(message); // must return new Err<void> with the extracted message
+    if (meResult case Err(:final message)) {
+      return Err(
+          message); // must return new Err<void> with the extracted message
+    }
 
     // If all passed, return Ok therefore we are logged in
     return const Ok(null);
@@ -47,7 +51,9 @@ class AuthRepository extends ChangeNotifier {
   Future<void> logout() async {
     // POST the logout, save the result (null or error)
     final result = await _apiClient.post('$_path/logout');
-    if (result case Err(:final message)) debugPrint('[AuthRepository] logout request failed: $message');
+    if (result case Err(:final message)) {
+      debugPrint('[AuthRepository] logout request failed: $message');
+    }
 
     await _apiClient.clearCookies();
     _cachedUser = null;

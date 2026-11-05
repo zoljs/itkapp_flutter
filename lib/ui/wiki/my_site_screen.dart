@@ -105,7 +105,8 @@ class _MySiteScreenState extends State<MySiteScreen> {
             login: _viewModel.login,
             siteColor: _viewModel.color,
           ),
-          MySiteColorPicker(selected: _viewModel.color, onSelected: _viewModel.setColor),
+          MySiteColorPicker(
+              selected: _viewModel.color, onSelected: _viewModel.setColor),
           MySiteSettingsGroup(
             loading: loading,
             isPublic: _viewModel.isPublic,
@@ -116,7 +117,8 @@ class _MySiteScreenState extends State<MySiteScreen> {
             tags: _viewModel.tags,
             loading: loading,
             onAdd: _openTagPicker,
-            onDelete: (tag) => _viewModel.setTags(_viewModel.tags.where((t) => t != tag).toList()),
+            onDelete: (tag) => _viewModel
+                .setTags(_viewModel.tags.where((t) => t != tag).toList()),
           ),
           if (_viewModel.hasExistingSite) ...[
             BrandButton(
@@ -146,12 +148,15 @@ class _MySiteScreenState extends State<MySiteScreen> {
     return ListenableBuilder(
         listenable: Listenable.merge([_viewModel, _viewModel.load]),
         builder: (context, _) {
-          final loading = _viewModel.load.running; // reminder for me, always calculate this inside the listenable
+          final loading = _viewModel.load
+              .running; // reminder for me, always calculate this inside the listenable
 
           return Scaffold(
             appBar: buildBrandAppBar(
               context: context,
-              title: _viewModel.hasExistingSite ? 'Saját oldalam' : 'Oldal létrehozása',
+              title: _viewModel.hasExistingSite
+                  ? 'Saját oldalam'
+                  : 'Oldal létrehozása',
               actionEnabled: !loading,
               onAction: loading
                   ? null

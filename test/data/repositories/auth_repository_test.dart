@@ -21,7 +21,8 @@ void main() {
     SharedPreferences.setMockInitialValues(stored);
     rawPrefs = await SharedPreferences.getInstance();
     api = TestApiClient();
-    repository = AuthRepository(apiClient: api, prefs: SharedPreferencesService(rawPrefs));
+    repository = AuthRepository(
+        apiClient: api, prefs: SharedPreferencesService(rawPrefs));
   }
 
   /// Answers /login with [loginStatus] and /me with [meStatus] + [meBody].

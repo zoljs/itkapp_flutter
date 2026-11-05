@@ -98,9 +98,12 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
         _viewModel.delete,
       ]),
       builder: (context, v_) {
-        final links = _viewModel.initialLoading ? _skeletonLinks : _viewModel.links;
+        final links =
+            _viewModel.initialLoading ? _skeletonLinks : _viewModel.links;
         final loadError = _viewModel.load.errorMessage;
-        final showError = loadError != null && _viewModel.links.isEmpty && !_viewModel.initialLoading;
+        final showError = loadError != null &&
+            _viewModel.links.isEmpty &&
+            !_viewModel.initialLoading;
 
         return Scaffold(
           appBar: buildBrandAppBar(context: context, title: 'Naptárlinkek'),
@@ -141,7 +144,8 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
                         child: SwipeToDelete(
                           id: link.id,
                           confirmTitle: 'Naptár törlése',
-                          confirmMessage: 'Biztosan törölni szeretnéd a ${link.name} naptárat?',
+                          confirmMessage:
+                              'Biztosan törölni szeretnéd a ${link.name} naptárat?',
                           onDelete: () => _delete(link.id),
                           child: CalendarLinkTile(
                             link: link,
@@ -154,7 +158,8 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
               // Add
               SettingsGroup(
                 header: 'Új naptár hozzáadása',
-                footer: 'https:// vagy webcal:// kezdetű, .ics naptárlinket adj meg.',
+                footer:
+                    'https:// vagy webcal:// kezdetű, .ics naptárlinket adj meg.',
                 children: [
                   Padding(
                     padding: const EdgeInsets.fromLTRB(

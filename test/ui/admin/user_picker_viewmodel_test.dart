@@ -8,7 +8,11 @@ import '../../helpers/fixtures.dart';
 
 void main() {
   test('név és felhasználónév szerint szűr', () async {
-    final repository = FakeAdminUsersRepository()..getResult = Ok([summary(1, 'Teszt Elek', 'tesel1'), summary(2, 'Minta Anna', 'minan2')]);
+    final repository = FakeAdminUsersRepository()
+      ..getResult = Ok([
+        summary(1, 'Teszt Elek', 'tesel1'),
+        summary(2, 'Minta Anna', 'minan2')
+      ]);
     final viewModel = UserPickerViewModel(repository: repository);
     await flush();
 

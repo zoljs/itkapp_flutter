@@ -114,7 +114,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   width: active ? 20 : 8,
                   height: 8,
                   decoration: BoxDecoration(
-                    color: active ? scheme.primary : scheme.surfaceContainerHighest,
+                    color: active
+                        ? scheme.primary
+                        : scheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(4),
                   ),
                 );
@@ -194,7 +196,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   decoration: BoxDecoration(
                     color: scheme.surfaceContainer,
                     borderRadius: BorderRadius.circular(AppSpacing.xxl),
-                    border: Border.all(color: scheme.outlineVariant, width: AppSpacing.sm),
+                    border: Border.all(
+                        color: scheme.outlineVariant, width: AppSpacing.sm),
                   ),
                   child: AnimatedAlign(
                     duration: const Duration(milliseconds: 300),
@@ -215,13 +218,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ),
           const SizedBox(height: AppSpacing.lg),
           SettingsGroup(
-            footer: 'Az új elem hozzáadása gomb a képernyő alján jelenik meg, egy kézzel könnyebben elérhető.',
+            footer:
+                'Az új elem hozzáadása gomb a képernyő alján jelenik meg, egy kézzel könnyebben elérhető.',
             children: [
               SettingsTile(
                 icon: Icons.add_rounded,
                 iconColor: scheme.tertiary,
                 title: 'Akció gombok lent',
-                onTap: () => themeRepository.toggleActionButtonAsFab(!themeRepository.actionButtonAsFab.value),
+                onTap: () => themeRepository.toggleActionButtonAsFab(
+                    !themeRepository.actionButtonAsFab.value),
                 trailing: ValueListenableBuilder<bool>(
                   valueListenable: themeRepository.actionButtonAsFab,
                   builder: (context, asFab, _) => Switch.adaptive(

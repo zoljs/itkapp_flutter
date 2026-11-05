@@ -9,5 +9,7 @@ class WikiFilesRepository {
 
   final UsersClient _usersClient;
 
-  Future<Result<List<WikiFile>>> listDir(String dir, String user) async => _usersClient.getJson('/~$user/files_wiki.php', parse: WikiFile.parseObject, queryParameters: {'dir': dir});
+  Future<Result<List<WikiFile>>> listDir(String dir, String user) async =>
+      _usersClient.getJson('/~$user/files_wiki.php',
+          parse: WikiFile.parseObject, queryParameters: {'dir': dir});
 }

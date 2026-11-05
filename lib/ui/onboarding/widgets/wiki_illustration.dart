@@ -15,7 +15,12 @@ class WikiIllustration extends StatelessWidget {
     final ColorScheme scheme = Theme.of(context).colorScheme;
 
     final List<String> tags = ['Analízis I.', 'Computer Controlled Systems'];
-    final List<Color> colors = [itkPrimary, scheme.surfaceContainerHighest, scheme.surfaceContainerHigh, scheme.surfaceContainer];
+    final List<Color> colors = [
+      itkPrimary,
+      scheme.surfaceContainerHighest,
+      scheme.surfaceContainerHigh,
+      scheme.surfaceContainer
+    ];
 
     return Stack(
       alignment: Alignment.bottomCenter,
@@ -62,7 +67,8 @@ class WikiIllustration extends StatelessWidget {
                 runSpacing: AppSpacing.sm,
                 children: tags.map((tag) {
                   return Container(
-                    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
                     decoration: BoxDecoration(
                       color: Colors.white.withValues(alpha: 0.25),
                       borderRadius: BorderRadius.circular(AppRadius.sm),

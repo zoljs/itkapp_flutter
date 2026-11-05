@@ -30,7 +30,9 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = GroupDetailViewModel(repository: context.read<AbsolutoriumRepository>(), groupId: widget.groupId);
+    _viewModel = GroupDetailViewModel(
+        repository: context.read<AbsolutoriumRepository>(),
+        groupId: widget.groupId);
   }
 
   @override
@@ -42,14 +44,17 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
   Future<void> _openAdd([MissingSubject? subject]) async {
     await showAdaptiveSheet<void>(
       context: context,
-      builder: (context, controller) => AddCompletionSheet(scrollController: controller, initialSubject: subject),
+      builder: (context, controller) => AddCompletionSheet(
+          scrollController: controller, initialSubject: subject),
     );
   }
 
   Future<void> _delete(int completionId) async {
     await _viewModel.delete.execute(completionId);
     if (!mounted) return;
-    if (_viewModel.delete.errorMessage case final message?) context.showMessage(message);
+    if (_viewModel.delete.errorMessage case final message?) {
+      context.showMessage(message);
+    }
   }
 
   @override
@@ -72,8 +77,11 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
               : group == null
                   ? StateMessage(
                       icon: Icons.info_outline_rounded,
-                      message: _viewModel.refresh.errorMessage ?? 'Ez a csoport már nem része a tantervednek.',
-                      onRetry: _viewModel.refresh.errorMessage == null ? null : _viewModel.refresh.execute,
+                      message: _viewModel.refresh.errorMessage ??
+                          'Ez a csoport már nem része a tantervednek.',
+                      onRetry: _viewModel.refresh.errorMessage == null
+                          ? null
+                          : _viewModel.refresh.execute,
                     )
                   : RefreshIndicator.adaptive(
                       onRefresh: _viewModel.refresh.execute,
@@ -88,7 +96,8 @@ class _GroupDetailScreenState extends State<GroupDetailScreen> {
     final scheme = Theme.of(context).colorScheme;
 
     return ListView(
-      physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+      physics:
+          const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
       padding: EdgeInsets.fromLTRB(
         AppSpacing.screenHorizontal,
         AppSpacing.sm,
@@ -132,7 +141,8 @@ class _GroupSummary extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: ShapeDecoration(
         color: scheme.surfaceContainerHigh,
-        shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
+        shape: RoundedSuperellipseBorder(
+            borderRadius: BorderRadius.circular(AppRadius.xxl)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -142,13 +152,18 @@ class _GroupSummary extends StatelessWidget {
             children: [
               Text(
                 '${group.countedCredits}',
-                style: textTheme.displaySmall?.copyWith(fontWeight: FontWeight.w800, color: scheme.onSurface, height: 1),
+                style: textTheme.displaySmall?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: scheme.onSurface,
+                    height: 1),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: AppSpacing.xs, bottom: AppSpacing.xxs),
+                padding: const EdgeInsets.only(
+                    left: AppSpacing.xs, bottom: AppSpacing.xxs),
                 child: Text(
                   '/ ${group.requiredCredits} kredit',
-                  style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
+                  style:
+                      TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
                 ),
               ),
               const Spacer(),
@@ -156,12 +171,17 @@ class _GroupSummary extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
-          CreditBar(value: group.countedCredits, max: group.requiredCredits, complete: group.isComplete, height: 10),
+          CreditBar(
+              value: group.countedCredits,
+              max: group.requiredCredits,
+              complete: group.isComplete,
+              height: 10),
           const SizedBox(height: AppSpacing.sm),
           Text(
             [
               '${group.completedSubgroupCount}/${group.requiredSubgroupCount} tárgycsoport kész',
-              if (group.earnedCredits > group.countedCredits) '${group.earnedCredits} kr szerezve',
+              if (group.earnedCredits > group.countedCredits)
+                '${group.earnedCredits} kr szerezve',
             ].join(' · '),
             style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
           ),
@@ -188,9 +208,12 @@ class _SubgroupSection extends StatelessWidget {
   List<String> get _footerLines {
     final s = subgroup;
     return [
-      if (s.overflowCredits > 0) '${s.overflowCredits} kr többlet átszámítva a szabadon választhatóba.',
-      if (s.receivedOverflowCredits > 0) 'Ebből ${s.receivedOverflowCredits} kr többlet kötelezően választhatóból.',
-      if (s.type == SubgroupType.freeElective) 'Ide számít minden saját tárgy és minden tantervi tárgy, ami máshová nem sorolható.',
+      if (s.overflowCredits > 0)
+        '${s.overflowCredits} kr többlet átszámítva a szabadon választhatóba.',
+      if (s.receivedOverflowCredits > 0)
+        'Ebből ${s.receivedOverflowCredits} kr többlet kötelezően választhatóból.',
+      if (s.type == SubgroupType.freeElective)
+        'Ide számít minden saját tárgy és minden tantervi tárgy, ami máshová nem sorolható.',
     ];
   }
 
@@ -202,8 +225,10 @@ class _SubgroupSection extends StatelessWidget {
 
     final progressText = [
       if (s.requiredCredits > 0) '${s.earnedCredits}/${s.requiredCredits} kr',
-      if (s.requiredCount != null) '${s.completedCount}/${s.requiredCount} tárgy',
-      if (s.requiredCredits == 0 && s.requiredCount == null) '${s.earnedCredits} kr',
+      if (s.requiredCount != null)
+        '${s.completedCount}/${s.requiredCount} tárgy',
+      if (s.requiredCredits == 0 && s.requiredCount == null)
+        '${s.earnedCredits} kr',
     ].join(' · ');
 
     final rows = <Widget>[
@@ -221,7 +246,10 @@ class _SubgroupSection extends StatelessWidget {
             subtitle: [
               semesterLabel(c.semester),
               gradeLabel(c.grade),
-              if (c.isCustom) 'saját' else if (c.countedAsFreeElective) 'szabvál.-ként',
+              if (c.isCustom)
+                'saját'
+              else if (c.countedAsFreeElective)
+                'szabvál.-ként',
             ].join(' · '),
           ),
         ),
@@ -230,8 +258,11 @@ class _SubgroupSection extends StatelessWidget {
           name: m.name,
           code: m.code,
           credits: m.credits,
-          subtitle: m.recommendedSemester == null ? null : '${m.recommendedSemester}. félév',
-          trailing: Icon(Icons.add_circle_outline_rounded, size: 22, color: scheme.primary),
+          subtitle: m.recommendedSemester == null
+              ? null
+              : '${m.recommendedSemester}. félév',
+          trailing: Icon(Icons.add_circle_outline_rounded,
+              size: 22, color: scheme.primary),
           onTap: () => onAddMissing(m),
         ),
     ];
@@ -242,11 +273,14 @@ class _SubgroupSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
             child: Row(
               children: [
                 Expanded(
-                  child: Text(s.name, style: muted.copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w600)),
+                  child: Text(s.name,
+                      style: muted.copyWith(
+                          letterSpacing: 0.4, fontWeight: FontWeight.w600)),
                 ),
                 const SizedBox(width: AppSpacing.sm),
                 TypeBadge(type: s.type),
@@ -261,28 +295,42 @@ class _SubgroupSection extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.lg, AppSpacing.lg, AppSpacing.md),
+                    padding: const EdgeInsets.fromLTRB(AppSpacing.lg,
+                        AppSpacing.lg, AppSpacing.lg, AppSpacing.md),
                     child: Row(
                       children: [
                         Expanded(
                           child: CreditBar(
-                            value: s.requiredCredits > 0 ? s.earnedCredits : s.completedCount,
-                            max: s.requiredCredits > 0 ? s.requiredCredits : (s.requiredCount ?? 0),
+                            value: s.requiredCredits > 0
+                                ? s.earnedCredits
+                                : s.completedCount,
+                            max: s.requiredCredits > 0
+                                ? s.requiredCredits
+                                : (s.requiredCount ?? 0),
                             complete: s.isComplete,
                           ),
                         ),
                         const SizedBox(width: AppSpacing.md),
-                        if (s.isComplete) const DoneBadge() else Text(progressText, style: muted),
+                        if (s.isComplete)
+                          const DoneBadge()
+                        else
+                          Text(progressText, style: muted),
                       ],
                     ),
                   ),
                   if (rows.isEmpty)
                     Padding(
-                      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
-                      child: Text('Még nincs teljesített tárgy ebből a blokkból.', style: muted),
+                      padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.lg),
+                      child: Text(
+                          'Még nincs teljesített tárgy ebből a blokkból.',
+                          style: muted),
                     ),
                   for (final row in rows) ...[
-                    Divider(height: 1, indent: 50, color: scheme.outlineVariant.withValues(alpha: 0.5)),
+                    Divider(
+                        height: 1,
+                        indent: 50,
+                        color: scheme.outlineVariant.withValues(alpha: 0.5)),
                     row,
                   ],
                 ],
@@ -291,7 +339,8 @@ class _SubgroupSection extends StatelessWidget {
           ),
           for (final line in _footerLines)
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
               child: Text(line, style: muted),
             ),
         ],

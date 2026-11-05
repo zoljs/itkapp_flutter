@@ -22,7 +22,9 @@ void main() {
   late WikiSitesRepository repository;
 
   /// Number of GET /api/sites/me requests sent so far.
-  int mySiteRequests() => api.adapter.requests.where((r) => r.method == 'GET' && r.path == '/api/sites/me').length;
+  int mySiteRequests() => api.adapter.requests
+      .where((r) => r.method == 'GET' && r.path == '/api/sites/me')
+      .length;
 
   setUp(() {
     api = TestApiClient();
@@ -37,18 +39,27 @@ void main() {
       final second = await repository.get();
 
       expect(mySiteRequests(), 1);
-      expect(first, isA<Ok<UserSite?>>().having((r) => r.value?.name, 'name', 'Teszt Elek'));
-      expect(second, isA<Ok<UserSite?>>().having((r) => r.value?.name, 'name', 'Teszt Elek'));
+      expect(
+          first,
+          isA<Ok<UserSite?>>()
+              .having((r) => r.value?.name, 'name', 'Teszt Elek'));
+      expect(
+          second,
+          isA<Ok<UserSite?>>()
+              .having((r) => r.value?.name, 'name', 'Teszt Elek'));
     });
 
-    test('nincs oldal (204, üres válasz): Ok(null), és ez is a cache-be kerül', () async {
+    test('nincs oldal (204, üres válasz): Ok(null), és ez is a cache-be kerül',
+        () async {
       api.adapter.handler = (_) => _noContent();
 
       final first = await repository.get();
       final second = await repository.get();
 
-      expect(first, isA<Ok<UserSite?>>().having((r) => r.value, 'value', isNull));
-      expect(second, isA<Ok<UserSite?>>().having((r) => r.value, 'value', isNull));
+      expect(
+          first, isA<Ok<UserSite?>>().having((r) => r.value, 'value', isNull));
+      expect(
+          second, isA<Ok<UserSite?>>().having((r) => r.value, 'value', isNull));
       expect(mySiteRequests(), 1);
     });
 
@@ -87,7 +98,10 @@ void main() {
       final result = await repository.get();
 
       expect(mySiteRequests(), 1);
-      expect(result, isA<Ok<UserSite?>>().having((r) => r.value?.name, 'name', 'Teszt Elek'));
+      expect(
+          result,
+          isA<Ok<UserSite?>>()
+              .having((r) => r.value?.name, 'name', 'Teszt Elek'));
     });
 
     test('save a szín kulcsát küldi', () async {
@@ -108,7 +122,9 @@ void main() {
       api.adapter.handler = (_) => jsonBody(200, [_site]);
       await repository.getAll();
 
-      final listRequests = api.adapter.requests.where((r) => r.method == 'GET' && r.path == '/api/sites').length;
+      final listRequests = api.adapter.requests
+          .where((r) => r.method == 'GET' && r.path == '/api/sites')
+          .length;
       expect(listRequests, 2);
     });
 
@@ -121,7 +137,8 @@ void main() {
       final result = await repository.get();
 
       expect(mySiteRequests(), 1);
-      expect(result, isA<Ok<UserSite?>>().having((r) => r.value, 'value', isNull));
+      expect(
+          result, isA<Ok<UserSite?>>().having((r) => r.value, 'value', isNull));
     });
 
     test('clearCache (kijelentkezés) után újra kér', () async {

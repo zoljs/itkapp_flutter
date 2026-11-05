@@ -12,7 +12,8 @@ class ApiClient {
     // 401 Interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onError: (error, handler) {
-        if (isSessionExpired(error.requestOptions.uri, error.response?.statusCode)) {
+        if (isSessionExpired(
+            error.requestOptions.uri, error.response?.statusCode)) {
           unawaited(_handleUnauthorized());
         }
         handler.next(error);
@@ -22,7 +23,8 @@ class ApiClient {
     // Session expired Interceptor
     dio.interceptors.add(InterceptorsWrapper(
       onResponse: (response, handler) {
-        if (isSessionExpired(response.requestOptions.uri, response.statusCode)) {
+        if (isSessionExpired(
+            response.requestOptions.uri, response.statusCode)) {
           unawaited(_handleUnauthorized());
           return handler.reject(DioException.badResponse(
             statusCode: 401,
@@ -103,9 +105,13 @@ class ApiClient {
         send: () => dio.post(path, data: data),
       );
 
-  Future<Result<void>> delete(String path) => sendRequest(parse: (_) {}, send: () => dio.delete(path));
+  Future<Result<void>> delete(String path) =>
+      sendRequest(parse: (_) {}, send: () => dio.delete(path));
 }
 
 const _pathsWithoutLogout = {'/api/auth/login', '/api/auth/logout'};
 
-bool isSessionExpired(Uri uri, int? statusCode) => statusCode == 401 && uri.host == Uri.parse(ApiClient.baseUrl).host && !_pathsWithoutLogout.contains(uri.path);
+bool isSessionExpired(Uri uri, int? statusCode) =>
+    statusCode == 401 &&
+    uri.host == Uri.parse(ApiClient.baseUrl).host &&
+    !_pathsWithoutLogout.contains(uri.path);

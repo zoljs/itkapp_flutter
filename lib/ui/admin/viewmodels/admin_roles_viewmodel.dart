@@ -8,7 +8,8 @@ import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 
 class AdminRolesViewModel extends ChangeNotifier {
-  AdminRolesViewModel({required AdminRolesRepository repository}) : _repository = repository {
+  AdminRolesViewModel({required AdminRolesRepository repository})
+      : _repository = repository {
     load = Command0<void>(_load);
     unawaited(load.execute());
     assign = Command1<void, int>(_assign);
@@ -32,7 +33,8 @@ class AdminRolesViewModel extends ChangeNotifier {
   late final Command1<void, int> revoke;
 
   // Getters
-  UnmodifiableListView<UserSummary> get roleHolders => UnmodifiableListView(_roleHolders);
+  UnmodifiableListView<UserSummary> get roleHolders =>
+      UnmodifiableListView(_roleHolders);
 
   bool get initialLoading => load.running && _roleHolders.isEmpty;
 

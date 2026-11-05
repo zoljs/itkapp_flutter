@@ -11,7 +11,8 @@ class CalendarLinksRepository {
 
   final ApiClient _apiClient;
 
-  Future<Result<List<CalendarLink>>> get() async => _apiClient.getJson(_path, parse: CalendarLink.parseList);
+  Future<Result<List<CalendarLink>>> get() async =>
+      _apiClient.getJson(_path, parse: CalendarLink.parseList);
 
   Future<Result<void>> add({
     required String name,

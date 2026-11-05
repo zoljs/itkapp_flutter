@@ -34,7 +34,8 @@ class StatRow extends StatelessWidget {
                   v.label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+                  style:
+                      TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
                 ),
                 const SizedBox(height: AppSpacing.xxs),
                 Text(
@@ -86,8 +87,11 @@ class AveragesCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
-            child: Text('Átlagok', style: muted.copyWith(letterSpacing: 0.4, fontWeight: FontWeight.w600)),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+            child: Text('Átlagok',
+                style: muted.copyWith(
+                    letterSpacing: 0.4, fontWeight: FontWeight.w600)),
           ),
           ClipRSuperellipse(
             borderRadius: BorderRadius.circular(AppRadius.xxl),
@@ -111,10 +115,17 @@ class AveragesCard extends StatelessWidget {
                                 formatAverage(averages.overallWeightedAverage),
                                 highlight: true,
                               ),
-                              StatValue('Kreditindex', latest == null ? '–' : formatAverage(latest.creditIndex)),
+                              StatValue(
+                                  'Kreditindex',
+                                  latest == null
+                                      ? '–'
+                                      : formatAverage(latest.creditIndex)),
                               StatValue(
                                 'Korr. KI',
-                                latest == null ? '–' : formatAverage(latest.correctedCreditIndex),
+                                latest == null
+                                    ? '–'
+                                    : formatAverage(
+                                        latest.correctedCreditIndex),
                               ),
                             ],
                           ),
@@ -124,28 +135,37 @@ class AveragesCard extends StatelessWidget {
                             '(az elégtelen és az aláírásos tárgyak nélkül). Kreditindex: Σ(teljesített kredit × jegy) / 30. '
                             'Korrigált KI: kreditindex × teljesített / felvett kredit. '
                             'Összesített korrigált KI: Σ(kredit × jegy) / (30 × aktív félévek) × teljesített / felvett.',
-                            style: TextStyle(fontSize: 12, color: scheme.onSurfaceVariant),
+                            style: TextStyle(
+                                fontSize: 12, color: scheme.onSurfaceVariant),
                           ),
                         ],
                       ),
                     ),
                   ),
-                  Divider(height: 1, indent: AppSpacing.lg, color: scheme.outlineVariant.withValues(alpha: 0.5)),
+                  Divider(
+                      height: 1,
+                      indent: AppSpacing.lg,
+                      color: scheme.outlineVariant.withValues(alpha: 0.5)),
                   InkWell(
                     onTap: onOpenDiploma,
                     child: ConstrainedBox(
                       constraints: const BoxConstraints(minHeight: 60),
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.sm, AppSpacing.sm),
+                        padding: const EdgeInsets.fromLTRB(AppSpacing.lg,
+                            AppSpacing.sm, AppSpacing.sm, AppSpacing.sm),
                         child: Row(
                           children: [
-                            Icon(Icons.workspace_premium_rounded, color: scheme.tertiary),
+                            Icon(Icons.workspace_premium_rounded,
+                                color: scheme.tertiary),
                             const SizedBox(width: AppSpacing.md),
                             Expanded(
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('Diplomaátlag', style: TextStyle(fontSize: 15, color: scheme.onSurface)),
+                                  Text('Diplomaátlag',
+                                      style: TextStyle(
+                                          fontSize: 15,
+                                          color: scheme.onSurface)),
                                   Text(
                                     d == null
                                         ? 'Még nincs elég adat'
@@ -165,7 +185,8 @@ class AveragesCard extends StatelessWidget {
                                 color: scheme.onSurface,
                               ),
                             ),
-                            Icon(Icons.chevron_right_rounded, color: scheme.outline),
+                            Icon(Icons.chevron_right_rounded,
+                                color: scheme.outline),
                           ],
                         ),
                       ),

@@ -73,7 +73,8 @@ GoRouter router(
           },
         ),
         StatefulShellRoute.indexedStack(
-          builder: (context, state, navigationShell) => AppScaffold(navigationShell: navigationShell),
+          builder: (context, state, navigationShell) =>
+              AppScaffold(navigationShell: navigationShell),
           branches: [
             // ----------------- [HOME] -----------------
             StatefulShellBranch(routes: [
@@ -107,7 +108,8 @@ GoRouter router(
         ),
         GoRoute(
           path: Routes.adminRoles,
-          pageBuilder: (context, state) => _page(state, const AdminRolesScreen()),
+          pageBuilder: (context, state) =>
+              _page(state, const AdminRolesScreen()),
         ),
         GoRoute(
           path: Routes.midterms,
@@ -135,20 +137,24 @@ GoRouter router(
         ),
         GoRoute(
           path: Routes.calendarLinks,
-          pageBuilder: (context, state) => _page(state, const CalendarLinksScreen()),
+          pageBuilder: (context, state) =>
+              _page(state, const CalendarLinksScreen()),
         ),
         GoRoute(
           path: Routes.absolutorium,
-          pageBuilder: (context, state) => _page(state, const AbsolutoriumScreen()),
+          pageBuilder: (context, state) =>
+              _page(state, const AbsolutoriumScreen()),
           routes: [
             GoRoute(
               path: 'completions',
-              pageBuilder: (context, state) => _page(state, const CompletionsScreen()),
+              pageBuilder: (context, state) =>
+                  _page(state, const CompletionsScreen()),
             ),
             GoRoute(
               path: 'groups/:id',
               pageBuilder: (context, state) {
-                final groupId = int.tryParse(state.pathParameters['id'] ?? '') ?? -1;
+                final groupId =
+                    int.tryParse(state.pathParameters['id'] ?? '') ?? -1;
                 return _page(state, GroupDetailScreen(groupId: groupId));
               },
             ),
@@ -156,7 +162,8 @@ GoRouter router(
         ),
         GoRoute(
           path: Routes.wikiSetup,
-          pageBuilder: (context, state) => _page(state, const WikiFilesSetupScreen()),
+          pageBuilder: (context, state) =>
+              _page(state, const WikiFilesSetupScreen()),
         ),
         GoRoute(
           path: Routes.wikiEdit,
@@ -183,4 +190,5 @@ GoRouter router(
       ],
     );
 
-Page<void> _page(GoRouterState state, Widget child) => MaterialPage(child: child, key: state.pageKey);
+Page<void> _page(GoRouterState state, Widget child) =>
+    MaterialPage(child: child, key: state.pageKey);

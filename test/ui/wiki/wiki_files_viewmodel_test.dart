@@ -11,8 +11,10 @@ void main() {
 
   setUp(() => repository = FakeWikiFilesRepository());
 
-  Future<WikiFilesViewModel> create({String dir = '', String user = 'perpa4'}) async {
-    final viewModel = WikiFilesViewModel(repository: repository, dir: dir, user: user);
+  Future<WikiFilesViewModel> create(
+      {String dir = '', String user = 'perpa4'}) async {
+    final viewModel =
+        WikiFilesViewModel(repository: repository, dir: dir, user: user);
     await flush();
     return viewModel;
   }

@@ -37,7 +37,11 @@ class CalendarLinksViewmodel extends ChangeNotifier {
   UnmodifiableListView<CalendarLink> get links => UnmodifiableListView(_links);
   SyncInterval get syncInterval => _syncInterval;
   bool get isFull => _links.length >= 10;
-  bool get canAdd => _name.trim().isNotEmpty && _url.trim().isNotEmpty && !add.running && !isFull;
+  bool get canAdd =>
+      _name.trim().isNotEmpty &&
+      _url.trim().isNotEmpty &&
+      !add.running &&
+      !isFull;
 
   // Setters
   void setName(String value) {

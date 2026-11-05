@@ -54,7 +54,8 @@ class EventCard extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                [time, if (e.location?.isNotEmpty ?? false) e.location!].join(' · '),
+                [time, if (e.location?.isNotEmpty ?? false) e.location!]
+                    .join(' · '),
                 style: muted,
               ),
             ],

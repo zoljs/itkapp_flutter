@@ -8,7 +8,9 @@ import 'package:itk_app/utils/result.dart';
 import 'package:itk_app/utils/semester.dart';
 
 class AddCompletionViewModel extends ChangeNotifier {
-  AddCompletionViewModel({required AbsolutoriumRepository repository, MissingSubject? initialSubject})
+  AddCompletionViewModel(
+      {required AbsolutoriumRepository repository,
+      MissingSubject? initialSubject})
       : _repository = repository,
         lockedToCurriculum = initialSubject != null {
     save = Command0<void>(_save);
@@ -58,7 +60,8 @@ class AddCompletionViewModel extends ChangeNotifier {
 
   int? get grade => _grade;
 
-  List<int?> get gradeOptions => _custom ? allGrades : (_subject?.gradeOptions ?? allGrades);
+  List<int?> get gradeOptions =>
+      _custom ? allGrades : (_subject?.gradeOptions ?? allGrades);
 
   bool get canSave {
     if (save.running) return false;
@@ -129,7 +132,9 @@ class AddCompletionViewModel extends ChangeNotifier {
   Future<Result<void>> _save() async {
     if (_custom) {
       final name = _customName.trim();
-      if (name.length < 2) return const Err('Add meg a tárgy nevét (legalább 2 karakter).');
+      if (name.length < 2) {
+        return const Err('Add meg a tárgy nevét (legalább 2 karakter).');
+      }
       return _repository.addCustomCompletion(
         name: name,
         code: _customCode,
@@ -141,6 +146,7 @@ class AddCompletionViewModel extends ChangeNotifier {
 
     final subject = _subject;
     if (subject == null) return const Err('Válassz tárgyat.');
-    return _repository.addCompletion(subjectId: subject.id, semester: _semester, grade: _grade);
+    return _repository.addCompletion(
+        subjectId: subject.id, semester: _semester, grade: _grade);
   }
 }

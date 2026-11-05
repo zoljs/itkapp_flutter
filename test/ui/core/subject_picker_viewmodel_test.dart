@@ -11,7 +11,8 @@ void main() {
   late FakeSubjectsRepository subjects;
 
   setUp(() {
-    subjects = FakeSubjectsRepository()..getResult = const Ok([analysis, programming]);
+    subjects = FakeSubjectsRepository()
+      ..getResult = const Ok([analysis, programming]);
   });
 
   group('SubjectPickerViewModel', () {
@@ -50,7 +51,8 @@ void main() {
       expect(viewModel.selectedSubjects, {'Analízis I.'});
 
       viewModel.toggleSubject('Programozás alapjai');
-      expect(viewModel.selectedSubjects, {'Analízis I.', 'Programozás alapjai'});
+      expect(
+          viewModel.selectedSubjects, {'Analízis I.', 'Programozás alapjai'});
 
       viewModel.toggleSubject('Analízis I.');
       expect(viewModel.selectedSubjects, {'Programozás alapjai'});

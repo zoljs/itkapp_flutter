@@ -36,12 +36,14 @@ class WikiSitesRepository {
     final cachedMySite = _cachedMySite;
     if (cachedMySite != null && !forceReload) return cachedMySite;
 
-    final result = await _apiClient.getJson('$_path/me', parse: UserSite.parseOptional);
+    final result =
+        await _apiClient.getJson('$_path/me', parse: UserSite.parseOptional);
     if (result is Ok<UserSite?>) _cachedMySite = result;
     return result;
   }
 
-  Future<Result<UserSite>> save(List<String> tags, bool isPublic, SiteColor color) async {
+  Future<Result<UserSite>> save(
+      List<String> tags, bool isPublic, SiteColor color) async {
     final result = await _apiClient.postJson(
       _path,
       parse: UserSite.parse,

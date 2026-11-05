@@ -32,7 +32,8 @@ class MySiteHeader extends StatelessWidget {
         ),
         SettingsGroup(
           header: 'Adatok',
-          footer: 'Az oldal neve és az URL a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
+          footer:
+              'Az oldal neve és az URL a bejelentkezett fiókodhoz van rögzítve, nem módosítható.',
           children: [
             SettingsTile(
               title: 'Név és URL',

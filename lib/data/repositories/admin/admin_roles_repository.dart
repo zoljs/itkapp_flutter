@@ -11,7 +11,8 @@ class AdminRolesRepository {
 
   final ApiClient _apiClient;
 
-  Future<Result<List<UserSummary>>> getRoleHolders() async => _apiClient.getJson(_path, parse: UserSummary.parseList);
+  Future<Result<List<UserSummary>>> getRoleHolders() async =>
+      _apiClient.getJson(_path, parse: UserSummary.parseList);
 
   Future<Result<void>> assignCohortRep(int userId) async {
     final result = await _apiClient.post(

@@ -56,7 +56,10 @@ class WikiViewModel extends ChangeNotifier {
     return _sites.where((s) {
       final myLogin = _mySite?.value?.login;
       final isMine = myLogin != null && s.login == myLogin;
-      final matchesSearch = q.isEmpty || s.name.toLowerCase().contains(q) || s.tags.any((t) => t.toLowerCase().contains(q)) || s.url.toLowerCase().contains(q);
+      final matchesSearch = q.isEmpty ||
+          s.name.toLowerCase().contains(q) ||
+          s.tags.any((t) => t.toLowerCase().contains(q)) ||
+          s.url.toLowerCase().contains(q);
 
       return !isMine && matchesSearch;
     }).toList();
@@ -66,7 +69,8 @@ class WikiViewModel extends ChangeNotifier {
   Future<Result<void>> _load(bool forceReload) async {
     final sitesFuture = _wikiSitesRepository.getAll(forceReload: forceReload);
 
-    final mySiteResult = await _wikiSitesRepository.get(forceReload: forceReload);
+    final mySiteResult =
+        await _wikiSitesRepository.get(forceReload: forceReload);
     if (mySiteResult is Ok<UserSite?>) {
       _mySite = mySiteResult;
       notifyListeners();

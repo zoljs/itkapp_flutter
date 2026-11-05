@@ -17,7 +17,8 @@ void main() {
   });
 
   Future<CalendarLinksViewmodel> create() async {
-    final viewModel = CalendarLinksViewmodel(repository: links, calendarRepository: calendar);
+    final viewModel =
+        CalendarLinksViewmodel(repository: links, calendarRepository: calendar);
     await flush();
     return viewModel;
   }
@@ -65,7 +66,8 @@ void main() {
     });
   });
 
-  test('hozzáadás: trimmel, üríti a mezőket és a naptár cache-t, újratölt', () async {
+  test('hozzáadás: trimmel, üríti a mezőket és a naptár cache-t, újratölt',
+      () async {
     final viewModel = await create()
       ..setName('  Edzés ')
       ..setUrl(' https://x/c.ics ')

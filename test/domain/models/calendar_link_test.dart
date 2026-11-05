@@ -22,7 +22,8 @@ void main() {
       expect(() => SyncInterval.fromWire('15m'), throwsFormatException);
       expect(() => SyncInterval.fromWire(null), throwsFormatException);
       // The enum itself is not a wire value: this was a real bug once.
-      expect(() => SyncInterval.fromWire(SyncInterval.daily), throwsFormatException);
+      expect(() => SyncInterval.fromWire(SyncInterval.daily),
+          throwsFormatException);
     });
   });
 
@@ -39,12 +40,14 @@ void main() {
     });
 
     test('a még nem szinkronizált link null időpontot kap', () {
-      final link = CalendarLink.fromJson({...validJson(), 'lastSyncedAt': null});
+      final link =
+          CalendarLink.fromJson({...validJson(), 'lastSyncedAt': null});
       expect(link.lastSyncedAt, isNull);
     });
 
     test('a hibaüzenet átjön', () {
-      final link = CalendarLink.fromJson({...validJson(), 'lastError': 'Nem sikerült letölteni a naptárat.'});
+      final link = CalendarLink.fromJson(
+          {...validJson(), 'lastError': 'Nem sikerült letölteni a naptárat.'});
       expect(link.lastError, 'Nem sikerült letölteni a naptárat.');
     });
 
@@ -76,13 +79,21 @@ void main() {
 
     test('egy rossz elem az egész listát elutasítja', () {
       expect(
-        () => CalendarLink.parseList([validJson(), {'id': 'x'}]),
+        () => CalendarLink.parseList([
+          validJson(),
+          {'id': 'x'}
+        ]),
         throwsFormatException,
       );
     });
 
     test('jó lista', () {
-      expect(CalendarLink.parseList([validJson(), {...validJson(), 'id': 4}]), hasLength(2));
+      expect(
+          CalendarLink.parseList([
+            validJson(),
+            {...validJson(), 'id': 4}
+          ]),
+          hasLength(2));
     });
   });
 }

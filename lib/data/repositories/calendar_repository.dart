@@ -20,7 +20,8 @@ class CalendarRepository {
     if (cached != null && !forceReload) return Ok(cached);
 
     // Reponse try
-    final result = await _apiClient.getJson(_path, parse: CalendarEvent.parseIcsResponse);
+    final result =
+        await _apiClient.getJson(_path, parse: CalendarEvent.parseIcsResponse);
     if (result case Ok(:final value)) _cached = value;
     return result;
   }

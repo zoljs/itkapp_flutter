@@ -26,22 +26,33 @@ class LdapUser {
 
   factory LdapUser.fromJson(Map<String, dynamic> json) {
     final id = json['id'];
-    if (id is! int) throw const FormatException('A felhasználónak hiányzik az id-je.');
+    if (id is! int) {
+      throw const FormatException('A felhasználónak hiányzik az id-je.');
+    }
 
     final login = json['login'];
-    if (login is! String) throw const FormatException('A felhasználónak hiányzik a felhasználóneve.');
+    if (login is! String) {
+      throw const FormatException(
+          'A felhasználónak hiányzik a felhasználóneve.');
+    }
 
     final name = json['name'];
-    if (name is! String) throw const FormatException('A felhasználónak hiányzik a neve.');
+    if (name is! String) {
+      throw const FormatException('A felhasználónak hiányzik a neve.');
+    }
 
     final email = json['email'];
     if (email is! String?) throw const FormatException('Hibás email mező.');
 
     final givenName = json['givenName'];
-    if (givenName is! String) throw const FormatException('A felhasználónak hiányzik a keresztneve.');
+    if (givenName is! String) {
+      throw const FormatException('A felhasználónak hiányzik a keresztneve.');
+    }
 
     final familyName = json['familyName'];
-    if (familyName is! String) throw const FormatException('A felhasználónak hiányzik a vezetékneve.');
+    if (familyName is! String) {
+      throw const FormatException('A felhasználónak hiányzik a vezetékneve.');
+    }
 
     return LdapUser(
       id: id,
@@ -50,7 +61,8 @@ class LdapUser {
       name: name,
       givenName: givenName,
       familyName: familyName,
-      canModerateMidterms: _readBool(json['canModerateMidterms'], 'canModerateMidterms'),
+      canModerateMidterms:
+          _readBool(json['canModerateMidterms'], 'canModerateMidterms'),
       isAdmin: _readBool(json['isAdmin'], 'isAdmin'),
     );
   }

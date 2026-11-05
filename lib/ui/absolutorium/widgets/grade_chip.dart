@@ -4,7 +4,12 @@ import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 
 class GradeChip extends StatelessWidget {
-  const GradeChip({super.key, required this.grade, required this.selected, required this.onTap, this.emptyLabel});
+  const GradeChip(
+      {super.key,
+      required this.grade,
+      required this.selected,
+      required this.onTap,
+      this.emptyLabel});
 
   final int? grade;
   final bool selected;
@@ -16,7 +21,8 @@ class GradeChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final isWide = grade == null;
-    final shape = RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.lg));
+    final shape = RoundedSuperellipseBorder(
+        borderRadius: BorderRadius.circular(AppRadius.lg));
 
     return Semantics(
       button: true,
@@ -33,7 +39,9 @@ class GradeChip extends StatelessWidget {
             width: isWide ? 96 : 48,
             child: Center(
               child: Text(
-                grade == null ? (emptyLabel ?? gradeLabel(null)) : gradeLabel(grade),
+                grade == null
+                    ? (emptyLabel ?? gradeLabel(null))
+                    : gradeLabel(grade),
                 style: TextStyle(
                   fontSize: isWide ? 14 : 18,
                   fontWeight: FontWeight.w700,

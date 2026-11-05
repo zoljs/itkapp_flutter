@@ -2,7 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:itk_app/domain/models/absolutorium.dart';
 import 'package:itk_app/domain/models/averages.dart';
 
-Completion c(int id, String semester, int credits, int? grade, {bool custom = false, String? name}) => Completion(
+Completion c(int id, String semester, int credits, int? grade,
+        {bool custom = false, String? name}) =>
+    Completion(
       id: id,
       subjectId: custom ? null : id,
       code: custom ? null : 'K$id',
@@ -55,7 +57,8 @@ void main() {
       expect(a.overallWeightedAverage, closeTo(73 / 18, 1e-9));
       expect(a.totalEnrolledCredits, 23);
       expect(a.totalCompletedCredits, 20);
-      expect(a.cumulativeCorrectedCreditIndex, closeTo(73 / 60 * 20 / 23, 1e-9));
+      expect(
+          a.cumulativeCorrectedCreditIndex, closeTo(73 / 60 * 20 / 23, 1e-9));
       expect(a.lowestGrade, 1);
       expect(a.hasFailedSubject, isTrue);
     });
@@ -91,7 +94,8 @@ void main() {
 
     test('all parts given', () {
       const avg = 73 / 18;
-      final e = estimateDiploma(avg, const DiplomaInputs(thesis: 5, finalExam: 5))!;
+      final e =
+          estimateDiploma(avg, const DiplomaInputs(thesis: 5, finalExam: 5))!;
       expect(e.isEstimate, isFalse);
       expect(e.value, 4.71);
       expect(e.classification, 'jeles');
@@ -106,10 +110,12 @@ void main() {
 
   test('honoursConditions', () {
     final a = computeAverages(sample);
-    final list = honoursConditions(a, const DiplomaInputs(thesis: 5, finalExam: 5));
+    final list =
+        honoursConditions(a, const DiplomaInputs(thesis: 5, finalExam: 5));
     expect(list.map((h) => h.met), [true, true, true, false, false]);
 
-    final unknown = honoursConditions(AverageSummary.empty, DiplomaInputs.empty);
+    final unknown =
+        honoursConditions(AverageSummary.empty, DiplomaInputs.empty);
     expect(unknown.every((h) => h.met == null), isTrue);
   });
 
@@ -120,7 +126,8 @@ void main() {
       expect(back.thesis, 4);
       expect(back.finalExam, isNull);
 
-      expect(DiplomaInputs.fromJsonString('{"thesis":5,"mathExam":3}').thesis, 5);
+      expect(
+          DiplomaInputs.fromJsonString('{"thesis":5,"mathExam":3}').thesis, 5);
       expect(DiplomaInputs.fromJsonString('{"thesis":9}').thesis, isNull);
       expect(DiplomaInputs.fromJsonString('nem json').thesis, isNull);
       expect(DiplomaInputs.fromJsonString(null).thesis, isNull);

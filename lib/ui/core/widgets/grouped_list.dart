@@ -16,14 +16,16 @@ class SettingsHeader extends StatelessWidget {
     final muted = TextStyle(fontSize: 13, color: scheme.onSurfaceVariant);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.lg, 0, AppSpacing.lg, AppSpacing.sm),
       child: Text(title, style: muted.copyWith(letterSpacing: 0.4)),
     );
   }
 }
 
 class SettingsGroup extends StatelessWidget {
-  const SettingsGroup({super.key, this.header, this.footer, required this.children});
+  const SettingsGroup(
+      {super.key, this.header, this.footer, required this.children});
 
   final String? header;
   final String? footer;
@@ -65,7 +67,8 @@ class SettingsGroup extends StatelessWidget {
           ),
           if (footer != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg, AppSpacing.sm, AppSpacing.lg, 0),
               child: Text(footer!, style: muted),
             ),
         ],
@@ -116,7 +119,8 @@ class SettingsTile extends StatelessWidget {
                     color: iconColor,
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
-                  child: Icon(icon, size: 18, color: foregroundColor ?? Colors.white),
+                  child: Icon(icon,
+                      size: 18, color: foregroundColor ?? Colors.white),
                 ),
                 const SizedBox(width: AppSpacing.md + 2),
               ],
@@ -133,14 +137,17 @@ class SettingsTile extends StatelessWidget {
                     value!,
                     textAlign: TextAlign.end,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
+                    style:
+                        TextStyle(fontSize: 15, color: scheme.onSurfaceVariant),
                   ),
                 ),
               if (trailing != null) trailing!,
               if (onTap != null && trailing == null) ...[
                 const SizedBox(width: AppSpacing.xs),
                 Icon(
-                  external ? Icons.open_in_new_rounded : Icons.chevron_right_rounded,
+                  external
+                      ? Icons.open_in_new_rounded
+                      : Icons.chevron_right_rounded,
                   size: external ? 18 : 22,
                   color: scheme.outline,
                 ),

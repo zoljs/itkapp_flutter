@@ -26,7 +26,8 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
   @override
   void initState() {
     super.initState();
-    _viewModel = DiplomaViewModel(repository: context.read<AbsolutoriumRepository>());
+    _viewModel =
+        DiplomaViewModel(repository: context.read<AbsolutoriumRepository>());
   }
 
   @override
@@ -51,7 +52,12 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
             children: [
-              for (final g in DiplomaViewModel.grades) GradeChip(grade: g, selected: g == value, emptyLabel: 'nincs még', onTap: () => onChanged(g)),
+              for (final g in DiplomaViewModel.grades)
+                GradeChip(
+                    grade: g,
+                    selected: g == value,
+                    emptyLabel: 'nincs még',
+                    onTap: () => onChanged(g)),
             ],
           ),
         ),
@@ -69,7 +75,8 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
 
         return Scaffold(
           backgroundColor: sheetBackgroundColor(context),
-          appBar: buildBrandAppBar(context: context, title: 'Diplomaátlag', closesSheet: true),
+          appBar: buildBrandAppBar(
+              context: context, title: 'Diplomaátlag', closesSheet: true),
           body: ListView(
             controller: widget.scrollController,
             padding: EdgeInsets.fromLTRB(
@@ -84,12 +91,15 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
               if (estimate != null)
                 SettingsGroup(
                   header: 'Összetevők',
-                  footer: 'A még meg nem adott jegyek helyén a jelenlegi súlyozott átlagod szerepel.',
+                  footer:
+                      'A még meg nem adott jegyek helyén a jelenlegi súlyozott átlagod szerepel.',
                   children: [
                     for (final p in estimate.parts)
                       SettingsTile(
                         title: '${p.label} (${(p.weight * 100).round()}%)',
-                        value: p.estimated ? '≈ ${formatAverage(p.value)}' : formatAverage(p.value),
+                        value: p.estimated
+                            ? '≈ ${formatAverage(p.value)}'
+                            : formatAverage(p.value),
                       ),
                   ],
                 ),
@@ -101,12 +111,14 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
               ),
               _gradePicker(
                 header: 'Záróvizsga tárgy',
-                footer: '30%. A súlyozott tanulmányi átlag (30%) a teljesítéseidből számolódik, '
+                footer:
+                    '30%. A súlyozott tanulmányi átlag (30%) a teljesítéseidből számolódik, '
                     'a szakdolgozat-készítés tárgyai nélkül.',
                 value: inputs.finalExam,
                 onChanged: _viewModel.setFinalExam,
               ),
-              _HonoursGroup(conditions: _viewModel.honours, met: _viewModel.honoursMet),
+              _HonoursGroup(
+                  conditions: _viewModel.honours, met: _viewModel.honoursMet),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
                 child: Text(
@@ -115,7 +127,9 @@ class _DiplomaSheetState extends State<DiplomaSheet> {
                   'A hivatalos eredményt a Tanulmányi Osztály állapítja meg; '
                   'az elismert (kreditátvitellel befogadott) tárgyak nem számítanak az átlagba. '
                   'A megadott jegyek csak ezen az eszközön tárolódnak.',
-                  style: TextStyle(fontSize: 12, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                  style: TextStyle(
+                      fontSize: 12,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant),
                 ),
               ),
             ],
@@ -142,7 +156,8 @@ class _ResultCard extends StatelessWidget {
       padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: ShapeDecoration(
         color: scheme.primaryContainer,
-        shape: RoundedSuperellipseBorder(borderRadius: BorderRadius.circular(AppRadius.xxl)),
+        shape: RoundedSuperellipseBorder(
+            borderRadius: BorderRadius.circular(AppRadius.xxl)),
       ),
       child: loading && e == null
           ? const Center(child: CircularProgressIndicator.adaptive())
@@ -150,8 +165,14 @@ class _ResultCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  e == null ? 'Még nincs elég adat' : (e.isEstimate ? 'Becsült diplomaátlag' : 'Diplomaátlag'),
-                  style: TextStyle(fontSize: 13, color: scheme.onPrimaryContainer.withValues(alpha: 0.8)),
+                  e == null
+                      ? 'Még nincs elég adat'
+                      : (e.isEstimate
+                          ? 'Becsült diplomaátlag'
+                          : 'Diplomaátlag'),
+                  style: TextStyle(
+                      fontSize: 13,
+                      color: scheme.onPrimaryContainer.withValues(alpha: 0.8)),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
@@ -164,7 +185,9 @@ class _ResultCard extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  e == null ? 'Vigyél fel jeggyel zárult tárgyat.' : 'Minősítés: ${e.classification}',
+                  e == null
+                      ? 'Vigyél fel jeggyel zárult tárgyat.'
+                      : 'Minősítés: ${e.classification}',
                   style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.w600,

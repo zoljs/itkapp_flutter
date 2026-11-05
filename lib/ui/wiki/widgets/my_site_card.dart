@@ -7,7 +7,11 @@ import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
 
 class MySiteCard extends StatelessWidget {
-  const MySiteCard({super.key, required this.mySite, required this.onOpen, required this.onEdit});
+  const MySiteCard(
+      {super.key,
+      required this.mySite,
+      required this.onOpen,
+      required this.onEdit});
 
   final UserSite? mySite;
   final ValueChanged<UserSite> onOpen;

@@ -5,10 +5,13 @@ import 'package:itk_app/data/repositories/absolutorium_repository.dart';
 import 'package:itk_app/domain/models/averages.dart';
 
 class DiplomaViewModel extends ChangeNotifier {
-  DiplomaViewModel({required AbsolutoriumRepository repository}) : _repository = repository {
+  DiplomaViewModel({required AbsolutoriumRepository repository})
+      : _repository = repository {
     _repository.completions.addListener(_onCompletionsChanged);
     _repository.diplomaInputs.addListener(notifyListeners);
-    if (_repository.completions.value == null) unawaited(_repository.getCompletions());
+    if (_repository.completions.value == null) {
+      unawaited(_repository.getCompletions());
+    }
   }
 
   static const grades = <int?>[5, 4, 3, 2, 1, null];
@@ -34,7 +37,8 @@ class DiplomaViewModel extends ChangeNotifier {
     if (_dirty) {
       _dirty = false;
       final source = _repository.completions.value;
-      _averages = source == null ? AverageSummary.empty : computeAverages(source);
+      _averages =
+          source == null ? AverageSummary.empty : computeAverages(source);
     }
     return _averages;
   }
@@ -43,7 +47,8 @@ class DiplomaViewModel extends ChangeNotifier {
 
   DiplomaInputs get inputs => _repository.diplomaInputs.value;
 
-  DiplomaEstimate? get estimate => estimateDiploma(averages.diplomaWeightedAverage, inputs);
+  DiplomaEstimate? get estimate =>
+      estimateDiploma(averages.diplomaWeightedAverage, inputs);
 
   List<HonoursCondition> get honours => honoursConditions(averages, inputs);
 
@@ -54,7 +59,9 @@ class DiplomaViewModel extends ChangeNotifier {
     return null;
   }
 
-  void setThesis(int? grade) => unawaited(_repository.setDiplomaInputs(inputs.withThesis(grade)));
+  void setThesis(int? grade) =>
+      unawaited(_repository.setDiplomaInputs(inputs.withThesis(grade)));
 
-  void setFinalExam(int? grade) => unawaited(_repository.setDiplomaInputs(inputs.withFinalExam(grade)));
+  void setFinalExam(int? grade) =>
+      unawaited(_repository.setDiplomaInputs(inputs.withFinalExam(grade)));
 }

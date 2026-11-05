@@ -11,7 +11,10 @@ void main() {
 
   setUp(() {
     repository = FakeAdminRolesRepository()
-      ..getResult = Ok([summary(1, 'Teszt Elek', 'tesel1'), summary(2, 'Minta Anna', 'minan2')]);
+      ..getResult = Ok([
+        summary(1, 'Teszt Elek', 'tesel1'),
+        summary(2, 'Minta Anna', 'minan2')
+      ]);
   });
 
   Future<AdminRolesViewModel> create() async {

@@ -40,7 +40,8 @@ class WelcomeIllustration extends StatelessWidget {
               children: [
                 for (final (i, words) in _rows.indexed)
                   Padding(
-                    padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: AppSpacing.xs),
                     child: _MarqueeRow(
                       words: words,
                       reverse: i.isOdd,
@@ -67,7 +68,8 @@ class WelcomeIllustration extends StatelessWidget {
             ),
             child: Image.asset(
               'assets/icons/itkapp-small.png',
-              errorBuilder: (_, __, ___) => const Icon(Icons.school_rounded, size: 64, color: itkDark),
+              errorBuilder: (_, __, ___) =>
+                  const Icon(Icons.school_rounded, size: 64, color: itkDark),
             ),
           ).animate().scale(
                 begin: const Offset(0.6, 0.6),

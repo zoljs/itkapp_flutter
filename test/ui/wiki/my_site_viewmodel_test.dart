@@ -18,7 +18,8 @@ void main() {
   });
 
   Future<MySiteViewModel> create() async {
-    final viewModel = MySiteViewModel(wikiSitesRepository: sites, authRepository: auth);
+    final viewModel =
+        MySiteViewModel(wikiSitesRepository: sites, authRepository: auth);
     await flush();
     return viewModel;
   }
@@ -53,7 +54,8 @@ void main() {
     sites.getResult = const Ok(site);
 
     // No flush(): check the state right after the constructor.
-    final viewModel = MySiteViewModel(wikiSitesRepository: sites, authRepository: auth);
+    final viewModel =
+        MySiteViewModel(wikiSitesRepository: sites, authRepository: auth);
 
     expect(viewModel.color, SiteColor.green);
     expect(viewModel.tags, ['Fizika']);

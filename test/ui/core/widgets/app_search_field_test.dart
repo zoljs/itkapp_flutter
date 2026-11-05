@@ -46,7 +46,8 @@ void main() {
     expect(find.byIcon(Icons.close_rounded), findsOneWidget);
   });
 
-  testWidgets('a törlés gomb üríti a mezőt és üres szöveggel hívja az onChanged-et',
+  testWidgets(
+      'a törlés gomb üríti a mezőt és üres szöveggel hívja az onChanged-et',
       (tester) async {
     final controller = TextEditingController(text: 'anal');
     addTearDown(controller.dispose);

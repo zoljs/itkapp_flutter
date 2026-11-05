@@ -17,14 +17,18 @@ class UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final login = this.login;
-    final initial = login == null || login.isEmpty ? 'U' : login[0].toUpperCase();
+    final initial =
+        login == null || login.isEmpty ? 'U' : login[0].toUpperCase();
 
     return CircleAvatar(
       backgroundColor: color,
       radius: radius,
       child: Text(
         initial,
-        style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.w900, color: Colors.black87),
+        style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.w900,
+            color: Colors.black87),
       ),
     );
   }

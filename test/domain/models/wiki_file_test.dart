@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 
-Map<String, dynamic> file(String name, {String type = 'file'}) => {'name': name, 'type': type};
+Map<String, dynamic> file(String name, {String type = 'file'}) =>
+    {'name': name, 'type': type};
 
 void main() {
   group('WikiFile.fromJson', () {
@@ -15,7 +16,8 @@ void main() {
     });
 
     test('ismeretlen típus FormatException', () {
-      expect(() => WikiFile.fromJson(file('x', type: 'link')), throwsFormatException);
+      expect(() => WikiFile.fromJson(file('x', type: 'link')),
+          throwsFormatException);
     });
 
     test('útvonal-karakter a névben FormatException', () {

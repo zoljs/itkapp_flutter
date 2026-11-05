@@ -11,7 +11,8 @@ void main() {
 
   setUp(() {
     adapter = FakeHttpAdapter();
-    dio = Dio(BaseOptions(baseUrl: 'https://test.local'))..httpClientAdapter = adapter;
+    dio = Dio(BaseOptions(baseUrl: 'https://test.local'))
+      ..httpClientAdapter = adapter;
   });
 
   test('siker esetén a parse eredménye Ok-ban', () async {
@@ -32,7 +33,10 @@ void main() {
 
     final result = await sendRequest(send: () => dio.post('/x'), parse: (_) {});
 
-    expect(result, isA<Err<void>>().having((r) => r.message, 'message', 'Ez a link már fel van véve.'));
+    expect(
+        result,
+        isA<Err<void>>().having(
+            (r) => r.message, 'message', 'Ez a link már fel van véve.'));
   });
 
   test('a parse FormatException-je Err lesz, nem kivétel', () async {
@@ -43,6 +47,7 @@ void main() {
       parse: (_) => throw const FormatException('Rossz formátum.'),
     );
 
-    expect(result, isA<Err<int>>().having((r) => r.message, 'message', 'Rossz formátum.'));
+    expect(result,
+        isA<Err<int>>().having((r) => r.message, 'message', 'Rossz formátum.'));
   });
 }

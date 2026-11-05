@@ -26,7 +26,8 @@ final class AddAsCustom extends SubjectSearchResult {
 }
 
 class SubjectSearchScreen extends StatefulWidget {
-  const SubjectSearchScreen({super.key, this.selectedId, this.scrollController});
+  const SubjectSearchScreen(
+      {super.key, this.selectedId, this.scrollController});
 
   final int? selectedId;
   final ScrollController? scrollController;
@@ -42,7 +43,8 @@ class _SubjectSearchScreenState extends State<SubjectSearchScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = SubjectSearchViewModel(repository: context.read<AbsolutoriumRepository>());
+    _viewModel = SubjectSearchViewModel(
+        repository: context.read<AbsolutoriumRepository>());
   }
 
   @override
@@ -61,7 +63,8 @@ class _SubjectSearchScreenState extends State<SubjectSearchScreen> {
     if (_viewModel.queryTooShort) {
       return const StateMessage(
         icon: Icons.search_rounded,
-        message: 'Írj be legalább 2 karaktert (név vagy kód).\nElírva, ékezet nélkül vagy rövidítve is megtalálja.',
+        message:
+            'Írj be legalább 2 karaktert (név vagy kód).\nElírva, ékezet nélkül vagy rövidítve is megtalálja.',
       );
     }
     if (searching && hits.isEmpty) {
@@ -78,10 +81,13 @@ class _SubjectSearchScreenState extends State<SubjectSearchScreen> {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          StateMessage(icon: Icons.search_off_rounded, message: 'Nincs találat a tantervedben erre: „$q”'),
+          StateMessage(
+              icon: Icons.search_off_rounded,
+              message: 'Nincs találat a tantervedben erre: „$q”'),
           const SizedBox(height: AppSpacing.sm),
           FilledButton.tonalIcon(
-            onPressed: () => Navigator.pop<SubjectSearchResult>(context, AddAsCustom(q)),
+            onPressed: () =>
+                Navigator.pop<SubjectSearchResult>(context, AddAsCustom(q)),
             icon: const Icon(Icons.edit_note_rounded),
             label: const Text('Felvétel saját tárgyként'),
           ),
@@ -91,17 +97,20 @@ class _SubjectSearchScreenState extends State<SubjectSearchScreen> {
 
     return ListView.separated(
       controller: widget.scrollController,
-      padding: EdgeInsets.only(bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.xxxl),
+      padding: EdgeInsets.only(
+          bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.xxxl),
       itemCount: hits.length,
       separatorBuilder: (_, __) => const Divider(height: 1),
       itemBuilder: (context, i) {
         final s = hits[i];
         return InkWell(
-          onTap: () => Navigator.pop<SubjectSearchResult>(context, PickedSubject(s)),
+          onTap: () =>
+              Navigator.pop<SubjectSearchResult>(context, PickedSubject(s)),
           child: ConstrainedBox(
             constraints: const BoxConstraints(minHeight: 64),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.screenHorizontal),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.screenHorizontal),
               child: Row(
                 children: [
                   Expanded(
@@ -109,15 +118,23 @@ class _SubjectSearchScreenState extends State<SubjectSearchScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(s.name, style: TextStyle(fontSize: 15, color: scheme.onSurface)),
+                        Text(s.name,
+                            style: TextStyle(
+                                fontSize: 15, color: scheme.onSurface)),
                         Text(
-                          [s.code, '${s.credits} kr', if (s.requirementType != null) s.requirementType!].join(' · '),
-                          style: TextStyle(fontSize: 13, color: scheme.onSurfaceVariant),
+                          [
+                            s.code,
+                            '${s.credits} kr',
+                            if (s.requirementType != null) s.requirementType!
+                          ].join(' · '),
+                          style: TextStyle(
+                              fontSize: 13, color: scheme.onSurfaceVariant),
                         ),
                       ],
                     ),
                   ),
-                  if (s.id == widget.selectedId) Icon(Icons.check_rounded, color: scheme.primary),
+                  if (s.id == widget.selectedId)
+                    Icon(Icons.check_rounded, color: scheme.primary),
                 ],
               ),
             ),
@@ -152,12 +169,13 @@ class _SubjectSearchScreenState extends State<SubjectSearchScreen> {
                 decoration: InputDecoration(
                   hintText: 'Tárgy neve vagy kódja...',
                   prefixIcon: const Icon(Icons.search_rounded),
-                  suffixIcon: _viewModel.search.running && _viewModel.hits.isNotEmpty
-                      ? const Padding(
-                          padding: EdgeInsets.all(AppSpacing.md),
-                          child: AppSpinner(),
-                        )
-                      : null,
+                  suffixIcon:
+                      _viewModel.search.running && _viewModel.hits.isNotEmpty
+                          ? const Padding(
+                              padding: EdgeInsets.all(AppSpacing.md),
+                              child: AppSpinner(),
+                            )
+                          : null,
                 ),
               ),
             ),

@@ -16,23 +16,37 @@ void main() {
 
   test('get a v2 végpontról tölt', () async {
     api.adapter.handler = (_) => jsonBody(200, [
-          {'id': 1, 'name': 'Neptun', 'url': 'https://n/c.ics', 'syncInterval': '1d', 'lastSyncedAt': null, 'lastError': null},
+          {
+            'id': 1,
+            'name': 'Neptun',
+            'url': 'https://n/c.ics',
+            'syncInterval': '1d',
+            'lastSyncedAt': null,
+            'lastError': null
+          },
         ]);
 
     final result = await repository.get();
 
     expect(api.adapter.last.path, '/api/calendar/v2/links');
-    expect(result, isA<Ok<List<CalendarLink>>>().having((r) => r.value.single.name, 'name', 'Neptun'));
+    expect(
+        result,
+        isA<Ok<List<CalendarLink>>>()
+            .having((r) => r.value.single.name, 'name', 'Neptun'));
   });
 
   test('add a gyakoriság szerver értékét küldi', () async {
     api.adapter.handler = (_) => jsonBody(201, null);
 
-    await repository.add(name: 'Edzés', url: 'webcal://x/c.ics', syncInterval: SyncInterval.sixHours);
+    await repository.add(
+        name: 'Edzés',
+        url: 'webcal://x/c.ics',
+        syncInterval: SyncInterval.sixHours);
 
     final body = api.adapter.last.data as Map<String, dynamic>;
     expect(api.adapter.last.method, 'POST');
-    expect(body, {'name': 'Edzés', 'url': 'webcal://x/c.ics', 'syncInterval': '6h'});
+    expect(body,
+        {'name': 'Edzés', 'url': 'webcal://x/c.ics', 'syncInterval': '6h'});
   });
 
   test('duplikált link: a 409 magyar üzenet', () async {
@@ -40,9 +54,13 @@ void main() {
           'data': {'code': 'DUPLICATE_LINK'},
         });
 
-    final result = await repository.add(name: 'x', url: 'https://x', syncInterval: SyncInterval.daily);
+    final result = await repository.add(
+        name: 'x', url: 'https://x', syncInterval: SyncInterval.daily);
 
-    expect(result, isA<Err<void>>().having((r) => r.message, 'message', 'Ez a link már fel van véve.'));
+    expect(
+        result,
+        isA<Err<void>>().having(
+            (r) => r.message, 'message', 'Ez a link már fel van véve.'));
   });
 
   test('delete a címben küldi az id-t', () async {

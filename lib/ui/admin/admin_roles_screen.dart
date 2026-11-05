@@ -26,7 +26,8 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
 
   static final _skeletonUsers = List.generate(
     5,
-    (i) => UserSummary(userId: -i, fullName: BoneMock.name, ldapUsername: BoneMock.chars(6)),
+    (i) => UserSummary(
+        userId: -i, fullName: BoneMock.name, ldapUsername: BoneMock.chars(6)),
   );
 
   @override
@@ -124,7 +125,8 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
         children: [
           SettingsGroup(
             header: 'Évfolyamfelelősök',
-            footer: 'Az évfolyamfelelősök bármely ZH-t felvehetik és törölhetik. '
+            footer:
+                'Az évfolyamfelelősök bármely ZH-t felvehetik és törölhetik. '
                 'Balra húzva visszavonhatod a rangot.',
             children: [
               for (final u in users)

@@ -87,7 +87,11 @@ void main() {
     // Relative to today, so the tests don't break when the semester changes.
     CalendarEvent lesson(String? subject, {DateTime? start}) {
       final s = start ?? DateTime.now();
-      return CalendarEvent(title: 'Óra', start: s, end: s.add(const Duration(hours: 2)), subject: subject);
+      return CalendarEvent(
+          title: 'Óra',
+          start: s,
+          end: s.add(const Duration(hours: 2)),
+          subject: subject);
     }
 
     setUp(() {
@@ -107,7 +111,8 @@ void main() {
       viewModel.dispose();
     });
 
-    test('bekapcsolva csak a naptárban szereplő tárgyak zh-it mutatja', () async {
+    test('bekapcsolva csak a naptárban szereplő tárgyak zh-it mutatja',
+        () async {
       calendar.getResult = Ok([lesson('Analízis I.'), lesson(null)]);
       final viewModel = create({EventType.midterm});
       await flush();
@@ -120,7 +125,8 @@ void main() {
     });
 
     test('az előző félév tárgyai nem számítanak', () async {
-      final lastSemester = currentSemesterStart().subtract(const Duration(days: 1));
+      final lastSemester =
+          currentSemesterStart().subtract(const Duration(days: 1));
       calendar.getResult = Ok([
         lesson('Analízis I.'),
         lesson('Programozás alapjai', start: lastSemester),

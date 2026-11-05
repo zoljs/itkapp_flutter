@@ -1,7 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:itk_app/domain/models/user_summary.dart';
 
-Map<String, dynamic> validJson() => {'userId': 7, 'fullName': 'Teszt Elek', 'ldapUsername': 'tesel1'};
+Map<String, dynamic> validJson() =>
+    {'userId': 7, 'fullName': 'Teszt Elek', 'ldapUsername': 'tesel1'};
 
 void main() {
   test('beolvassa', () {
@@ -24,6 +25,7 @@ void main() {
 
   test('a nem lista és a nem objektum elem FormatException', () {
     expect(() => UserSummary.parseList('x'), throwsFormatException);
-    expect(() => UserSummary.parseList([validJson(), 'x']), throwsFormatException);
+    expect(
+        () => UserSummary.parseList([validJson(), 'x']), throwsFormatException);
   });
 }

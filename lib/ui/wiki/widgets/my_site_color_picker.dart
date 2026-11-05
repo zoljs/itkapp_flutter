@@ -63,7 +63,8 @@ class MySiteColorPicker extends StatelessWidget {
                               Color.lerp(color, Colors.black, 0.4)!,
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(innerBorderRadius),
+                          borderRadius:
+                              BorderRadius.circular(innerBorderRadius),
                         ),
                       ),
                     ),

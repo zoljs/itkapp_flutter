@@ -27,12 +27,15 @@ void main() {
     });
 
     test('a megadott típus átjön', () {
-      expect(Event.fromJson({...validJson(), 'type': 'RETAKE'}).type, EventType.retake);
-      expect(Event.fromJson({...validJson(), 'type': 'CONSULTATION'}).type, EventType.consultation);
+      expect(Event.fromJson({...validJson(), 'type': 'RETAKE'}).type,
+          EventType.retake);
+      expect(Event.fromJson({...validJson(), 'type': 'CONSULTATION'}).type,
+          EventType.consultation);
     });
 
     test('ismeretlen típus FormatException', () {
-      expect(() => Event.fromJson({...validJson(), 'type': 'PARTY'}), throwsFormatException);
+      expect(() => Event.fromJson({...validJson(), 'type': 'PARTY'}),
+          throwsFormatException);
     });
   });
 
@@ -46,7 +49,12 @@ void main() {
     });
 
     test('jó lista', () {
-      expect(Event.parseList([validJson(), {...validJson(), 'id': 11}]), hasLength(2));
+      expect(
+          Event.parseList([
+            validJson(),
+            {...validJson(), 'id': 11}
+          ]),
+          hasLength(2));
     });
   });
 }

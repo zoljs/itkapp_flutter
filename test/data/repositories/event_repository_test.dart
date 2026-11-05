@@ -30,7 +30,8 @@ void main() {
       expect(api.adapter.last.queryParameters['type'], 'MIDTERM,RETAKE');
     });
 
-    test('ugyanaz a halmaz más sorrendben ugyanazt a cache-t használja', () async {
+    test('ugyanaz a halmaz más sorrendben ugyanazt a cache-t használja',
+        () async {
       await repository.get(types: {EventType.midterm, EventType.retake});
       await repository.get(types: {EventType.retake, EventType.midterm});
 
@@ -82,7 +83,8 @@ void main() {
 
     test('sikeres felvétel után üríti a cache-t', () async {
       await repository.get(types: {EventType.midterm});
-      await repository.add(subjectId: 1, startsAt: DateTime.utc(2026), type: EventType.midterm);
+      await repository.add(
+          subjectId: 1, startsAt: DateTime.utc(2026), type: EventType.midterm);
       await repository.get(types: {EventType.midterm});
 
       // get, add, get again because the cache was cleared

@@ -6,7 +6,8 @@ class OnboardingRepository {
 
   OnboardingRepository({required SharedPreferencesService prefs})
       : _prefs = prefs,
-        hasSeenOnboarding = ValueNotifier(prefs.getBool(_hasSeenOnboarding) ?? false);
+        hasSeenOnboarding =
+            ValueNotifier(prefs.getBool(_hasSeenOnboarding) ?? false);
 
   final SharedPreferencesService _prefs;
   final ValueNotifier<bool> hasSeenOnboarding;

@@ -41,7 +41,8 @@ void main() {
     expect(find.textContaining('A-101'), findsOneWidget);
   });
 
-  testWidgets('deletable false esetén nincs csúsztatható réteg', (tester) async {
+  testWidgets('deletable false esetén nincs csúsztatható réteg',
+      (tester) async {
     await pumpCard(tester, deletable: false);
 
     expect(find.byType(Dismissible), findsNothing);

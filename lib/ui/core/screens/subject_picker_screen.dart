@@ -14,7 +14,8 @@ class SubjectPickerScreen extends StatefulWidget {
   final int? selectedId;
   final ScrollController? scrollController;
 
-  const SubjectPickerScreen({super.key, this.selectedId, this.scrollController});
+  const SubjectPickerScreen(
+      {super.key, this.selectedId, this.scrollController});
 
   @override
   State<SubjectPickerScreen> createState() => _SubjectPickerScreenState();
@@ -32,7 +33,8 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
   @override
   void initState() {
     super.initState();
-    _viewModel = SubjectPickerViewModel(repository: context.read<SubjectsRepository>());
+    _viewModel =
+        SubjectPickerViewModel(repository: context.read<SubjectsRepository>());
   }
 
   @override
@@ -62,7 +64,8 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
           bottom: MediaQuery.paddingOf(context).bottom + 80,
         ),
         itemCount: subjects.length,
-        itemBuilder: (context, index) => _buildSubjectRow(context, subjects[index]),
+        itemBuilder: (context, index) =>
+            _buildSubjectRow(context, subjects[index]),
         separatorBuilder: (context, index) => const Divider(height: 1),
       ),
     );
@@ -100,7 +103,8 @@ class _SubjectPickerScreenState extends State<SubjectPickerScreen> {
                   ],
                 ),
               ),
-              if (subject.id == widget.selectedId) Icon(Icons.check_rounded, color: scheme.primary),
+              if (subject.id == widget.selectedId)
+                Icon(Icons.check_rounded, color: scheme.primary),
             ],
           ),
         ),

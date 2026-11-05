@@ -6,7 +6,8 @@ void main() {
     final cases = <DateTime, DateTime>{
       DateTime(2026, 11, 4): DateTime(2026, 8, 1), // fall, during classes
       DateTime(2026, 8, 1): DateTime(2026, 8, 1), // first day of fall
-      DateTime(2027, 1, 15): DateTime(2026, 8, 1), // January exams belong to fall
+      DateTime(2027, 1, 15):
+          DateTime(2026, 8, 1), // January exams belong to fall
       DateTime(2027, 2, 1): DateTime(2027, 2, 1), // first day of spring
       DateTime(2027, 6, 20): DateTime(2027, 2, 1), // spring exams
       DateTime(2027, 7, 31): DateTime(2027, 2, 1), // last day of spring

@@ -16,10 +16,22 @@ class AppScaffold extends StatelessWidget {
         selectedIndex: navigationShell.currentIndex,
         onTap: (index) => navigationShell.goBranch(index),
         items: const [
-          NavBarItem(icon: Icons.home_outlined, selectedIcon: Icons.home_rounded, label: 'Főoldal'),
-          NavBarItem(icon: Icons.calendar_month_outlined, selectedIcon: Icons.calendar_month_rounded, label: 'Naptár'),
-          NavBarItem(icon: Icons.groups_outlined, selectedIcon: Icons.groups_rounded, label: 'Wiki'),
-          NavBarItem(icon: Icons.settings_outlined, label: 'Beállítások', selectedIcon: Icons.settings_rounded)
+          NavBarItem(
+              icon: Icons.home_outlined,
+              selectedIcon: Icons.home_rounded,
+              label: 'Főoldal'),
+          NavBarItem(
+              icon: Icons.calendar_month_outlined,
+              selectedIcon: Icons.calendar_month_rounded,
+              label: 'Naptár'),
+          NavBarItem(
+              icon: Icons.groups_outlined,
+              selectedIcon: Icons.groups_rounded,
+              label: 'Wiki'),
+          NavBarItem(
+              icon: Icons.settings_outlined,
+              label: 'Beállítások',
+              selectedIcon: Icons.settings_rounded)
         ],
       ),
     );

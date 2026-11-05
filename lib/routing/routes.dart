@@ -19,5 +19,6 @@ abstract final class Routes {
 
   static String filesFor(String user) => '$wikiFiles/$user';
 
-  static String absolutoriumGroupFor(int groupId) => '$absolutoriumGroups/$groupId';
+  static String absolutoriumGroupFor(int groupId) =>
+      '$absolutoriumGroups/$groupId';
 }

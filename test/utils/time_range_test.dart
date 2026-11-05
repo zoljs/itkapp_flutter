@@ -7,19 +7,17 @@ void main() {
 
   group('TimeRange.thisWeek', () {
     test('Monday 00:00 is inside', () {
-      expect(TimeRange.thisWeek.contains(DateTime(2026, 11, 2), now: now),
-          isTrue);
+      expect(
+          TimeRange.thisWeek.contains(DateTime(2026, 11, 2), now: now), isTrue);
     });
     test('Sunday 23:59 is inside', () {
       expect(
-          TimeRange.thisWeek
-              .contains(DateTime(2026, 11, 8, 23, 59), now: now),
+          TimeRange.thisWeek.contains(DateTime(2026, 11, 8, 23, 59), now: now),
           isTrue);
     });
     test('previous Sunday 23:59 is outside', () {
       expect(
-          TimeRange.thisWeek
-              .contains(DateTime(2026, 11, 1, 23, 59), now: now),
+          TimeRange.thisWeek.contains(DateTime(2026, 11, 1, 23, 59), now: now),
           isFalse);
     });
     test('next Monday 00:00 is outside', () {
@@ -30,8 +28,8 @@ void main() {
       final wed = DateTime(2026, 12, 2);
       expect(TimeRange.thisWeek.contains(DateTime(2026, 11, 30), now: wed),
           isTrue);
-      expect(TimeRange.thisWeek.contains(DateTime(2026, 12, 6), now: wed),
-          isTrue);
+      expect(
+          TimeRange.thisWeek.contains(DateTime(2026, 12, 6), now: wed), isTrue);
       expect(TimeRange.thisWeek.contains(DateTime(2026, 11, 29), now: wed),
           isFalse);
       expect(TimeRange.thisWeek.contains(DateTime(2026, 12, 7), now: wed),

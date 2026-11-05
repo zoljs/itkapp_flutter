@@ -14,7 +14,8 @@ void main() {
   setUp(() {
     files = FakeWikiFilesRepository();
     auth = FakeAuthRepository()..cachedUser = user();
-    viewModel = WikiFilesSetupViewModel(wikiFilesRepository: files, authRepository: auth);
+    viewModel = WikiFilesSetupViewModel(
+        wikiFilesRepository: files, authRepository: auth);
   });
 
   tearDown(() => viewModel.dispose());
@@ -24,8 +25,10 @@ void main() {
   });
 
   test('a telepítő parancs a backendről tölt, a public_html-be ír', () {
-    expect(WikiFilesSetupViewModel.installCommand, contains('https://test.app.itk.ppke.hu/dl/files_wiki.php'));
-    expect(WikiFilesSetupViewModel.installCommand, contains('-o ~/public_html/files_wiki.php'));
+    expect(WikiFilesSetupViewModel.installCommand,
+        contains('https://test.app.itk.ppke.hu/dl/files_wiki.php'));
+    expect(WikiFilesSetupViewModel.installCommand,
+        contains('-o ~/public_html/files_wiki.php'));
   });
 
   test('ellenőrzéskor a saját gyökérmappát kéri', () async {
