@@ -30,7 +30,7 @@ class WikiViewModel extends ChangeNotifier {
   Ok<UserSite?>? _mySite;
   late final Command1<void, bool> load;
   late final Command1<List<WikiFile>, String> checkFiles;
-  // Only meaningful while checkFiles.running; not cleared on purpose.
+  // Getter returns value while checkFiles.running; otherwise null.
   String? _checkingLogin;
   String _query = '';
 
@@ -45,7 +45,7 @@ class WikiViewModel extends ChangeNotifier {
   UnmodifiableListView<UserSite> get sites => UnmodifiableListView(_sites);
   UserSite? get mySite => _mySite?.value;
   String get query => _query;
-  String? get checkingLogin => _checkingLogin;
+  String? get checkingLogin => checkFiles.running ? _checkingLogin : null;
 
   bool get sitesInitialLoading => load.running && _sites.isEmpty;
   bool get mySiteInitialLoading => load.running && _mySite == null;

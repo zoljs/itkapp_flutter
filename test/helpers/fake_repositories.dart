@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/absolutorium_repository.dart';
 import 'package:itk_app/data/repositories/admin/admin_roles_repository.dart';
@@ -179,9 +181,13 @@ class FakeWikiFilesRepository implements WikiFilesRepository {
   Result<List<WikiFile>> listResult = const Ok([]);
   final calls = <(String dir, String user)>[];
 
+  /// When set, listDir waits for it: lets a test look at the state while running.
+  Completer<void>? gate;
+
   @override
   Future<Result<List<WikiFile>>> listDir(String dir, String user) async {
     calls.add((dir, user));
+    await gate?.future;
     return listResult;
   }
 

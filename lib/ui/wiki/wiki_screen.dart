@@ -130,9 +130,7 @@ class _WikiScreenState extends State<WikiScreen> {
                   sites: _viewModel.filteredSites,
                   onRetry: () => _viewModel.load.execute(true),
                   onSiteTap: (site) => unawaited(_onSiteTap(site)),
-                  checkingLogin: _viewModel.checkFiles.running
-                      ? _viewModel.checkingLogin
-                      : null,
+                  checkingLogin: _viewModel.checkingLogin,
                 ),
               ],
             );
