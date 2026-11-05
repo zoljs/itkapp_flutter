@@ -211,6 +211,81 @@ void main() {
     viewModel.dispose();
   });
 
+  group('típus szűrő', () {
+    late EventsViewModel viewModel;
+
+    setUp(() async {
+      events.getResult = Ok([
+        event(id: 1, subject: analysis, type: EventType.midterm),
+        event(id: 2, subject: programming, type: EventType.retake),
+        event(id: 3, subject: analysis, type: EventType.retake),
+      ]);
+      viewModel = create({EventType.midterm, EventType.retake});
+      await flush();
+    });
+
+    tearDown(() => viewModel.dispose());
+
+    test('alapból nincs kiválasztott típus, minden látszik', () {
+      expect(viewModel.selectedTypes, isEmpty);
+      expect(viewModel.filteredEvents.map((e) => e.id), [1, 2, 3]);
+    });
+
+    test('egy típust kiválasztva csak az látszik', () {
+      viewModel.setTypeSelected(EventType.retake, true);
+
+      expect(viewModel.selectedTypes, {EventType.retake});
+      expect(viewModel.filteredEvents.map((e) => e.id), [2, 3]);
+    });
+
+    test('több kiválasztott típus közül bármelyik megfelel', () {
+      viewModel.setTypeSelected(EventType.midterm, true);
+      viewModel.setTypeSelected(EventType.retake, true);
+
+      expect(viewModel.filteredEvents.map((e) => e.id), [1, 2, 3]);
+    });
+
+    test('kikapcsolva újra minden látszik', () {
+      viewModel.setTypeSelected(EventType.retake, true);
+      viewModel.setTypeSelected(EventType.retake, false);
+
+      expect(viewModel.selectedTypes, isEmpty);
+      expect(viewModel.filteredEvents, hasLength(3));
+    });
+
+    test('ugyanazt kétszer bekapcsolva sem duplázódik', () {
+      viewModel.setTypeSelected(EventType.retake, true);
+      viewModel.setTypeSelected(EventType.retake, true);
+
+      expect(viewModel.selectedTypes, {EventType.retake});
+      viewModel.setTypeSelected(EventType.retake, false);
+      expect(viewModel.selectedTypes, isEmpty);
+    });
+
+    test('a keresés és a típus együtt szűr (ÉS)', () {
+      viewModel.setTypeSelected(EventType.retake, true);
+      viewModel.setQuery('analízis');
+
+      expect(viewModel.filteredEvents.map((e) => e.id), [3]);
+    });
+
+    test('változáskor értesít', () {
+      var notified = 0;
+      viewModel.addListener(() => notified++);
+
+      viewModel.setTypeSelected(EventType.retake, true);
+
+      expect(notified, 1);
+    });
+
+    test('a kiválasztás nem módosítható kívülről', () {
+      expect(
+        () => viewModel.selectedTypes.add(EventType.midterm),
+        throwsUnsupportedError,
+      );
+    });
+  });
+
   group('törlés', () {
     test('azonnal kiveszi a listából', () async {
       events.getResult = Ok([event(id: 1), event(id: 2)]);

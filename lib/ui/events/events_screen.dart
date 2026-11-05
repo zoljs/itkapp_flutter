@@ -43,8 +43,10 @@ class _EventsScreenState extends State<EventsScreen> {
   final _searchController = TextEditingController();
   late final EventsViewModel _viewModel;
 
-  double _bottomPadding(bool showChips) =>
-      AppSpacing.searchFieldHeight + AppSpacing.md * 3 + (showChips ? 48 : 0);
+  double _searchAreaHeight(bool showChips) =>
+      AppSpacing.md * 2 +
+      AppSpacing.searchFieldHeight +
+      (showChips ? AppSpacing.md + AppSpacing.chipHeight : 0);
 
   @override
   void initState() {
@@ -96,7 +98,6 @@ class _EventsScreenState extends State<EventsScreen> {
     return SliverAppBar(
       pinned: true,
       expandedHeight: 320,
-      collapsedHeight: AppSpacing.searchBarHeight,
       backgroundColor: scheme.surface,
       scrolledUnderElevation: 0,
       title: Text(widget.title),
@@ -114,7 +115,7 @@ class _EventsScreenState extends State<EventsScreen> {
       flexibleSpace: FlexibleSpaceBar(
         stretchModes: const [StretchMode.zoomBackground],
         background:
-            EventsHeaderBackground(bottomInset: _bottomPadding(showChips)),
+            EventsHeaderBackground(bottomInset: _searchAreaHeight(showChips)),
       ),
       bottom: _buildSearch(showChips),
     );
@@ -123,12 +124,13 @@ class _EventsScreenState extends State<EventsScreen> {
   PreferredSizeWidget _buildSearch(bool showChips) {
     final scheme = Theme.of(context).colorScheme;
     return PreferredSize(
-      preferredSize: Size.fromHeight(60 + (showChips ? 48 : 0)),
+      preferredSize: Size.fromHeight(_searchAreaHeight(showChips)),
       child: Container(
+        height: _searchAreaHeight(showChips),
         color: scheme.surface,
         padding: const EdgeInsets.fromLTRB(
           AppSpacing.screenHorizontal,
-          AppSpacing.screenHorizontal,
+          AppSpacing.md,
           AppSpacing.screenHorizontal,
           AppSpacing.md,
         ),

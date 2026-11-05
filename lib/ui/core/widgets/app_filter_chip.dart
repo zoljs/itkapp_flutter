@@ -22,7 +22,7 @@ class AppFilterChip extends StatelessWidget {
       backgroundColor: scheme.surfaceContainer,
       selectedColor: itkPrimary,
       checkmarkColor: Colors.black87,
-      visualDensity: const VisualDensity(vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       shape: RoundedSuperellipseBorder(
         borderRadius: BorderRadius.circular(AppRadius.xl),
       ),
