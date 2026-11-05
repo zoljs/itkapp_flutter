@@ -4,6 +4,7 @@ import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/ui/events/viewmodels/events_viewmodel.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:itk_app/utils/semester.dart';
+import 'package:itk_app/utils/time_range.dart';
 
 import '../../helpers/fake_http.dart';
 import '../../helpers/fake_repositories.dart';
@@ -283,6 +284,73 @@ void main() {
         () => viewModel.selectedTypes.add(EventType.midterm),
         throwsUnsupportedError,
       );
+    });
+  });
+
+  group('időszak szűrő', () {
+    late EventsViewModel viewModel;
+
+    setUp(() async {
+      final now = DateTime.now();
+      events.getResult = Ok([
+        event(id: 1, startsAt: now),
+        event(id: 2, startsAt: now, type: EventType.retake),
+        event(id: 3, startsAt: now.add(const Duration(days: 40))),
+        event(id: 4, startsAt: now.subtract(const Duration(days: 40))),
+      ]);
+      viewModel = create({EventType.midterm, EventType.retake});
+      await flush();
+    });
+
+    tearDown(() => viewModel.dispose());
+
+    test('alapból nincs kiválasztott időszak, minden látszik', () {
+      expect(viewModel.selectedTimeRange, isNull);
+      expect(viewModel.filteredEvents.map((e) => e.id), [1, 2, 3, 4]);
+    });
+
+    test('ez a hónap: csak a mostani hónap eseményei', () {
+      viewModel.setSelectedTimeRange(TimeRange.thisMonth);
+
+      expect(viewModel.selectedTimeRange, TimeRange.thisMonth);
+      expect(viewModel.filteredEvents.map((e) => e.id), [1, 2]);
+    });
+
+    test('ez a hét: csak a mostani hét eseményei', () {
+      viewModel.setSelectedTimeRange(TimeRange.thisWeek);
+
+      expect(viewModel.filteredEvents.map((e) => e.id), [1, 2]);
+    });
+
+    test('ugyanazt újra választva kikapcsol', () {
+      viewModel.setSelectedTimeRange(TimeRange.thisWeek);
+      viewModel.setSelectedTimeRange(TimeRange.thisWeek);
+
+      expect(viewModel.selectedTimeRange, isNull);
+      expect(viewModel.filteredEvents, hasLength(4));
+    });
+
+    test('másik időszakra váltva az előzőt leváltja', () {
+      viewModel.setSelectedTimeRange(TimeRange.thisWeek);
+      viewModel.setSelectedTimeRange(TimeRange.thisMonth);
+
+      expect(viewModel.selectedTimeRange, TimeRange.thisMonth);
+    });
+
+    test('az időszak és a típus együtt szűr (ÉS)', () {
+      viewModel.setSelectedTimeRange(TimeRange.thisWeek);
+      viewModel.setTypeSelected(EventType.retake, true);
+
+      expect(viewModel.filteredEvents.map((e) => e.id), [2]);
+    });
+
+    test('változáskor értesít', () {
+      var notified = 0;
+      viewModel.addListener(() => notified++);
+
+      viewModel.setSelectedTimeRange(TimeRange.thisWeek);
+
+      expect(notified, 1);
     });
   });
 

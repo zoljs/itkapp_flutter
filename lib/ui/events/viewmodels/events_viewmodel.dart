@@ -9,6 +9,7 @@ import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/utils/command.dart';
 import 'package:itk_app/utils/result.dart';
 import 'package:itk_app/utils/semester.dart';
+import 'package:itk_app/utils/time_range.dart';
 
 class EventsViewModel extends ChangeNotifier {
   EventsViewModel({
@@ -49,10 +50,17 @@ class EventsViewModel extends ChangeNotifier {
   Set<String> _mySubjects = {};
   bool _onlyMySubjects = false;
   final Set<EventType> _selectedTypes = {};
+  TimeRange? _selectedTimeRange;
 
   // Getters
   UnmodifiableListView<Event> get events => UnmodifiableListView(_events);
   UnmodifiableSetView<EventType> get types => UnmodifiableSetView(_types);
+
+  TimeRange? get selectedTimeRange => _selectedTimeRange;
+  void setSelectedTimeRange(TimeRange range) {
+    _selectedTimeRange = range == _selectedTimeRange ? null : range;
+    notifyListeners();
+  }
 
   String get query => _query;
   void setQuery(String value) {
@@ -97,7 +105,9 @@ class EventsViewModel extends ChangeNotifier {
           (e.location?.toLowerCase().contains(q) ?? false);
       final matchesType =
           _selectedTypes.isEmpty || _selectedTypes.contains(e.type);
-      return passes && matchesSearch && matchesType;
+      final matchesTime = selectedTimeRange == null ||
+          selectedTimeRange!.contains(e.startsAt, now: DateTime.now());
+      return passes && matchesSearch && matchesType && matchesTime;
     }).toList();
   }
 

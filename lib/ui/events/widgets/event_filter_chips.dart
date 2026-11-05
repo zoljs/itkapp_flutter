@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/app_filter_chip.dart';
+import 'package:itk_app/utils/time_range.dart';
+import 'package:itk_app/utils/value_changed_two.dart';
 
 class EventFilterChips extends StatelessWidget {
   const EventFilterChips({
@@ -12,6 +14,8 @@ class EventFilterChips extends StatelessWidget {
     required this.types,
     required this.selectedTypes,
     required this.onTypeSelected,
+    this.selectedTimeRange,
+    required this.onChangedTimeRange,
   });
 
   final bool showMySubjects;
@@ -21,7 +25,9 @@ class EventFilterChips extends StatelessWidget {
   /// Type chips are shown only when there is more than one type to choose from.
   final Set<EventType> types;
   final Set<EventType> selectedTypes;
-  final void Function(EventType type, bool selected) onTypeSelected;
+  final ValueChangedOf<EventType, bool> onTypeSelected;
+  final TimeRange? selectedTimeRange;
+  final ValueChanged<TimeRange> onChangedTimeRange;
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +41,12 @@ class EventFilterChips extends StatelessWidget {
               selected: onlyMySubjects,
               onSelected: onMySubjectsSelected,
               label: 'Tárgyaim',
+            ),
+          for (final range in TimeRange.values)
+            AppFilterChip(
+              selected: range == selectedTimeRange,
+              onSelected: (_) => onChangedTimeRange(range),
+              label: range.label,
             ),
           if (types.length > 1)
             for (final type in types)

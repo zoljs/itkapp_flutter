@@ -5,6 +5,7 @@ import 'package:itk_app/ui/core/widgets/app_search_field.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/events/widgets/event_filter_chips.dart';
 import 'package:itk_app/ui/events/widgets/events_header_background.dart';
+import 'package:itk_app/utils/time_range.dart';
 import 'package:itk_app/utils/value_changed_two.dart';
 
 class EventsHeader extends StatelessWidget {
@@ -22,6 +23,8 @@ class EventsHeader extends StatelessWidget {
     required this.types,
     required this.selectedTypes,
     required this.onTypeSelected,
+    this.selectedTimeRange,
+    required this.onChangedTimeRange,
   });
 
   final String title;
@@ -36,13 +39,14 @@ class EventsHeader extends StatelessWidget {
   final Set<EventType> types;
   final Set<EventType> selectedTypes;
   final ValueChangedOf<EventType, bool> onTypeSelected;
-
-  bool get _showChips => showMySubjects || types.length > 1;
+  final TimeRange? selectedTimeRange;
+  final ValueChanged<TimeRange> onChangedTimeRange;
 
   double get _searchAreaHeight =>
       AppSpacing.md * 2 +
       AppSpacing.searchFieldHeight +
-      (_showChips ? AppSpacing.md + AppSpacing.chipHeight : 0);
+      AppSpacing.md +
+      AppSpacing.chipHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -87,17 +91,17 @@ class EventsHeader extends StatelessWidget {
                 onChanged: onQueryChanged,
                 hintText: 'Tárgy neve vagy kódja...',
               ),
-              if (_showChips) ...[
-                const SizedBox(height: AppSpacing.md),
-                EventFilterChips(
-                  showMySubjects: showMySubjects,
-                  onlyMySubjects: onlyMySubjects,
-                  onMySubjectsSelected: onMySubjectsSelected,
-                  types: types,
-                  selectedTypes: selectedTypes,
-                  onTypeSelected: onTypeSelected,
-                ),
-              ],
+              const SizedBox(height: AppSpacing.md),
+              EventFilterChips(
+                showMySubjects: showMySubjects,
+                onlyMySubjects: onlyMySubjects,
+                onMySubjectsSelected: onMySubjectsSelected,
+                types: types,
+                selectedTypes: selectedTypes,
+                onTypeSelected: onTypeSelected,
+                selectedTimeRange: selectedTimeRange,
+                onChangedTimeRange: onChangedTimeRange,
+              ),
             ],
           ),
         ),

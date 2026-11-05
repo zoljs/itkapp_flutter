@@ -12,13 +12,14 @@ Event event({
   Subject subject = analysis,
   String? location,
   EventType type = EventType.midterm,
+  DateTime? startsAt,
 }) =>
     Event(
       id: id,
       subject: subject,
       location: location,
       type: type,
-      startsAt: DateTime.utc(2026, 11, 10, 10),
+      startsAt: startsAt ?? DateTime.utc(2026, 11, 10, 10),
     );
 
 CalendarLink link({required int id, String name = 'Neptun'}) => CalendarLink(
