@@ -2,10 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/domain/models/subject.dart';
-import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
+import 'package:itk_app/ui/core/widgets/picker_tile.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/core/screens/viewmodels/subject_multi_picker_viewmodel.dart';
 import 'package:provider/provider.dart';
@@ -58,6 +58,7 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
   }
 
   Widget _buildList(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final loading = _viewModel.load.running;
     final subjects = loading ? _skeletonSubjects : _viewModel.filteredSubjects;
 
@@ -79,60 +80,21 @@ class _SubjectMultiPickerScreenState extends State<SubjectMultiPickerScreen> {
         itemCount: subjects.length,
         itemBuilder: (context, index) {
           final subject = subjects[index];
-          return _buildSubjectRow(
-            context,
-            subjects[index],
-            _viewModel.selectedSubjects.contains(subject.name),
+          final selected = _viewModel.selectedSubjects.contains(subject.name);
+          return PickerTile(
+            title: subject.name,
+            subtitle: subject.code,
+            onTap: () => _viewModel.toggleSubject(subject.name),
+            trailing: Icon(
+              selected
+                  ? CupertinoIcons.checkmark_circle_fill
+                  : CupertinoIcons.circle,
+              color: selected ? scheme.primary : scheme.outline,
+              size: 24,
+            ),
           );
         },
         separatorBuilder: (context, index) => const Divider(height: 1),
-      ),
-    );
-  }
-
-  Widget _buildSubjectRow(
-      BuildContext context, Subject subject, bool selected) {
-    final scheme = Theme.of(context).colorScheme;
-
-    return InkWell(
-      onTap: () => _viewModel.toggleSubject(subject.name),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.screenHorizontal,
-        ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 64.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      subject.name,
-                      style: TextStyle(fontSize: 15, color: scheme.onSurface),
-                    ),
-                    Text(
-                      subject.code,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                selected
-                    ? CupertinoIcons.checkmark_circle_fill
-                    : CupertinoIcons.circle,
-                color: selected ? scheme.primary : scheme.outline,
-                size: 24,
-              )
-            ],
-          ),
-        ),
       ),
     );
   }

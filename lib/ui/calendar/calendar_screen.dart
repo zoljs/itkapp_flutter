@@ -169,7 +169,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
               // Event Tile
               eventTileBuilder: (date, events, boundary, start, end) {
                 if (events.isEmpty) return const SizedBox.shrink();
-                final myEvent = events.first.event as CalendarEvent;
+                final myEvent = events.first.event;
+                if (myEvent == null) return const SizedBox.shrink();
 
                 final effectiveHeight =
                     boundary.height < 24 ? 24.0 : boundary.height;
@@ -221,7 +222,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: events.map(
                     (e) {
-                      final myEvent = e.event as CalendarEvent;
+                      final myEvent = e.event;
+                      if (myEvent == null) return const SizedBox.shrink();
                       return Container(
                         width: double.infinity,
                         padding: const EdgeInsets.symmetric(

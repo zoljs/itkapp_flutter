@@ -60,9 +60,7 @@ void main() {
     expect(changes, ['']);
   });
 
-
-  testWidgets(
-      'gépelésre megjelenik a törlés gomb, a szülő újraépítése nélkül',
+  testWidgets('gépelésre megjelenik a törlés gomb, a szülő újraépítése nélkül',
       (tester) async {
     final controller = TextEditingController();
     addTearDown(controller.dispose);

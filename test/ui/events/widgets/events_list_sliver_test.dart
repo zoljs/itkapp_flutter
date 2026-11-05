@@ -84,8 +84,8 @@ void main() {
     });
 
     testWidgets('subject filter and time range both named', (tester) async {
-      await tester.pumpWidget(
-          _wrap(subjectFilterActive: true, timeRangeActive: true));
+      await tester
+          .pumpWidget(_wrap(subjectFilterActive: true, timeRangeActive: true));
 
       expect(
           find.text(

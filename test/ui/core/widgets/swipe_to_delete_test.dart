@@ -41,8 +41,7 @@ void main() {
     expect(deleted, 0);
   });
 
-  testWidgets('mégse: nem hívja az onDelete-et, az elem marad',
-      (tester) async {
+  testWidgets('mégse: nem hívja az onDelete-et, az elem marad', (tester) async {
     var deleted = 0;
     await _pump(tester, onDelete: () => deleted++);
 

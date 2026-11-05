@@ -181,8 +181,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       content = Skeletonizer(
         enabled: _viewModel.load.running,
-        child:
-            NextClassCard(e: e, scheme: scheme, day: day, muted: muted, time: time),
+        child: NextClassCard(
+            e: e, scheme: scheme, day: day, muted: muted, time: time),
       );
     }
 

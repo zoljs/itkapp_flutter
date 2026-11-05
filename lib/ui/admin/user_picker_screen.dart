@@ -6,6 +6,7 @@ import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/picker_search_field.dart';
+import 'package:itk_app/ui/core/widgets/picker_tile.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -57,6 +58,7 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
   }
 
   Widget _buildList(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final loading = _viewModel.load.running;
     final users = loading ? _skeletonUsers : _viewModel.filteredUsers;
 
@@ -77,57 +79,21 @@ class _UserPickerScreenState extends State<UserPickerScreen> {
           bottom: MediaQuery.paddingOf(context).bottom + 80,
         ),
         itemCount: users.length,
-        itemBuilder: (context, index) => _buildUserRow(context, users[index]),
+        itemBuilder: (context, index) {
+          final user = users[index];
+          final isExcluded = widget.excludedIds.contains(user.userId);
+          return PickerTile(
+            title: user.fullName,
+            subtitle: isExcluded
+                ? '${user.ldapUsername} · már évfolyamfelelős'
+                : user.ldapUsername,
+            onTap: isExcluded ? null : () => _pick(user),
+            trailing: isExcluded
+                ? Icon(Icons.check_rounded, color: scheme.onSurfaceVariant)
+                : null,
+          );
+        },
         separatorBuilder: (context, index) => const Divider(height: 1),
-      ),
-    );
-  }
-
-  Widget _buildUserRow(BuildContext context, UserSummary user) {
-    final scheme = Theme.of(context).colorScheme;
-    final isExcluded = widget.excludedIds.contains(user.userId);
-
-    return InkWell(
-      onTap: isExcluded ? null : () => _pick(user),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.screenHorizontal,
-        ),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(minHeight: 64.0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      user.fullName,
-                      style: TextStyle(
-                        fontSize: 15,
-                        color: isExcluded
-                            ? scheme.onSurfaceVariant
-                            : scheme.onSurface,
-                      ),
-                    ),
-                    Text(
-                      isExcluded
-                          ? '${user.ldapUsername} · már évfolyamfelelős'
-                          : user.ldapUsername,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: scheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              if (isExcluded)
-                Icon(Icons.check_rounded, color: scheme.onSurfaceVariant),
-            ],
-          ),
-        ),
       ),
     );
   }
