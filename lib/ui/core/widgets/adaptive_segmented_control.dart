@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
 class AdaptiveSegmentedControl<T extends Object> extends StatelessWidget {
   const AdaptiveSegmentedControl(
@@ -23,8 +24,8 @@ class AdaptiveSegmentedControl<T extends Object> extends StatelessWidget {
             children: {
               for (final item in values)
                 item: Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md, vertical: 6),
                   child: Text(labelOf(item)),
                 ),
             },

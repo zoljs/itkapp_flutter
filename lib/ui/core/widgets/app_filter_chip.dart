@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
 class AppFilterChip extends StatelessWidget {
   const AppFilterChip({
@@ -22,7 +23,8 @@ class AppFilterChip extends StatelessWidget {
       backgroundColor: scheme.surfaceContainer,
       selectedColor: itkPrimary,
       checkmarkColor: Colors.black87,
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
+      padding:
+          const EdgeInsets.symmetric(vertical: 14, horizontal: AppSpacing.sm),
       shape: RoundedSuperellipseBorder(
         borderRadius: BorderRadius.circular(AppRadius.xxl),
       ),

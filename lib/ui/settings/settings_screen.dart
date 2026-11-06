@@ -274,7 +274,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                 BrandButton(
                   onTap: _confirmLogout,
-                  height: 52,
                   backgroundColor: scheme.errorContainer,
                   child: Center(
                       child: Text(

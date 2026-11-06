@@ -27,11 +27,11 @@ class MySiteCard extends StatelessWidget {
       return UserSiteCard(
         color: scheme.surfaceContainerHigh,
         onTap: onEdit,
-        height: 80,
+        height: AppSpacing.mySiteCardHeight,
         child: Row(
           children: [
             Icon(Icons.add_circle_outline_rounded, color: scheme.primary),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.md),
             const Expanded(
               child: Text(
                 'Még nincs saját wiki-oldalad, hozz létre egyet!',
@@ -85,7 +85,7 @@ class MySiteCard extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.sm),
           IconButton(
             onPressed: onEdit,
             tooltip: 'Szerkesztés',

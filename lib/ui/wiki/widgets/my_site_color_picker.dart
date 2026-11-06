@@ -32,7 +32,7 @@ class MySiteColorPicker extends StatelessWidget {
                 final double innerBorderRadius = isSelected ? 6.0 : 20.0;
 
                 return Padding(
-                  padding: const EdgeInsets.only(right: 8.0),
+                  padding: const EdgeInsets.only(right: AppSpacing.sm),
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
                     onTap: () => onSelected(siteColor),

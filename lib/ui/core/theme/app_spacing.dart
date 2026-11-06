@@ -18,13 +18,15 @@ class AppSpacing {
 
   // Named for specific stuff
   static const double bottomNavClearance = 140;
-  static const double screenHorizontal = 12;
-  static const double listItemSpacing = 12;
+  static const double screenHorizontal = md;
+  static const double listItemSpacing = md;
 
   static const chipHeight = 48.0;
   static const searchFieldHeight = 48.0;
-  static const searchBarHeight = searchFieldHeight + 2 * md;
+  static const searchBarHeight = searchFieldHeight + 2 * screenHorizontal;
   static const mySiteCardHeight = 80.0;
+  static const buttonHeight = 52.0;
 
   static const toolbarHeight = 64.0;
+  static const leadingWidth = minimumAndroid + 2 * sm;
 }

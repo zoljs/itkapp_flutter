@@ -123,7 +123,6 @@ class _MySiteScreenState extends State<MySiteScreen> {
           if (_viewModel.hasExistingSite) ...[
             BrandButton(
               onTap: _deleteSite,
-              height: 52,
               backgroundColor: scheme.errorContainer,
               child: Center(
                 child: Text(

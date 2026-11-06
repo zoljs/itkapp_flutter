@@ -67,8 +67,7 @@ class ShrinkingSliverAppBar extends StatelessWidget {
             final bottomHeight = divider ??
                 (bottom == null
                     ? expandedHeight / 2
-                    : AppSpacing.searchFieldHeight +
-                        AppSpacing.md * 2 +
+                    : AppSpacing.searchBarHeight +
                         AppSpacing.mySiteCardHeight / 2);
 
             final separatorHeight = (constraints.maxHeight - bottomHeight)

@@ -43,10 +43,7 @@ class EventsHeader extends StatelessWidget {
   final ValueChanged<TimeRange> onTimeRangeChanged;
 
   double get _searchAreaHeight =>
-      AppSpacing.md * 2 +
-      AppSpacing.searchFieldHeight +
-      AppSpacing.md +
-      AppSpacing.chipHeight;
+      AppSpacing.searchBarHeight + AppSpacing.md + AppSpacing.chipHeight;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +55,7 @@ class EventsHeader extends StatelessWidget {
       scrolledUnderElevation: 0,
       title: Text(title),
       leading: buildBrandLeading(context),
-      leadingWidth: AppSpacing.minimumAndroid + 2 * AppSpacing.sm,
+      leadingWidth: AppSpacing.leadingWidth,
       actionsPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       actions: [
         if (canModerate)

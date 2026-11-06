@@ -212,7 +212,8 @@ class _LoginScreenState extends State<LoginScreen> {
                               hintText: 'Jelszó',
                               prefixIcon: Icons.lock_outline_rounded,
                               suffixIcon: Padding(
-                                padding: const EdgeInsets.only(right: 4.0),
+                                padding:
+                                    const EdgeInsets.only(right: AppSpacing.xs),
                                 child: IconButton(
                                   icon: Icon(
                                     _obscurePassword

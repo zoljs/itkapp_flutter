@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
 
 class NavBarItem {
   const NavBarItem(
@@ -142,7 +143,7 @@ class NavBarTab extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 4),
+            const SizedBox(height: AppSpacing.xs),
             AnimatedDefaultTextStyle(
               duration: duration,
               curve: Curves.easeOut,

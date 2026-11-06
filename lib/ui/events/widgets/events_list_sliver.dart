@@ -106,7 +106,7 @@ class EventsListSliver extends StatelessWidget {
             );
           },
           separatorBuilder: (context, index) =>
-              const SizedBox(height: AppSpacing.md),
+              const SizedBox(height: AppSpacing.listItemSpacing),
         ),
       ),
     );

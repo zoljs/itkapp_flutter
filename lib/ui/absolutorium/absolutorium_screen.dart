@@ -95,7 +95,7 @@ class _AbsolutoriumScreenState extends State<AbsolutoriumScreen> {
       scrolledUnderElevation: 0,
       title: const Text('Abszolutórium'),
       leading: buildBrandLeading(context),
-      leadingWidth: AppSpacing.minimumAndroid + 2 * AppSpacing.sm,
+      leadingWidth: AppSpacing.leadingWidth,
       actionsPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
       actions: [
         if (p != null && !asFab)

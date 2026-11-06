@@ -148,8 +148,8 @@ class _WikiScreenState extends State<WikiScreen> {
             return isIOS
                 ? customScrollView
                 : RefreshIndicator(
-                    edgeOffset: MediaQuery.paddingOf(context).top +
-                        AppSpacing.toolbarHeight,
+                    edgeOffset:
+                        MediaQuery.paddingOf(context).top + kToolbarHeight,
                     onRefresh: () => _viewModel.load.execute(true),
                     child: customScrollView,
                   );

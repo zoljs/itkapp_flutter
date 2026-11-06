@@ -65,7 +65,7 @@ class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
               AppSpacing.lg,
               AppSpacing.lg +
                   MediaQuery.paddingOf(context).top +
-                  kToolbarHeight,
+                  AppSpacing.toolbarHeight,
               AppSpacing.lg,
               AppSpacing.xxxl,
             ),
@@ -108,7 +108,6 @@ class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
                 BrandButton(
                   onTap:
                       check.running ? null : () => unawaited(check.execute()),
-                  height: 52,
                   backgroundColor: scheme.primaryContainer,
                   child: Center(
                     child: check.running

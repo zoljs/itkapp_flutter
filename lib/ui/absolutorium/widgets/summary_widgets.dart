@@ -343,7 +343,6 @@ class NoCurriculumView extends StatelessWidget {
           const SizedBox(height: AppSpacing.xxl),
           BrandButton(
             onTap: onChoose,
-            height: 52,
             backgroundColor: itkPrimary,
             child: const Text(
               'Tanterv kiválasztása',

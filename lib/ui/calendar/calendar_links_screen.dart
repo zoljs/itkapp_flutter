@@ -203,7 +203,6 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
               ),
               BrandButton(
                 onTap: _viewModel.canAdd ? _add : null,
-                height: 52,
                 backgroundColor: itkPrimary,
                 child: const Center(
                   child: Text(

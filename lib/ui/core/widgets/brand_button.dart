@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/app_pressable.dart';
 
 class BrandButton extends StatelessWidget {
@@ -8,7 +9,7 @@ class BrandButton extends StatelessWidget {
     required this.onTap,
     required this.child,
     required this.backgroundColor,
-    this.height = 48,
+    this.height = AppSpacing.buttonHeight,
   });
 
   final VoidCallback? onTap;

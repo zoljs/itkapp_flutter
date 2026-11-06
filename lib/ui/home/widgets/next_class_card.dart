@@ -52,7 +52,7 @@ class NextClassCard extends StatelessWidget {
                   color: scheme.onSurface,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: AppSpacing.xxs),
               Text(
                 [time, if (e.location?.isNotEmpty ?? false) e.location!]
                     .join(' · '),
