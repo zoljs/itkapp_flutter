@@ -16,30 +16,27 @@ class WeekStrip extends StatelessWidget {
         final isToday = day == today;
 
         return Expanded(
-          child: Column(
-            children: [
-              Container(
-                height: 44,
-                margin: const EdgeInsets.symmetric(horizontal: 3),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: isToday
-                      ? scheme.onPrimary
-                      : scheme.onPrimary.withValues(alpha: 0.4),
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child: Text(
-                  '${day.day}',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w700,
-                    color: isToday
-                        ? scheme.primary
-                        : scheme.primary.withValues(alpha: 0.5),
-                  ),
-                ),
+          child: Container(
+            height: 24,
+            margin: const EdgeInsets.symmetric(horizontal: 3),
+            alignment: Alignment.center,
+            decoration: ShapeDecoration(
+              color: isToday
+                  ? scheme.onPrimary
+                  : scheme.onPrimary.withValues(alpha: 0.4),
+              shape: RoundedSuperellipseBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.xl)),
+            ),
+            child: Text(
+              '${day.day}',
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                color: isToday
+                    ? scheme.primary
+                    : scheme.primary.withValues(alpha: 0.5),
               ),
-            ],
+            ),
           ),
         );
       }),
