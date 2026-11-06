@@ -27,6 +27,8 @@ class SettingsScreen extends StatefulWidget {
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
+
+  static String heroTag = 'settings-avatar';
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
@@ -83,13 +85,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   .headlineSmall
                   ?.merge(topBarTitleStyle),
             ),
+            hasBackButton: true,
             centeredWidget: CircleAvatar(
-                radius: 55,
-                backgroundColor: scheme.surface,
+              radius: 55,
+              backgroundColor: scheme.surface,
+              child: Hero(
+                tag: SettingsScreen.heroTag,
                 child: UserAvatar(
                   login: login,
                   color: itkPrimary,
-                )),
+                ),
+              ),
+            ),
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(

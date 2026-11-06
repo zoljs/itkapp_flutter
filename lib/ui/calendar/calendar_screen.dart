@@ -88,7 +88,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           span: span,
                           showsToday: showsToday,
                           errorMessage: _viewModel.load.errorMessage,
-                          onSpanChanged: _viewModel.setSpan,
                           onRefresh: _viewModel.load.running
                               ? null
                               : () => unawaited(_viewModel.load.execute(true)),
@@ -103,7 +102,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               borderRadius: landscape
                                   ? BorderRadius.zero
                                   : const BorderRadius.vertical(
-                                      top: Radius.circular(AppRadius.xl),
+                                      top: Radius.circular(AppRadius.xxl),
                                     ),
                             ),
                           ),

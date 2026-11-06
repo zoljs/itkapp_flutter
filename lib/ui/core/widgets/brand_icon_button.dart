@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:itk_app/ui/core/widgets/press_feedback.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
+import 'package:itk_app/ui/core/widgets/app_pressable.dart';
 
-class BrandIconButton extends StatefulWidget {
+class BrandIconButton extends StatelessWidget {
   const BrandIconButton({
     super.key,
     required this.icon,
@@ -20,68 +20,41 @@ class BrandIconButton extends StatefulWidget {
   final IconData icon;
   final Color? backgroundColor;
   final Color? iconColor;
-
   final double size;
   final bool elevated;
 
   @override
-  State<BrandIconButton> createState() => _BrandIconButtonState();
-}
-
-class _BrandIconButtonState extends State<BrandIconButton> {
-  bool _pressed = false;
-
-  bool get _enabled => widget.onPressed != null;
-
-  void _setPressed(bool value) {
-    if (_pressed != value) setState(() => _pressed = value);
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
+    final background = backgroundColor;
 
-    return Semantics(
-      button: true,
-      enabled: _enabled,
-      label: widget.semanticLabel,
-      child: Listener(
-        onPointerDown: (_) => _enabled ? _setPressed(true) : null,
-        onPointerUp: (_) => _setPressed(false),
-        onPointerCancel: (_) => _setPressed(false),
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: widget.onPressed,
-          child: AnimatedOpacity(
-            opacity: _enabled ? 1 : 0.4,
-            duration: const Duration(milliseconds: 150),
-            child: PressFeedback(
-              pressed: _pressed,
-              pressedScale: 0.9,
-              child: Container(
-              height: widget.size,
-              width: widget.size,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: widget.backgroundColor,
-                shape: BoxShape.circle,
-                boxShadow: widget.elevated
-                    ? [
-                        BoxShadow(
-                          color: widget.backgroundColor!.withValues(alpha: 0.2),
-                          blurRadius: AppSpacing.md,
-                          offset: const Offset(AppSpacing.xs, AppSpacing.xs),
-                        ),
-                      ]
-                    : null,
-              ),
-              child: Icon(
-                widget.icon,
-                size: widget.size * 0.5,
-                color: widget.iconColor ?? scheme.onSurface,
-                semanticLabel: widget.semanticLabel,
-              ),
-            ),
+    return AnimatedOpacity(
+      opacity: onPressed != null ? 1 : 0.4,
+      duration: const Duration(milliseconds: 150),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: elevated && background != null
+              ? [
+                  BoxShadow(
+                    color: background.withValues(alpha: 0.2),
+                    blurRadius: AppSpacing.md,
+                    offset: const Offset(AppSpacing.xs, AppSpacing.xs),
+                  ),
+                ]
+              : null,
+        ),
+        child: AppPressable(
+          onTap: onPressed,
+          semanticLabel: semanticLabel,
+          color: background,
+          shape: const CircleBorder(),
+          pressedScale: 0.9,
+          child: SizedBox.square(
+            dimension: size,
+            child: Icon(
+              icon,
+              size: size * 0.5,
+              color: iconColor ?? Theme.of(context).colorScheme.onSurface,
             ),
           ),
         ),

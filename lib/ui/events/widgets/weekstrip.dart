@@ -25,7 +25,7 @@ class WeekStrip extends StatelessWidget {
                   ? scheme.onPrimary
                   : scheme.onPrimary.withValues(alpha: 0.4),
               shape: RoundedSuperellipseBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.xl)),
+                  borderRadius: BorderRadius.circular(AppRadius.xxl)),
             ),
             child: Text(
               '${day.day}',

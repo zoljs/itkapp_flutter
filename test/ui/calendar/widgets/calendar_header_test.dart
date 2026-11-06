@@ -10,7 +10,6 @@ Future<void> _pump(
   CalendarSpan span = CalendarSpan.oneDay,
   bool showsToday = false,
   String? errorMessage,
-  ValueChanged<CalendarSpan>? onSpanChanged,
 }) =>
     tester.pumpWidget(MaterialApp(
       home: Scaffold(
@@ -20,7 +19,6 @@ Future<void> _pump(
           span: span,
           showsToday: showsToday,
           errorMessage: errorMessage,
-          onSpanChanged: onSpanChanged ?? (_) {},
           onRefresh: () {},
           onPickDate: () {},
         ),

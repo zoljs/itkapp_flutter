@@ -5,6 +5,7 @@ import 'package:itk_app/ui/core/widgets/user_avatar.dart';
 import 'package:itk_app/ui/wiki/widgets/my_site_header.dart';
 import 'package:itk_app/ui/wiki/widgets/user_site_card.dart';
 import 'package:flutter/material.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class MySiteCard extends StatelessWidget {
   const MySiteCard(
@@ -37,7 +38,10 @@ class MySiteCard extends StatelessWidget {
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
             ),
-            Icon(Icons.chevron_right_rounded, color: scheme.onSurfaceVariant),
+            Skeleton.ignore(
+              child: Icon(Icons.chevron_right_rounded,
+                  color: scheme.onSurfaceVariant),
+            ),
           ],
         ),
       );
@@ -53,7 +57,7 @@ class MySiteCard extends StatelessWidget {
           Hero(
             tag: MySiteHeader.heroTag,
             child: UserAvatar(
-              radius: 22,
+              radius: 24,
               fontSize: 24,
               login: mySite!.login,
               color: Color.alphaBlend(

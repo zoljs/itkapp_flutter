@@ -15,7 +15,10 @@ void main() {
   setUp(() async {
     files = FakeWikiFilesRepository();
     viewModel = WikiViewModel(
-        wikiSitesRepository: FakeSitesRepository(), wikiFilesRepository: files);
+      wikiSitesRepository: FakeSitesRepository(),
+      wikiFilesRepository: files,
+      authRepository: FakeAuthRepository(),
+    );
     await flush();
   });
 

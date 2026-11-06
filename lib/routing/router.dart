@@ -72,7 +72,7 @@ GoRouter router(
             return const OnboardingScreen();
           },
         ),
-        StatefulShellRoute.indexedStack(
+        StatefulShellRoute(
           builder: (context, state, navigationShell) =>
               AppScaffold(navigationShell: navigationShell),
           branches: [
@@ -98,13 +98,24 @@ GoRouter router(
               ),
             ]),
             // ----------------- [SETTINGS] -----------------
-            StatefulShellBranch(routes: [
-              GoRoute(
-                path: Routes.settings,
-                builder: (context, state) => const SettingsScreen(),
-              ),
-            ]),
+            // StatefulShellBranch(routes: [
+            //   GoRoute(
+            //     path: Routes.settings,
+            //     builder: (context, state) => const SettingsScreen(),
+            //   ),
+            // ]),
           ],
+          navigatorContainerBuilder: (context, navigationShell, children) =>
+              IndexedStack(
+            index: navigationShell.currentIndex,
+            children: [
+              for (var i = 0; i < children.length; i++)
+                HeroMode(
+                  enabled: i == navigationShell.currentIndex,
+                  child: children[i],
+                ),
+            ],
+          ),
         ),
         GoRoute(
           path: Routes.adminRoles,
@@ -186,7 +197,11 @@ GoRouter router(
               ),
             );
           },
-        )
+        ),
+        GoRoute(
+          path: Routes.settings,
+          pageBuilder: (context, state) => _page(state, const SettingsScreen()),
+        ),
       ],
     );
 

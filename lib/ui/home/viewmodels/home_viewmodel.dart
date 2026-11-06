@@ -37,6 +37,7 @@ class HomeViewModel extends ChangeNotifier {
   CalendarEvent? _nextEvent;
 
   String? get firstName => _authRepository.cachedUser?.firstName;
+  String? get login => _authRepository.cachedUser?.login;
 
   CalendarEvent? get nextEvent => _nextEvent;
 

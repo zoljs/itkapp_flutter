@@ -37,8 +37,10 @@ class WikiSitesListSliver extends StatelessWidget {
                   name: BoneMock.name,
                   url: 'https://example.com/${BoneMock.words(1)}',
                   tags: [
+                    BoneMock.words(2),
+                    BoneMock.words(2),
                     BoneMock.words(1),
-                    BoneMock.words(1),
+                    BoneMock.words(3),
                   ],
                 ),
               )
@@ -81,7 +83,7 @@ class WikiSitesListSliver extends StatelessWidget {
                 );
               },
               separatorBuilder: (context, index) =>
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.listItemSpacing),
             ),
           ),
         );

@@ -24,7 +24,7 @@ class AppFilterChip extends StatelessWidget {
       checkmarkColor: Colors.black87,
       padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 8),
       shape: RoundedSuperellipseBorder(
-        borderRadius: BorderRadius.circular(AppRadius.xl),
+        borderRadius: BorderRadius.circular(AppRadius.xxl),
       ),
       onSelected: onSelected,
       side: BorderSide.none,

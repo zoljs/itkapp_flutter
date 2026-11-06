@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 
 import 'package:flutter/foundation.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/user_site.dart';
@@ -13,7 +14,9 @@ class WikiViewModel extends ChangeNotifier {
   WikiViewModel({
     required WikiSitesRepository wikiSitesRepository,
     required WikiFilesRepository wikiFilesRepository,
-  })  : _wikiSitesRepository = wikiSitesRepository,
+    required AuthRepository authRepository,
+  })  : _authRepository = authRepository,
+        _wikiSitesRepository = wikiSitesRepository,
         _wikiFilesRepository = wikiFilesRepository,
         _sites = wikiSitesRepository.cachedSites,
         _mySite = wikiSitesRepository.cachedMySite {
@@ -25,6 +28,7 @@ class WikiViewModel extends ChangeNotifier {
 
   final WikiSitesRepository _wikiSitesRepository;
   final WikiFilesRepository _wikiFilesRepository;
+  final AuthRepository _authRepository;
 
   // State
   List<UserSite> _sites;
@@ -47,6 +51,7 @@ class WikiViewModel extends ChangeNotifier {
   UserSite? get mySite => _mySite?.value;
   String get query => _query;
   String? get checkingLogin => checkFiles.running ? _checkingLogin : null;
+  String? get login => _authRepository.cachedUser?.login;
 
   bool get sitesInitialLoading => load.running && _sites.isEmpty;
   bool get mySiteInitialLoading => load.running && _mySite == null;

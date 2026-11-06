@@ -123,7 +123,7 @@ class CalendarPlanner extends StatelessWidget {
                       ? scheme.primaryContainer
                       : scheme.surfaceContainer,
                   shape: RoundedSuperellipseBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.xl),
+                    borderRadius: BorderRadius.circular(AppRadius.xxl),
                   ),
                 ),
                 width: 48,

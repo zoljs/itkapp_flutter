@@ -19,7 +19,6 @@ class CalendarHeader extends StatelessWidget {
     required this.span,
     required this.showsToday,
     required this.errorMessage,
-    required this.onSpanChanged,
     required this.onRefresh,
     required this.onPickDate,
   });
@@ -32,7 +31,6 @@ class CalendarHeader extends StatelessWidget {
   final CalendarSpan span;
   final bool showsToday;
   final String? errorMessage;
-  final ValueChanged<CalendarSpan> onSpanChanged;
 
   /// `null` while a refresh is running.
   final VoidCallback? onRefresh;
@@ -110,19 +108,12 @@ class CalendarHeader extends StatelessWidget {
                   BrandIconButton(
                     icon: Icons.link_rounded,
                     onPressed: () => context.push(Routes.calendarLinks),
-                    semanticLabel: 'Frissítés',
+                    semanticLabel: 'Naptárak kezelése',
                   ),
                 ],
               ),
             ],
           ),
-          // Calendar View Mode
-          // AdaptiveSegmentedControl<CalendarSpan>(
-          //   values: CalendarSpan.values,
-          //   selected: span,
-          //   onChanged: onSpanChanged,
-          //   labelOf: (s) => s.label,
-          // ),
         ],
       ),
     );

@@ -41,10 +41,10 @@ class AppScaffold extends StatelessWidget {
               icon: Icons.groups_outlined,
               selectedIcon: Icons.groups_rounded,
               label: 'Wiki'),
-          NavBarItem(
-              icon: Icons.settings_outlined,
-              label: 'Beállítások',
-              selectedIcon: Icons.settings_rounded)
+          // NavBarItem(
+          //     icon: Icons.settings_outlined,
+          //     label: 'Beállítások',
+          //     selectedIcon: Icons.settings_rounded)
         ],
       ),
     );

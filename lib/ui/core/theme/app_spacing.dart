@@ -19,10 +19,11 @@ class AppSpacing {
   // Named for specific stuff
   static const double bottomNavClearance = 140;
   static const double screenHorizontal = 12;
+  static const double listItemSpacing = 12;
 
   static const chipHeight = 48.0;
   static const searchFieldHeight = 48.0;
-  static const searchBarHeight = searchFieldHeight + 2 * lg;
+  static const searchBarHeight = searchFieldHeight + 2 * md;
   static const mySiteCardHeight = 80.0;
 
   static const toolbarHeight = 64.0;

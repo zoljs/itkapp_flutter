@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/widgets/app_search_field.dart';
+import 'package:itk_app/ui/core/widgets/settings_avatar_button.dart';
 import 'package:itk_app/ui/wiki/widgets/wiki_sites_list_sliver.dart';
 import 'package:itk_app/utils/open_link.dart';
 import 'package:provider/provider.dart';
@@ -44,6 +46,7 @@ class _WikiScreenState extends State<WikiScreen> {
     _viewModel = WikiViewModel(
       wikiSitesRepository: context.read<WikiSitesRepository>(),
       wikiFilesRepository: context.read<WikiFilesRepository>(),
+      authRepository: context.read<AuthRepository>(),
     );
   }
 
@@ -86,15 +89,23 @@ class _WikiScreenState extends State<WikiScreen> {
           builder: (context, _) {
             final customScrollView = CustomScrollView(
               slivers: [
+                // [ShrinkingSliverAppBar] contains your site card and title.
                 ShrinkingSliverAppBar(
                   centerTitle: true,
+                  expandedHeight: 242,
                   title: Text(
-                    'Hallgatói oldalak',
+                    'Users Wiki',
                     style: Theme.of(context)
                         .textTheme
                         .headlineSmall
                         ?.merge(topBarTitleStyle),
                   ),
+                  actions: [
+                    SettingsAvatarButton(
+                      onAvatarTap: () => context.push(Routes.settings),
+                      login: _viewModel.login,
+                    )
+                  ],
                   bottom: Padding(
                     padding: const EdgeInsets.all(AppSpacing.screenHorizontal),
                     child: AppSearchField(
@@ -115,12 +126,14 @@ class _WikiScreenState extends State<WikiScreen> {
                     ),
                   ),
                 ),
+                // [CupertinoSliverRefreshControl] is the iOS specific pull-to-refresh indicator.
                 if (isIOS)
                   CupertinoSliverRefreshControl(
                     onRefresh: () async {
                       await _viewModel.load.execute(true);
                     },
                   ),
+                // [WikiSitesListSliver] is a dumb widget. It displays data passed down to it.
                 WikiSitesListSliver(
                   loading: _viewModel.sitesInitialLoading,
                   loadError: _viewModel.load.errorMessage,
