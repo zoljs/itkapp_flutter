@@ -61,7 +61,7 @@ class _WikiScreenState extends State<WikiScreen> {
     final login = site.login;
     // If there is no login, it is unclaimed so open the link without looking for a php file, because there is no way its already there if they are not using the app.
     if (login == null) {
-      await openLink(context, site.url, mode: LaunchMode.inAppWebView);
+      await openLink(context, site.url, mode: LaunchMode.inAppBrowserView);
       return;
     }
 
@@ -72,7 +72,7 @@ class _WikiScreenState extends State<WikiScreen> {
     if (_viewModel.checkFiles.completed) {
       await context.push(Routes.filesFor(login));
     } else {
-      await openLink(context, site.url, mode: LaunchMode.inAppWebView);
+      await openLink(context, site.url, mode: LaunchMode.inAppBrowserView);
     }
   }
 

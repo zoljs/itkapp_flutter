@@ -49,13 +49,20 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
 
   Future<void> _openFile(BuildContext context, String name) async =>
       openLink(context, widget.viewModel.fileUrl(name),
-          mode: LaunchMode.inAppWebView);
+          mode: LaunchMode.inAppBrowserView);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: false,
-      appBar: buildBrandAppBar(title: widget.viewModel.title, context: context),
+      appBar: buildBrandAppBar(
+        title: widget.viewModel.title,
+        context: context,
+        actionEnabled: true,
+        actionIcon: Icons.close_rounded,
+        actionLabel: 'Bezárás',
+        onAction: () => context.go(Routes.wiki),
+      ),
       body: ListenableBuilder(
         listenable: widget.viewModel,
         builder: (context, _) {
