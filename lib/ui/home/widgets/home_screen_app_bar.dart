@@ -9,8 +9,6 @@ class HomeScreenAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     return SliverAppBar(
-      stretch: true,
-      stretchTriggerOffset: 100.0,
       pinned: true,
       expandedHeight: 150,
       collapsedHeight: 60,

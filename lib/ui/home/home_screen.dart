@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/absolutorium_repository.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
@@ -61,93 +62,102 @@ class _HomeScreenState extends State<HomeScreen> {
     final scheme = Theme.of(context).colorScheme;
     final firstName = _viewModel.firstName ?? 'diák';
     final today = DateFormat('MMMM d., EEEE', 'hu').format(DateTime.now());
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
-    return Scaffold(
-      body: RefreshIndicator.adaptive(
-        onRefresh: _refresh,
-        edgeOffset: MediaQuery.paddingOf(context).top,
-        child: CustomScrollView(
-          physics: const AlwaysScrollableScrollPhysics(
-            parent: BouncingScrollPhysics(),
+    final customScrollView = CustomScrollView(
+      slivers: [
+        const HomeScreenAppBar(),
+        if (isIOS)
+          CupertinoSliverRefreshControl(
+            onRefresh: () async {
+              await _viewModel.load.execute(true);
+            },
           ),
-          slivers: [
-            const HomeScreenAppBar(),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.screenHorizontal,
-                AppSpacing.xxl,
-                AppSpacing.screenHorizontal,
-                AppSpacing.bottomNavClearance,
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.screenHorizontal,
+            AppSpacing.xxl,
+            AppSpacing.screenHorizontal,
+            AppSpacing.bottomNavClearance,
+          ),
+          sliver: SliverList.list(
+            children: [
+              Text(
+                '$_greeting, $firstName!',
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
-              sliver: SliverList.list(
+              const SizedBox(height: AppSpacing.xs),
+              Text(today, style: TextStyle(color: scheme.onSurfaceVariant)),
+              const SizedBox(height: AppSpacing.xxl),
+              SettingsGroup(
+                header: 'Következő óra',
                 children: [
-                  Text(
-                    '$_greeting, $firstName!',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                  ListenableBuilder(
+                      listenable: _viewModel,
+                      builder: (context, _) {
+                        return _buildNextEvent(scheme);
+                      })
+                ],
+              ),
+              SettingsGroup(
+                header: 'Időpontok',
+                children: [
+                  SettingsTile(
+                    icon: Icons.event_note_rounded,
+                    iconColor: scheme.error,
+                    title: 'Zárthelyi dolgozatok',
+                    onTap: () => context.push(Routes.midterms),
                   ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(today, style: TextStyle(color: scheme.onSurfaceVariant)),
-                  const SizedBox(height: AppSpacing.xxl),
-                  SettingsGroup(
-                    header: 'Következő óra',
-                    children: [
-                      ListenableBuilder(
-                          listenable: _viewModel,
-                          builder: (context, _) {
-                            return _buildNextEvent(scheme);
-                          })
-                    ],
-                  ),
-                  SettingsGroup(
-                    header: 'Időpontok',
-                    children: [
-                      SettingsTile(
-                        icon: Icons.event_note_rounded,
-                        iconColor: scheme.error,
-                        title: 'Zárthelyi dolgozatok',
-                        onTap: () => context.push(Routes.midterms),
-                      ),
-                      SettingsTile(
-                        icon: Icons.event_note_rounded,
-                        iconColor: scheme.error,
-                        title: 'Konzultációk',
-                        onTap: () => context.push(Routes.consultations),
-                      ),
-                    ],
-                  ),
-                  SettingsGroup(
-                    header: 'Tanulmányok',
-                    children: [
-                      ListenableBuilder(
-                        listenable: _viewModel,
-                        builder: (context, _) => SettingsTile(
-                          icon: Icons.school_rounded,
-                          iconColor: itkPrimary,
-                          title: 'Abszolutórium',
-                          value: _viewModel.absolutoriumSummary,
-                          onTap: () => context.push(Routes.absolutorium),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SettingsGroup(
-                    header: 'Gyors linkek',
-                    children: [
-                      QuickLinksGrid(onTap: (url) => openLink(context, url)),
-                      SettingsTile(
-                        icon: Icons.video_chat_outlined,
-                        iconColor: itkPrimary,
-                        title: 'Online Videók',
-                        onTap: () => context.push(Routes.videos),
-                      )
-                    ],
+                  SettingsTile(
+                    icon: Icons.event_note_rounded,
+                    iconColor: scheme.error,
+                    title: 'Konzultációk',
+                    onTap: () => context.push(Routes.consultations),
                   ),
                 ],
               ),
-            ),
-          ],
+              SettingsGroup(
+                header: 'Tanulmányok',
+                children: [
+                  ListenableBuilder(
+                    listenable: _viewModel,
+                    builder: (context, _) => SettingsTile(
+                      icon: Icons.school_rounded,
+                      iconColor: itkPrimary,
+                      title: 'Abszolutórium',
+                      value: _viewModel.absolutoriumSummary,
+                      onTap: () => context.push(Routes.absolutorium),
+                    ),
+                  ),
+                ],
+              ),
+              SettingsGroup(
+                header: 'Gyors linkek',
+                children: [
+                  QuickLinksGrid(onTap: (url) => openLink(context, url)),
+                  SettingsTile(
+                    icon: Icons.video_chat_outlined,
+                    iconColor: itkPrimary,
+                    title: 'Online Videók',
+                    onTap: () => context.push(Routes.videos),
+                  )
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
+      ],
+    );
+
+    // Body
+    return Scaffold(
+      body: isIOS
+          ? customScrollView
+          : RefreshIndicator(
+              onRefresh: _refresh,
+              edgeOffset: MediaQuery.paddingOf(context).top,
+              child: customScrollView,
+            ),
     );
   }
 
