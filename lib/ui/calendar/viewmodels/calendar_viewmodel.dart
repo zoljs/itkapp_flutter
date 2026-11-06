@@ -50,7 +50,7 @@ class CalendarViewModel extends ChangeNotifier {
   /// something to put in it.
   bool get hasAllDayEvents => _hasAllDayEvents;
 
-  CalendarSpan _span = CalendarSpan.oneDay;
+  CalendarSpan _span = CalendarSpan.threeDays;
   CalendarSpan get span => _span;
 
   void setSpan(CalendarSpan span) {

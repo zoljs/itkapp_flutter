@@ -34,7 +34,7 @@ class CalendarPlanner extends StatelessWidget {
     required this.onSpanChanged,
   });
 
-  static const heightPerMinute = 1.5;
+  static const heightPerMinute = 1.0;
 
   /// Lets the screen call `jumpToDate` on the planner.
   final GlobalKey<EventsPlannerState> plannerKey;
@@ -82,7 +82,7 @@ class CalendarPlanner extends StatelessWidget {
       ),
 
       // Start at 07:30 ideally
-      initialVerticalScrollOffset: heightPerMinute * 60 * 7.5,
+      initialVerticalScrollOffset: heightPerMinute * 60 * 8.0,
 
       // Day changing behavior
       onDayChange: onDayChange,
