@@ -109,7 +109,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
                           ),
                           child: CalendarPlanner(
                             onSpanChanged: _viewModel.setSpan,
-                            onPickDate: _pickDate,
                             plannerKey: _plannerKeys[(span, landscape)]!,
                             controller: _viewModel.eventController,
                             span: span,

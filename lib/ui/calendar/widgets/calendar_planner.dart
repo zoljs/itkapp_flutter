@@ -30,7 +30,6 @@ class CalendarPlanner extends StatelessWidget {
     required this.showAllDayBar,
     required this.initialDate,
     required this.onDayChange,
-    required this.onPickDate,
     required this.onSpanChanged,
     required this.days,
   });
@@ -43,7 +42,6 @@ class CalendarPlanner extends StatelessWidget {
   final CalendarSpan span;
   final bool showAllDayBar;
   final DateTime initialDate;
-  final VoidCallback onPickDate;
   final ValueChanged<CalendarSpan> onSpanChanged;
   final int days;
 
@@ -74,22 +72,18 @@ class CalendarPlanner extends StatelessWidget {
       ),
 
       // Pinching
-      pinchToZoomParam: PinchToZoomParameters(
+      pinchToZoomParam: const PinchToZoomParameters(
         pinchToZoom: true,
-        onZoomChange: (_) {},
         pinchToZoomMinHeightPerMinute: 0.5,
         pinchToZoomMaxHeightPerMinute: 2.5,
         pinchToZoomSpeed: 1,
       ),
 
-      // Start at 07:30 ideally
+      // Start at 08:00
       initialVerticalScrollOffset: heightPerMinute * 60 * 8.0,
 
       // Day changing behavior
       onDayChange: onDayChange,
-      // horizontalScrollPhysics: const PageScrollPhysics(
-      //   parent: BouncingScrollPhysics(),
-      // ),
       automaticAdjustHorizontalScrollToDay: false,
       horizontalScrollPhysics: DaySnapScrollPhysics(
         daysShowed: days,
@@ -134,10 +128,8 @@ class CalendarPlanner extends StatelessWidget {
             ],
           );
         },
-        //daysHeaderVisibility: span.days > 1,
         daysHeaderColor: scheme.surface,
         daysHeaderForegroundColor: scheme.onSurface,
-        dayHeaderTextBuilder: (day) => DateFormat('E d.', 'hu').format(day),
       ),
 
       // Nighttime

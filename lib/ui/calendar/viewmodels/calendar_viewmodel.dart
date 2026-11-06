@@ -52,6 +52,7 @@ class CalendarViewModel extends ChangeNotifier {
 
   CalendarSpan _span = CalendarSpan.threeDays;
   CalendarSpan get span => _span;
+
   void setSpan(CalendarSpan span) {
     if (span == _span) return;
     _span = span;
