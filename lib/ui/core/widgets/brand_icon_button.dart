@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:itk_app/ui/core/widgets/press_feedback.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
 
@@ -55,7 +55,10 @@ class _BrandIconButtonState extends State<BrandIconButton> {
           child: AnimatedOpacity(
             opacity: _enabled ? 1 : 0.4,
             duration: const Duration(milliseconds: 150),
-            child: Container(
+            child: PressFeedback(
+              pressed: _pressed,
+              pressedScale: 0.9,
+              child: Container(
               height: widget.size,
               width: widget.size,
               alignment: Alignment.center,
@@ -78,10 +81,8 @@ class _BrandIconButtonState extends State<BrandIconButton> {
                 color: widget.iconColor ?? scheme.onSurface,
                 semanticLabel: widget.semanticLabel,
               ),
-            )
-                .animate(target: _pressed ? 1 : 0)
-                .scaleXY(end: 0.9, duration: 100.ms)
-                .tint(color: Colors.black, end: 0.15, duration: 100.ms),
+            ),
+            ),
           ),
         ),
       ),

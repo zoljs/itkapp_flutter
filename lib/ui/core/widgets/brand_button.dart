@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:itk_app/ui/core/widgets/press_feedback.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 
 class BrandButton extends StatefulWidget {
@@ -40,19 +40,19 @@ class _BrandButtonState extends State<BrandButton> {
         onTapDown: (_) => _enabled ? _setPressed(true) : null,
         onTapUp: (_) => _setPressed(false),
         onTapCancel: () => _setPressed(false),
-        child: Container(
-          height: widget.height,
-          alignment: Alignment.center,
-          decoration: ShapeDecoration(
-            color: widget.backgroundColor,
-            shape: RoundedSuperellipseBorder(
-                borderRadius: BorderRadius.circular(AppRadius.xxl)),
+        child: PressFeedback(
+          pressed: _pressed,
+          child: Container(
+            height: widget.height,
+            alignment: Alignment.center,
+            decoration: ShapeDecoration(
+              color: widget.backgroundColor,
+              shape: RoundedSuperellipseBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.xxl)),
+            ),
+            child: widget.child,
           ),
-          child: widget.child,
-        )
-            .animate(target: _pressed ? 1 : 0)
-            .scaleXY(end: 0.96, duration: 100.ms)
-            .tint(color: Colors.black, end: 0.15, duration: 100.ms),
+        ),
       ),
     );
   }
