@@ -1,7 +1,7 @@
 name: itk_app
 description: Flutter client for test.app.itk.ppke.hu
 publish_to: "none"
-version: 0.0.1
+version: 0.1.0+1
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -23,7 +23,7 @@ dependencies:
   package_info_plus: ^10.2.1
   shared_preferences: ^2.5.5
   intl: ^0.20.3
-  calendar_view: ^2.0.0
+  infinite_calendar_view: ^2.14.0
   flutter_localizations:
     sdk: flutter
   provider: ^6.1.5+1

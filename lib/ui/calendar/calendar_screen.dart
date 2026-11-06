@@ -1,18 +1,17 @@
-import 'package:calendar_view/calendar_view.dart';
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:intl/intl.dart';
+import 'package:infinite_calendar_view/infinite_calendar_view.dart'
+    show EventsPlannerState;
 import 'package:itk_app/data/repositories/calendar_repository.dart';
-
-import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/ui/calendar/viewmodels/calendar_viewmodel.dart';
-
-import 'package:itk_app/ui/core/theme/app_fonts.dart';
+import 'package:itk_app/ui/calendar/widgets/calendar_header.dart';
+import 'package:itk_app/ui/calendar/widgets/calendar_planner.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
-
-import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_date_picker.dart';
-import 'package:itk_app/ui/core/widgets/brand_icon_button.dart';
 import 'package:provider/provider.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -24,9 +23,17 @@ class CalendarScreen extends StatefulWidget {
 
 class _CalendarScreenState extends State<CalendarScreen> {
   late final CalendarViewModel _viewModel;
-  final _dayViewKey = GlobalKey<DayViewState<CalendarEvent>>();
+  bool _rollForward = true;
 
-  DateTime _visibleDate = DateTime.now();
+  // One key per span: switching the span builds a fresh planner (it does not
+  // react to a changed `daysShowed`), starting at the day that was visible.
+  final _plannerKeys = {
+    for (final span in CalendarSpan.values)
+      for (final landscape in [false, true])
+        (span, landscape): GlobalKey<EventsPlannerState>(),
+  };
+
+  DateTime _visibleDate = DateUtils.dateOnly(DateTime.now());
 
   @override
   void initState() {
@@ -41,271 +48,158 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.dispose();
   }
 
+  bool _showsToday(int days) {
+    final today = DateUtils.dateOnly(DateTime.now());
+    final end = DateTime(
+        _visibleDate.year, _visibleDate.month, _visibleDate.day + days);
+    return !today.isBefore(_visibleDate) && today.isBefore(end);
+  }
+
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
-    final isToday = DateUtils.isSameDay(_visibleDate, DateTime.now());
+    final landscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
     return Scaffold(
-      backgroundColor: scheme.primaryContainer,
+      backgroundColor: landscape ? scheme.surface : scheme.primaryContainer,
       body: SafeArea(
         bottom: false,
-        child: Stack(
-          children: [
-            DayView<CalendarEvent>(
-              onPageChange: (date, page) {
-                setState(() {
-                  _visibleDate = date;
-                });
-              },
-              safeAreaOption: const SafeAreaOption(bottom: false),
-              key: _dayViewKey,
-              controller: _viewModel.eventController,
-              heightPerMinute: 2,
-              backgroundColor: scheme.surface,
-              showHalfHours: true,
-              startHour: 8,
-              endHour: 24,
-              hourIndicatorSettings: HourIndicatorSettings(
-                color: scheme.outlineVariant,
-                height: 0.8,
-              ),
-              halfHourIndicatorSettings: HourIndicatorSettings(
-                color: scheme.outlineVariant,
-                height: 0.4,
-              ),
+        child: ListenableBuilder(
+          listenable: _viewModel,
+          builder: (context, _) {
+            final span = _viewModel.span;
+            final showsToday = _showsToday(span.days);
 
-              // Day view title
-              dayTitleBuilder: (date) {
-                return Container(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.screenHorizontal,
-                      1,
-                      AppSpacing.screenHorizontal,
-                      18),
-                  decoration: BoxDecoration(
-                    color: scheme.primaryContainer,
+            final customScrollView = CustomScrollView(
+              slivers: [
+                if (isIOS)
+                  CupertinoSliverRefreshControl(
+                    onRefresh: () => _viewModel.load.execute(true),
                   ),
-                  child: Row(
-                    children: [
-                      // [ ----- ]
-                      Expanded(
-                        child: Column(
-                          spacing: AppSpacing.xxs,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              toBeginningOfSentenceCase(
-                                      DateFormat('EEEE', 'hu').format(date)) +
-                                  (isToday ? ' · Ma' : ''),
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: scheme.onPrimaryContainer
-                                    .withValues(alpha: 0.7),
-                                letterSpacing: 0.5,
-                              ),
-                            ),
-                            Text(
-                              DateFormat('MMMM d.', 'hu').format(date),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .headlineSmall
-                                  ?.merge(topBarTitleStyle),
-                            ),
-                            // Error message
-                            ListenableBuilder(
-                              listenable: _viewModel,
-                              builder: (context, _) =>
-                                  switch (_viewModel.load.errorMessage) {
-                                null => const SizedBox.shrink(),
-                                final message => Text(
-                                    message,
-                                    style: TextStyle(
-                                        fontSize: 12, color: scheme.error),
-                                  ),
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // [ ----- ]    [ ] [ ]
-                      Row(
-                        spacing: AppSpacing.sm,
-                        children: [
-                          BrandIconButton(
-                            icon: Icons.refresh_rounded,
-                            onPressed: () => _viewModel.load.running
-                                ? null
-                                : _viewModel.load.execute(true),
-                            semanticLabel: 'Frissítés',
-                          ),
-                          BrandIconButton(
-                              icon: Icons.calendar_month,
-                              onPressed: () => _pickDate(date),
-                              semanticLabel: 'Dátum választása'),
-                        ],
-                      ),
-                    ],
-                  ),
-                );
-              },
-
-              // Timeline e.g. 08:30
-              timeLineBuilder: (date) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 4, left: 4),
-                  child: Text(
-                    DateFormat.Hm().format(date),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: scheme.onSurfaceVariant,
-                    ),
-                  ),
-                );
-              },
-
-              // Event Tile
-              eventTileBuilder: (date, events, boundary, start, end) {
-                if (events.isEmpty) return const SizedBox.shrink();
-                final myEvent = events.first.event;
-                if (myEvent == null) return const SizedBox.shrink();
-
-                final effectiveHeight =
-                    boundary.height < 24 ? 24.0 : boundary.height;
-
-                return Container(
-                  width: boundary.width,
-                  height: effectiveHeight,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: scheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(AppRadius.lg),
-                  ),
+                SliverFillRemaining(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        myEvent.title,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: scheme.onPrimaryContainer,
+                      if (!landscape)
+                        CalendarHeader(
+                          firstDay: _visibleDate,
+                          rollForward: _rollForward,
+                          span: span,
+                          showsToday: showsToday,
+                          errorMessage: _viewModel.load.errorMessage,
+                          onSpanChanged: _viewModel.setSpan,
+                          onRefresh: _viewModel.load.running
+                              ? null
+                              : () => unawaited(_viewModel.load.execute(true)),
+                          onPickDate: _pickDate,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      if (myEvent.location != null &&
-                          myEvent.location!.isNotEmpty)
-                        Text(
-                          myEvent.location!,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: scheme.onPrimaryContainer
-                                .withValues(alpha: 0.7),
+                      Expanded(
+                        child: Container(
+                          clipBehavior: Clip.antiAlias,
+                          decoration: ShapeDecoration(
+                            color: scheme.surface,
+                            shape: RoundedSuperellipseBorder(
+                              borderRadius: landscape
+                                  ? BorderRadius.zero
+                                  : const BorderRadius.vertical(
+                                      top: Radius.circular(AppRadius.xl),
+                                    ),
+                            ),
                           ),
-                          overflow: TextOverflow.ellipsis,
+                          child: CalendarPlanner(
+                            onSpanChanged: _viewModel.setSpan,
+                            onPickDate: _pickDate,
+                            plannerKey: _plannerKeys[(span, landscape)]!,
+                            controller: _viewModel.eventController,
+                            span: span,
+                            showAllDayBar: _viewModel.hasAllDayEvents,
+                            initialDate: _visibleDate,
+                            onDayChange: _setVisibleDate,
+                          ),
                         ),
+                      ),
                     ],
                   ),
-                );
-              },
-
-              // Event
-              fullDayEventBuilder: (events, date) {
-                if (events.isEmpty) return const SizedBox.shrink();
-
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: events.map(
-                    (e) {
-                      final myEvent = e.event;
-                      if (myEvent == null) return const SizedBox.shrink();
-                      return Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 8, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: scheme.secondaryContainer,
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(Icons.event_rounded,
-                                size: 14, color: scheme.onSecondaryContainer),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                myEvent.title,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                  color: scheme.onSecondaryContainer,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ).toList(),
-                );
-              },
-            ),
-
-            // 'Ma' Button
-            Positioned(
-              bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.lg,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: IgnorePointer(
-                  ignoring: isToday,
-                  child: FilledButton(
-                    style: FilledButton.styleFrom(
-                      backgroundColor: Colors.black87.withValues(alpha: .3),
-                      foregroundColor: scheme.onSurface,
-                    ),
-                    onPressed: _goToToday,
-                    child: const Text(
-                      'Ma',
-                    ),
-                  )
-                      .animate(target: isToday ? 0 : 1)
-                      .fadeIn(duration: 250.ms)
-                      .slideY(
-                        begin: .5,
-                        end: 0,
-                        duration: 250.ms,
-                        curve: Curves.easeOut,
-                      ),
                 ),
-              ),
-            )
-          ],
+              ],
+            );
+            return Stack(
+              children: [
+                isIOS
+                    ? customScrollView
+                    : RefreshIndicator(
+                        onRefresh: () => _viewModel.load.execute(true),
+                        child: customScrollView,
+                      ),
+
+                // 'Today' Button
+                Positioned(
+                  bottom: MediaQuery.paddingOf(context).bottom + AppSpacing.lg,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: IgnorePointer(
+                      ignoring: showsToday,
+                      child: FilledButton(
+                        style: FilledButton.styleFrom(
+                          backgroundColor: Colors.black87.withValues(alpha: .3),
+                          foregroundColor: scheme.onSurface,
+                        ),
+                        onPressed: _goToToday,
+                        child: const Text('Ma'),
+                      )
+                          .animate(target: showsToday ? 0 : 1)
+                          .fadeIn(duration: 250.ms)
+                          .slideY(
+                            begin: .5,
+                            end: 0,
+                            duration: 250.ms,
+                            curve: Curves.easeOut,
+                          ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
   }
 
-  void _goToToday() {
-    _dayViewKey.currentState?.jumpToDate(DateTime.now());
+  /// Stores the first visible day and the direction the header title rolls:
+  /// up for a later day, down for an earlier one.
+  void _setVisibleDate(DateTime date) {
+    final day = DateUtils.dateOnly(date);
+    if (day == _visibleDate) return;
+    setState(() {
+      _rollForward = day.isAfter(_visibleDate);
+      _visibleDate = day;
+    });
   }
 
-  Future<void> _pickDate(DateTime current) async {
+  void _jumpTo(DateTime date) {
+    final landscape =
+        MediaQuery.orientationOf(context) == Orientation.landscape;
+    final day = DateUtils.dateOnly(date);
+    _plannerKeys[(_viewModel.span, landscape)]?.currentState?.jumpToDate(day);
+    // jumpToDate does not call onDayChange.
+    _setVisibleDate(day);
+  }
+
+  void _goToToday() => _jumpTo(DateTime.now());
+
+  Future<void> _pickDate() async {
     final now = DateTime.now();
 
     final picked = await showAdaptiveDatePicker(
       context: context,
       firstDate: DateTime(now.year - 1),
       lastDate: DateTime(2050, 12, 31),
-      initialDate: current,
+      initialDate: _visibleDate,
     );
 
-    if (picked != null) _dayViewKey.currentState?.jumpToDate(picked);
+    if (picked != null && mounted) _jumpTo(picked);
   }
 }

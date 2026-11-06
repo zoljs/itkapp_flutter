@@ -107,4 +107,54 @@ void main() {
       expect(event.subject, 'Analízis I.');
     });
   });
+
+  group('isAllDay', () {
+    CalendarEvent at(DateTime start, DateTime end) =>
+        CalendarEvent(title: 'x', start: start, end: end);
+
+    test('Neptun: ugyanazon nap 0:00-0:00 egész napos', () {
+      final midnight = DateTime(2026, 11, 5);
+      expect(at(midnight, midnight).isAllDay, isTrue);
+    });
+
+    test('éjféltől másnap éjfélig egész napos', () {
+      expect(at(DateTime(2026, 11, 5), DateTime(2026, 11, 6)).isAllDay, isTrue);
+    });
+
+    test('több napos, éjféltől éjfélig egész napos', () {
+      expect(at(DateTime(2026, 11, 5), DateTime(2026, 11, 8)).isAllDay, isTrue);
+    });
+
+    test('Moodle határidő (pillanat, nem éjfélkor) nem egész napos', () {
+      final due = DateTime(2026, 11, 5, 23, 59);
+      expect(at(due, due).isAllDay, isFalse);
+    });
+
+    test('0:30-as pillanat nem egész napos', () {
+      final t = DateTime(2026, 11, 5, 0, 30);
+      expect(at(t, t).isAllDay, isFalse);
+    });
+
+    test('éjféltől délig tartó esemény nem egész napos', () {
+      expect(at(DateTime(2026, 11, 5), DateTime(2026, 11, 5, 12)).isAllDay,
+          isFalse);
+    });
+
+    test('normál óra nem egész napos', () {
+      expect(at(DateTime(2026, 11, 5, 10), DateTime(2026, 11, 5, 12)).isAllDay,
+          isFalse);
+    });
+
+    test('VALUE=DATE esemény az ICS-ből egész napos', () {
+      final events = CalendarEvent.parseIcs(ics([
+        'BEGIN:VEVENT',
+        'UID:1',
+        'SUMMARY:Szünnap',
+        'DTSTART;VALUE=DATE:20261105',
+        'DTEND;VALUE=DATE:20261106',
+        'END:VEVENT',
+      ]));
+      expect(events.single.isAllDay, isTrue);
+    });
+  });
 }

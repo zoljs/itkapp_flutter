@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/widgets/navbar.dart';
@@ -14,7 +17,17 @@ class AppScaffold extends StatelessWidget {
       body: navigationShell,
       bottomNavigationBar: AppNavBar(
         selectedIndex: navigationShell.currentIndex,
-        onTap: (index) => navigationShell.goBranch(index),
+        onTap: (index) {
+          navigationShell.goBranch(index);
+          unawaited(SystemChrome.setPreferredOrientations(
+            index == 1
+                ? DeviceOrientation.values
+                : [
+                    DeviceOrientation.portraitUp,
+                    DeviceOrientation.portraitDown
+                  ],
+          ));
+        },
         items: const [
           NavBarItem(
               icon: Icons.home_outlined,

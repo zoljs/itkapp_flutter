@@ -8,6 +8,16 @@ class CalendarEvent {
   final DateTime start;
   final DateTime end;
 
+  static bool _isMidnight(DateTime t) =>
+      t.hour == 0 && t.minute == 0 && t.second == 0;
+
+  bool get isAllDay {
+    final s = start.toLocal();
+    final e = end.toLocal();
+    if (!_isMidnight(s)) return false;
+    return s == e || (_isMidnight(e) && e.isAfter(s));
+  }
+
   const CalendarEvent({
     required this.title,
     required this.start,

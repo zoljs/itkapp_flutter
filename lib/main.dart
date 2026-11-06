@@ -125,7 +125,7 @@ ThemeData _buildTheme(ColorScheme scheme) {
   final cupertinoText = const CupertinoThemeData().textTheme;
 
   return ThemeData(
-    //platform: TargetPlatform.android,
+    // platform: TargetPlatform.android,
     colorScheme: scheme,
     useMaterial3: true,
     splashFactory: defaultTargetPlatform == TargetPlatform.iOS
