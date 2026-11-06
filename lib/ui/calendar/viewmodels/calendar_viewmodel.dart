@@ -52,12 +52,15 @@ class CalendarViewModel extends ChangeNotifier {
 
   CalendarSpan _span = CalendarSpan.threeDays;
   CalendarSpan get span => _span;
-
   void setSpan(CalendarSpan span) {
     if (span == _span) return;
     _span = span;
     notifyListeners();
   }
+
+  /// Landscape always shows five days, whatever span is selected.
+  int visibleDays({required bool landscape}) =>
+      landscape ? CalendarSpan.fiveDays.days : span.days;
 
   @override
   void dispose() {

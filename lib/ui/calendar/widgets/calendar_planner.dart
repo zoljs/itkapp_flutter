@@ -32,6 +32,7 @@ class CalendarPlanner extends StatelessWidget {
     required this.onDayChange,
     required this.onPickDate,
     required this.onSpanChanged,
+    required this.days,
   });
 
   static const heightPerMinute = 1.0;
@@ -44,6 +45,7 @@ class CalendarPlanner extends StatelessWidget {
   final DateTime initialDate;
   final VoidCallback onPickDate;
   final ValueChanged<CalendarSpan> onSpanChanged;
+  final int days;
 
   /// First visible day after a horizontal scroll.
   final ValueChanged<DateTime> onDayChange;
@@ -54,7 +56,6 @@ class CalendarPlanner extends StatelessWidget {
     final bottomInset = MediaQuery.paddingOf(context).bottom + AppSpacing.lg;
     final landscape =
         MediaQuery.orientationOf(context) == Orientation.landscape;
-    final days = landscape ? CalendarSpan.fiveDays.days : span.days;
 
     return EventsPlanner(
       key: plannerKey,

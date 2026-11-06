@@ -58,9 +58,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
     final landscape =
         MediaQuery.orientationOf(context) == Orientation.landscape;
-    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
 
     return Scaffold(
       backgroundColor: landscape ? scheme.surface : scheme.primaryContainer,
@@ -70,7 +70,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
           listenable: _viewModel,
           builder: (context, _) {
             final span = _viewModel.span;
-            final showsToday = _showsToday(span.days);
+            final days = _viewModel.visibleDays(landscape: landscape);
+            final showsToday = _showsToday(days);
 
             final customScrollView = CustomScrollView(
               slivers: [
@@ -112,6 +113,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                             plannerKey: _plannerKeys[(span, landscape)]!,
                             controller: _viewModel.eventController,
                             span: span,
+                            days: days,
                             showAllDayBar: _viewModel.hasAllDayEvents,
                             initialDate: _visibleDate,
                             onDayChange: _setVisibleDate,

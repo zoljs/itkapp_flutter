@@ -168,10 +168,10 @@ void main() {
   });
 
   group('nézet', () {
-    test('alapból egy napot mutat', () async {
+    test('alapból három napot mutat', () async {
       final viewModel = CalendarViewModel(repository: FakeCalendarRepository());
       await flush();
-      expect(viewModel.span, CalendarSpan.oneDay);
+      expect(viewModel.span, CalendarSpan.threeDays);
       viewModel.dispose();
     });
 
@@ -181,11 +181,34 @@ void main() {
       var notified = 0;
       viewModel.addListener(() => notified++);
 
-      viewModel.setSpan(CalendarSpan.threeDays);
-      viewModel.setSpan(CalendarSpan.threeDays);
+      viewModel.setSpan(CalendarSpan.oneDay);
+      viewModel.setSpan(CalendarSpan.oneDay);
 
-      expect(viewModel.span, CalendarSpan.threeDays);
+      expect(viewModel.span, CalendarSpan.oneDay);
       expect(notified, 1);
+      viewModel.dispose();
+    });
+
+    test('fekvő módban mindig öt napot mutat', () async {
+      final viewModel = CalendarViewModel(repository: FakeCalendarRepository());
+      await flush();
+
+      for (final span in CalendarSpan.values) {
+        viewModel.setSpan(span);
+        expect(viewModel.visibleDays(landscape: true), 5, reason: '$span');
+      }
+      viewModel.dispose();
+    });
+
+    test('álló módban a kiválasztott nézet napjait mutatja', () async {
+      final viewModel = CalendarViewModel(repository: FakeCalendarRepository());
+      await flush();
+
+      for (final span in CalendarSpan.values) {
+        viewModel.setSpan(span);
+        expect(viewModel.visibleDays(landscape: false), span.days,
+            reason: '$span');
+      }
       viewModel.dispose();
     });
   });
