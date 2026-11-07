@@ -78,7 +78,7 @@ class CalendarLinksViewmodel extends ChangeNotifier {
     if (result case Ok()) {
       setName('');
       setUrl('');
-      _calendarRepository.clearCache();
+      _calendarRepository.invalidateCache();
       return _load();
     }
     return result;
@@ -90,7 +90,7 @@ class CalendarLinksViewmodel extends ChangeNotifier {
 
     final result = await _repository.delete(id: id);
     if (result case Ok()) {
-      _calendarRepository.clearCache();
+      _calendarRepository.invalidateCache();
       return _load();
     }
     if (result is Err) await _load();

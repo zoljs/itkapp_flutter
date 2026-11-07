@@ -64,7 +64,7 @@ Future<void> main() async {
           Provider(
               create: (context) => CalendarLinksRepository(
                   apiClient: context.read<ApiClient>())),
-          Provider(
+          ChangeNotifierProvider(
               create: (context) =>
                   CalendarRepository(apiClient: context.read<ApiClient>())),
           Provider(
@@ -73,9 +73,6 @@ Future<void> main() async {
           Provider(
               create: (context) => CalendarLinksRepository(
                   apiClient: context.read<ApiClient>())),
-          Provider(
-              create: (context) =>
-                  CalendarRepository(apiClient: context.read<ApiClient>())),
           Provider(
             create: (context) =>
                 WikiSitesRepository(apiClient: context.read<ApiClient>()),
