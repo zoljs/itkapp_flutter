@@ -1,8 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:itk_app/domain/models/calendar_event.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/utils/result.dart';
 
-class CalendarRepository {
+class CalendarRepository extends ChangeNotifier {
   static const _path = '/api/calendar';
 
   CalendarRepository({
@@ -27,4 +28,9 @@ class CalendarRepository {
   }
 
   void clearCache() => _cached = null;
+
+  void invalidateCache() {
+    clearCache();
+    notifyListeners();
+  }
 }

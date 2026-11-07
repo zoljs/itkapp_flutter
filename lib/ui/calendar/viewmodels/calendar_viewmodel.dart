@@ -39,10 +39,12 @@ class CalendarViewModel extends ChangeNotifier {
     required CalendarRepository repository,
   }) : _repository = repository {
     load = Command1<void, bool>(_load)..addListener(notifyListeners);
+    _repository.addListener(_onCacheInvalidated);
     unawaited(load.execute(false));
   }
 
   late final Command1<void, bool> load;
+  void _onCacheInvalidated() => unawaited(load.execute(false));
 
   bool _hasAllDayEvents = false;
 
@@ -65,6 +67,7 @@ class CalendarViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _repository.removeListener(_onCacheInvalidated);
     load.dispose();
     eventController.dispose();
     super.dispose();

@@ -21,6 +21,15 @@ abstract class AppTours {
               description: 'Itt ugorhatsz más dátumra könnyedén.',
             ),
           ),
+          HintStep(
+            targetId: 'calendar-viewchange',
+            tooltipBuilder: buildHintTooltip,
+            content: HintStepContent(
+              title: 'Nézet váltása',
+              description:
+                  'Itt válthatsz egynapos, háromnapos és heti nézet között.',
+            ),
+          ),
         ],
       );
 
