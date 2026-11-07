@@ -7,6 +7,7 @@ import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
@@ -49,8 +50,6 @@ class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-
     return ListenableBuilder(
       listenable: _viewModel,
       builder: (context, _) {
@@ -108,19 +107,11 @@ class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
                 BrandButton(
                   onTap:
                       check.running ? null : () => unawaited(check.execute()),
-                  backgroundColor: scheme.primaryContainer,
-                  child: Center(
-                    child: check.running
-                        ? AppSpinner(color: scheme.onPrimaryContainer)
-                        : Text(
-                            'Ellenőrzés',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: scheme.onPrimaryContainer,
-                            ),
-                          ),
-                  ),
+                  child: check.running
+                      ? const AppSpinner(color: itkDark)
+                      : const Text(
+                          'Ellenőrzés',
+                        ),
                 ),
                 if (check.result case final result?) ...[
                   const SizedBox(height: AppSpacing.lg),

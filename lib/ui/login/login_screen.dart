@@ -242,20 +242,11 @@ class _LoginScreenState extends State<LoginScreen> {
                                   height: 56,
                                   onTap:
                                       _viewModel.login.running ? null : _submit,
-                                  backgroundColor: itkPrimary,
-                                  child: Center(
-                                    child: _viewModel.login.running
-                                        ? const AppSpinner(color: itkDark)
-                                        : const Text(
-                                            'Bejelentkezés',
-                                            style: TextStyle(
-                                              color: itkDark,
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w600,
-                                              letterSpacing: 0.2,
-                                            ),
-                                          ),
-                                  ),
+                                  child: _viewModel.login.running
+                                      ? const AppSpinner(color: itkDark)
+                                      : const Text(
+                                          'Bejelentkezés',
+                                        ),
                                 );
                               }),
                         ],

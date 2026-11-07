@@ -275,15 +275,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 BrandButton(
                   onTap: _confirmLogout,
                   backgroundColor: scheme.errorContainer,
-                  child: Center(
-                      child: Text(
+                  foregroundColor: scheme.error,
+                  child: const Text(
                     "Kijelentkezés",
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      color: scheme.error,
-                    ),
-                  )),
+                  ),
                 ),
               ],
             ),

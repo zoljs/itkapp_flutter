@@ -124,15 +124,9 @@ class _MySiteScreenState extends State<MySiteScreen> {
             BrandButton(
               onTap: _deleteSite,
               backgroundColor: scheme.errorContainer,
-              child: Center(
-                child: Text(
-                  'Oldal törlése',
-                  style: TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: scheme.error,
-                  ),
-                ),
+              foregroundColor: scheme.error,
+              child: const Text(
+                'Oldal törlése',
               ),
             ),
             const SizedBox(height: AppSpacing.xxl),

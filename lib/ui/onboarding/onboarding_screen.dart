@@ -128,15 +128,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 width: double.infinity,
                 child: BrandButton(
                   onTap: _next,
-                  backgroundColor: itkPrimary,
                   child: Text(
                     _isLastPage ? 'Kezdjük!' : 'Tovább',
-                    style: const TextStyle(
-                      color: itkDark,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.2,
-                    ),
                   ),
                 ),
               ),

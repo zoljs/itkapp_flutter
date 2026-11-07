@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/app_pressable.dart';
 
 class BrandButton extends StatelessWidget {
@@ -8,14 +9,16 @@ class BrandButton extends StatelessWidget {
     super.key,
     required this.onTap,
     required this.child,
-    required this.backgroundColor,
+    this.backgroundColor = itkPrimary,
+    this.foregroundColor = itkDark,
     this.height = AppSpacing.buttonHeight,
   });
 
   final VoidCallback? onTap;
   final Widget child;
   final Color backgroundColor;
-  final double? height;
+  final Color foregroundColor;
+  final double height;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +30,19 @@ class BrandButton extends StatelessWidget {
       ),
       child: SizedBox(
         height: height,
-        child: Center(child: child),
+        child: IconTheme.merge(
+          data: IconThemeData(
+            color: foregroundColor,
+          ),
+          child: DefaultTextStyle.merge(
+            style: TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w600,
+              color: foregroundColor,
+            ),
+            child: Center(child: child),
+          ),
+        ),
       ),
     );
   }

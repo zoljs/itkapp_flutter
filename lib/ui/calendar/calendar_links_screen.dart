@@ -6,7 +6,6 @@ import 'package:itk_app/domain/models/calendar_link.dart';
 import 'package:itk_app/ui/calendar/widgets/calendar_link_tile.dart';
 import 'package:itk_app/ui/calendar/viewmodels/calendar_links_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
-import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_segmented_control.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
@@ -203,16 +202,8 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
               ),
               BrandButton(
                 onTap: _viewModel.canAdd ? _add : null,
-                backgroundColor: itkPrimary,
-                child: const Center(
-                  child: Text(
-                    'Hozzáadás',
-                    style: TextStyle(
-                      color: itkDark,
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
+                child: const Text(
+                  'Hozzáadás',
                 ),
               ),
             ],
