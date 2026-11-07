@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
@@ -86,6 +88,36 @@ void main() {
         viewModel.fileUrl('x.pdf'),
         'https://users.itk.ppke.hu/~perpa4/files/Analizis/ZH/x.pdf',
       );
+      viewModel.dispose();
+    });
+  });
+
+  group('első betöltés', () {
+    test('betöltés közben igaz, utána hamis', () async {
+      repository.gate = Completer<void>();
+      final viewModel =
+          WikiFilesViewModel(repository: repository, dir: '', user: 'perpa4');
+      await flush();
+      expect(viewModel.initialLoading, isTrue);
+
+      repository.gate!.complete();
+      await flush();
+      expect(viewModel.initialLoading, isFalse);
+      viewModel.dispose();
+    });
+
+    test('frissítéskor hamis, ha már vannak elemek', () async {
+      repository.listResult = Ok([WikiFile(name: 'zh1.pdf', isDir: false)]);
+      final viewModel = await create();
+
+      repository.gate = Completer<void>();
+      unawaited(viewModel.load.execute());
+      await flush();
+      expect(viewModel.load.running, isTrue);
+      expect(viewModel.initialLoading, isFalse);
+
+      repository.gate!.complete();
+      await flush();
       viewModel.dispose();
     });
   });

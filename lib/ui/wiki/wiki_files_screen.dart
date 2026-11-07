@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
@@ -11,35 +12,53 @@ import 'package:itk_app/ui/core/widgets/grouped_list.dart';
 import 'package:itk_app/ui/core/widgets/state_message.dart';
 import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
 import 'package:itk_app/utils/open_link.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class WikiFilesScreen extends StatefulWidget {
-  const WikiFilesScreen({super.key, required this.viewModel});
+  const WikiFilesScreen({
+    super.key,
+    required this.dir,
+    required this.user,
+  });
 
-  final WikiFilesViewModel viewModel;
+  final String dir;
+  final String user;
 
   @override
   State<WikiFilesScreen> createState() => _WikiFilesScreenState();
 }
 
 class _WikiFilesScreenState extends State<WikiFilesScreen> {
+  late final WikiFilesViewModel _viewModel;
+
   static final _skeletonItems = List.generate(
     8,
     (i) => WikiFile(name: BoneMock.words(i.isEven ? 2 : 3), isDir: i < 2),
   );
 
   @override
+  void initState() {
+    super.initState();
+    _viewModel = WikiFilesViewModel(
+      repository: context.read<WikiFilesRepository>(),
+      dir: widget.dir,
+      user: widget.user,
+    );
+  }
+
+  @override
   void dispose() {
-    widget.viewModel.dispose();
+    _viewModel.dispose();
     super.dispose();
   }
 
   void _openItem(BuildContext context, WikiFile item) {
     if (item.isDir) {
-      final dir = widget.viewModel.childPath(item.name);
+      final dir = _viewModel.childPath(item.name);
       final uri = Uri(
-          path: Routes.filesFor(widget.viewModel.user),
+          path: Routes.filesFor(_viewModel.user),
           queryParameters: {'dir': dir}).toString();
 
       unawaited(context.push(uri));
@@ -49,7 +68,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
   }
 
   Future<void> _openFile(BuildContext context, String name) async =>
-      openLink(context, widget.viewModel.fileUrl(name),
+      openLink(context, _viewModel.fileUrl(name),
           mode: LaunchMode.inAppBrowserView);
 
   @override
@@ -59,7 +78,7 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: buildBrandAppBar(
-        title: widget.viewModel.title,
+        title: _viewModel.title,
         context: context,
         actionEnabled: true,
         actionIcon: Icons.close_rounded,
@@ -67,11 +86,11 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
         onAction: () => context.go(Routes.wiki),
       ),
       body: ListenableBuilder(
-        listenable: widget.viewModel,
+        listenable: _viewModel,
         builder: (context, _) {
-          final load = widget.viewModel.load;
-          final items = widget.viewModel.items;
-          final showSkeleton = load.running && items.isEmpty;
+          final load = _viewModel.load;
+          final items = _viewModel.items;
+          final showSkeleton = _viewModel.initialLoading;
           final error = load.errorMessage;
 
           if (!showSkeleton && error != null && items.isEmpty) {

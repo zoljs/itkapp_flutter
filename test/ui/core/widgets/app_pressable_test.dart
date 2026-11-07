@@ -85,8 +85,10 @@ void main() {
   testWidgets('is a labeled button with a tap action', (tester) async {
     final handle = tester.ensureSemantics();
     await _pump(tester, onTap: () {});
+    // Found by label: the Semantics sits inside the InkWell (D28), so the
+    // AppPressable's own top render object has no node of its own.
     expect(
-      tester.getSemantics(find.byType(AppPressable)),
+      tester.getSemantics(find.bySemanticsLabel('Gomb')),
       isSemantics(
         label: 'Gomb',
         isButton: true,

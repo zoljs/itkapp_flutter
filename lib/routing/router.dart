@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
-import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/ui/absolutorium/absolutorium_screen.dart';
 import 'package:itk_app/ui/absolutorium/completions_screen.dart';
 import 'package:itk_app/ui/absolutorium/group_detail_screen.dart';
@@ -19,10 +18,8 @@ import 'package:itk_app/ui/videos/videos_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/ui/wiki/wiki_files_setup_screen.dart';
 import 'package:itk_app/ui/wiki/my_site_screen.dart';
-import 'package:itk_app/ui/wiki/viewmodels/wiki_files_viewmodel.dart';
 import 'package:itk_app/ui/wiki/wiki_files_screen.dart';
 import 'package:itk_app/ui/wiki/wiki_screen.dart';
-import 'package:provider/provider.dart';
 import '../data/repositories/auth_repository.dart';
 import 'routes.dart';
 
@@ -189,11 +186,8 @@ GoRouter router(
             return _page(
               state,
               WikiFilesScreen(
-                viewModel: WikiFilesViewModel(
-                  repository: context.read<WikiFilesRepository>(),
-                  user: user,
-                  dir: dir,
-                ),
+                dir: dir,
+                user: user,
               ),
             );
           },

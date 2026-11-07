@@ -31,6 +31,7 @@ class WikiFilesViewModel extends ChangeNotifier {
   // Getters
   String get user => _user;
   String get siteUrl => '${UsersClient.baseUrl}/~$_user';
+  bool get initialLoading => load.running && _items.isEmpty;
 
   @override
   void dispose() {
