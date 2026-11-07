@@ -11,6 +11,7 @@ import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_links_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
+import 'package:itk_app/data/repositories/hint_repository.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
 import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
@@ -37,8 +38,10 @@ Future<void> main() async {
 
   final themeRepository = ThemeRepository(prefs: prefs);
   final onboardingRepository = OnboardingRepository(prefs: prefs);
+  final hintRepository = HintRepository(prefs: prefs);
   final authRepository = AuthRepository(apiClient: apiClient, prefs: prefs);
   unawaited(authRepository.refreshUser());
+  hintRepository.configureStore();
   apiClient.onUnauthorized = handleSessionExpired;
 
   final appRouter = router(authRepository, onboardingRepository);
@@ -56,6 +59,7 @@ Future<void> main() async {
           Provider.value(value: prefs),
           Provider.value(value: themeRepository),
           Provider.value(value: onboardingRepository),
+          Provider.value(value: hintRepository),
           ChangeNotifierProvider.value(value: authRepository),
           Provider(
               create: (context) => CalendarLinksRepository(
@@ -144,6 +148,7 @@ ThemeData _buildTheme(ColorScheme scheme) {
             cupertinoText.dateTimePickerTextStyle.merge(flexRegular),
       ),
     ),
+    extensions: [buildITKAppHintTheme(scheme)],
     inputDecorationTheme: buildITKAppInputDecorationTheme(scheme),
     snackBarTheme: const SnackBarThemeData(
       behavior: SnackBarBehavior.floating,

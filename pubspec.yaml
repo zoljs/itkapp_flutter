@@ -1,7 +1,7 @@
 name: itk_app
 description: Flutter client for test.app.itk.ppke.hu
 publish_to: "none"
-version: 0.1.0+4
+version: 0.1.0+5
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -28,6 +28,7 @@ dependencies:
     sdk: flutter
   provider: ^6.1.5+1
   go_router: ^18.1.1
+  hintful: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

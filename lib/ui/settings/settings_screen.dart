@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/hint_repository.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/services/api_client.dart';
@@ -44,6 +45,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       themeRepository: context.read<ThemeRepository>(),
       apiClient: context.read<ApiClient>(),
       onboardingRepository: context.read<OnboardingRepository>(),
+      hintRepository: context.read<HintRepository>(),
     );
   }
 

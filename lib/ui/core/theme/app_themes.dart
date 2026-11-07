@@ -1,3 +1,4 @@
+import 'package:hintful/hintful.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,15 @@ InputDecorationThemeData buildITKAppInputDecorationTheme(ColorScheme scheme) {
       borderRadius: BorderRadius.circular(AppRadius.xxxl),
       borderSide: BorderSide(color: scheme.error, width: 2.0),
     ),
+  );
+}
+
+HintTheme buildITKAppHintTheme(ColorScheme scheme) {
+  return HintTheme.minimal(scheme).copyWith(
+    showTail: false,
+    tooltipRadius: BorderRadius.circular(AppRadius.xxl),
+    scrimColor: Colors.black54,
+    showPulse: true,
   );
 }
 

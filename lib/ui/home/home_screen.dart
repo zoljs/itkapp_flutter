@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hintful/hintful.dart';
+import 'package:itk_app/app_tours.dart';
 import 'package:itk_app/data/repositories/absolutorium_repository.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
@@ -28,6 +30,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _hintController = HintController(scopePrefix: 'home-');
   late final HomeViewModel _viewModel;
 
   @override
@@ -38,11 +41,19 @@ class _HomeScreenState extends State<HomeScreen> {
       calendarRepository: context.read<CalendarRepository>(),
       absolutoriumRepository: context.read<AbsolutoriumRepository>(),
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_hintController.tryShowTour(
+        AppTours.home(),
+        mark: HintMarkPolicy.onAnyExit,
+      ));
+    });
   }
 
   @override
   void dispose() {
     _viewModel.dispose();
+    _hintController.skip(); // no-op when idle
+    _hintController.dispose();
     super.dispose();
   }
 
@@ -74,9 +85,13 @@ class _HomeScreenState extends State<HomeScreen> {
           expandedHeight: 130,
           divider: 0,
           actions: [
-            SettingsAvatarButton(
-              onAvatarTap: () => context.push(Routes.settings),
-              login: _viewModel.login,
+            HintTarget(
+              focusShape: FocusShape.circle,
+              id: 'home-avatar',
+              child: SettingsAvatarButton(
+                onAvatarTap: () => context.push(Routes.settings),
+                login: _viewModel.login,
+              ),
             ),
           ],
         ),

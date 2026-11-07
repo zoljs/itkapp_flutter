@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:hintful/hintful.dart';
 import 'package:infinite_calendar_view/infinite_calendar_view.dart'
     show EventsPlannerState;
+import 'package:itk_app/app_tours.dart';
 import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/ui/calendar/viewmodels/calendar_viewmodel.dart';
 import 'package:itk_app/ui/calendar/widgets/calendar_header.dart';
@@ -22,6 +24,7 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
+  final _hintController = HintController(scopePrefix: 'calendar-');
   late final CalendarViewModel _viewModel;
   bool _rollForward = true;
 
@@ -40,11 +43,19 @@ class _CalendarScreenState extends State<CalendarScreen> {
     super.initState();
     _viewModel =
         CalendarViewModel(repository: context.read<CalendarRepository>());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(_hintController.tryShowTour(
+        AppTours.calendar(),
+        mark: HintMarkPolicy.onAnyExit,
+      ));
+    });
   }
 
   @override
   void dispose() {
     _viewModel.dispose();
+    _hintController.skip(); // no-op when idle
+    _hintController.dispose();
     super.dispose();
   }
 

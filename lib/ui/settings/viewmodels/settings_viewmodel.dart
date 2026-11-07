@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:itk_app/data/repositories/auth_repository.dart';
+import 'package:itk_app/data/repositories/hint_repository.dart';
 import 'package:itk_app/data/services/api_client.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
@@ -11,16 +12,19 @@ class SettingsViewModel extends ChangeNotifier {
 
   final ApiClient _apiClient;
   final OnboardingRepository _onboardingRepository;
+  final HintRepository _hintRepository;
 
   SettingsViewModel({
     required AuthRepository authRepository,
     required ThemeRepository themeRepository,
     required ApiClient apiClient,
     required OnboardingRepository onboardingRepository,
+    required HintRepository hintRepository,
   })  : _authRepository = authRepository,
         _themeRepository = themeRepository,
         _apiClient = apiClient,
-        _onboardingRepository = onboardingRepository {
+        _onboardingRepository = onboardingRepository,
+        _hintRepository = hintRepository {
     _themeRepository.oledMode.addListener(notifyListeners);
     _themeRepository.actionButtonAsFab.addListener(notifyListeners);
   }
@@ -44,5 +48,8 @@ class SettingsViewModel extends ChangeNotifier {
     super.dispose();
   }
 
-  Future<void> resetOnboarding() => _onboardingRepository.resetOnboarding();
+  Future<void> resetOnboarding() async {
+    await _onboardingRepository.resetOnboarding();
+    await _hintRepository.resetAll();
+  }
 }

@@ -197,6 +197,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "18.1.1"
+  hintful:
+    dependency: "direct main"
+    description:
+      name: hintful
+      sha256: d0c4d952ebf5c9deea8280f7fc6a401b1a2f2df087e9938526f3f05d5dba4741
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   hooks:
     dependency: transitive
     description:

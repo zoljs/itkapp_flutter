@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hintful/hintful.dart';
 import 'package:intl/intl.dart';
 import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/calendar/viewmodels/calendar_viewmodel.dart';
@@ -69,49 +70,57 @@ class CalendarHeader extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: AppPressable(
-                  showInk: false,
-                  semanticLabel: 'Dátum választása',
-                  color: Colors.transparent,
-                  onTap: onPickDate,
-                  child: Column(
-                    spacing: AppSpacing.xxs,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        eyebrow + (showsToday ? ' · Ma' : ''),
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color:
-                              scheme.onPrimaryContainer.withValues(alpha: 0.7),
-                          letterSpacing: 0.5,
-                        ),
-                      ),
-                      RollingText(
-                        titleFor(firstDay, span.days),
-                        forward: rollForward,
-                        style: Theme.of(context)
-                            .textTheme
-                            .headlineSmall
-                            ?.merge(topBarTitleStyle),
-                      ),
-                      if (message != null)
+                child: HintTarget(
+                  focusShape: FocusShape.roundedRect,
+                  id: 'calendar-datepicker',
+                  child: AppPressable(
+                    showInk: false,
+                    semanticLabel: 'Dátum választása',
+                    color: Colors.transparent,
+                    onTap: onPickDate,
+                    child: Column(
+                      spacing: AppSpacing.xxs,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          message,
-                          style: TextStyle(fontSize: 12, color: scheme.error),
+                          eyebrow + (showsToday ? ' · Ma' : ''),
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: scheme.onPrimaryContainer
+                                .withValues(alpha: 0.7),
+                            letterSpacing: 0.5,
+                          ),
                         ),
-                    ],
+                        RollingText(
+                          titleFor(firstDay, span.days),
+                          forward: rollForward,
+                          style: Theme.of(context)
+                              .textTheme
+                              .headlineSmall
+                              ?.merge(topBarTitleStyle),
+                        ),
+                        if (message != null)
+                          Text(
+                            message,
+                            style: TextStyle(fontSize: 12, color: scheme.error),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
               Row(
                 spacing: AppSpacing.sm,
                 children: [
-                  BrandIconButton(
-                    icon: Icons.link_rounded,
-                    onPressed: () => context.push(Routes.calendarLinks),
-                    semanticLabel: 'Naptárak kezelése',
+                  HintTarget(
+                    focusShape: FocusShape.circle,
+                    id: 'calendar-links',
+                    child: BrandIconButton(
+                      icon: Icons.link_rounded,
+                      onPressed: () => context.push(Routes.calendarLinks),
+                      semanticLabel: 'Naptárak kezelése',
+                    ),
                   ),
                 ],
               ),

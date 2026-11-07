@@ -9,6 +9,8 @@ class SharedPreferencesService {
   bool? getBool(String key) => _prefs.getBool(key);
   String? getString(String key) => _prefs.getString(key);
 
+  Set<String> get keys => _prefs.getKeys();
+
   Future<void> setBool(String key, bool value) async {
     await _prefs.setBool(key, value);
   }
