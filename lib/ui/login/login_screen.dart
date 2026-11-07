@@ -4,7 +4,6 @@ import 'package:itk_app/data/repositories/auth_repository.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/theme/app_themes.dart';
-import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/login/viewmodels/login_viewmodel.dart';
 import 'package:itk_app/utils/context_extensions.dart';
@@ -240,13 +239,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               builder: (context, _) {
                                 return BrandButton(
                                   height: 56,
-                                  onTap:
-                                      _viewModel.login.running ? null : _submit,
-                                  child: _viewModel.login.running
-                                      ? const AppSpinner(color: itkDark)
-                                      : const Text(
-                                          'Bejelentkezés',
-                                        ),
+                                  loading: _viewModel.login.running,
+                                  onTap: _submit,
+                                  child: const Text(
+                                    'Bejelentkezés',
+                                  ),
                                 );
                               }),
                         ],

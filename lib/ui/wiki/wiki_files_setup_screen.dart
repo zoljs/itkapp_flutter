@@ -7,8 +7,6 @@ import 'package:itk_app/data/repositories/wiki_files_repository.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
 import 'package:itk_app/ui/core/theme/app_radius.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
-import 'package:itk_app/ui/core/theme/app_themes.dart';
-import 'package:itk_app/ui/core/widgets/app_spinner.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/core/widgets/brand_button.dart';
 import 'package:itk_app/ui/core/widgets/grouped_list.dart';
@@ -105,13 +103,11 @@ class _WikiFilesSetupScreenState extends State<WikiFilesSetupScreen> {
                   ],
                 ),
                 BrandButton(
-                  onTap:
-                      check.running ? null : () => unawaited(check.execute()),
-                  child: check.running
-                      ? const AppSpinner(color: itkDark)
-                      : const Text(
-                          'Ellenőrzés',
-                        ),
+                  onTap: () => unawaited(check.execute()),
+                  loading: check.running,
+                  child: const Text(
+                    'Ellenőrzés',
+                  ),
                 ),
                 if (check.result case final result?) ...[
                   const SizedBox(height: AppSpacing.lg),
