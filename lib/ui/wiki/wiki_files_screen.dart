@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/domain/models/wiki_file.dart';
@@ -53,6 +54,8 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
     return Scaffold(
       extendBodyBehindAppBar: false,
       appBar: buildBrandAppBar(
@@ -88,36 +91,47 @@ class _WikiFilesScreenState extends State<WikiFilesScreen> {
 
           final shown = showSkeleton ? _skeletonItems : items;
 
-          return RefreshIndicator.adaptive(
-            onRefresh: load.execute,
-            child: ListView(
-              physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics()),
-              padding: EdgeInsets.fromLTRB(
-                AppSpacing.lg,
-                AppSpacing.lg,
-                AppSpacing.lg,
-                AppSpacing.xxxl + MediaQuery.paddingOf(context).bottom,
-              ),
-              children: [
-                Skeletonizer(
-                  enabled: showSkeleton,
-                  child: SettingsGroup(
-                    header: showSkeleton ? 'Betöltés...' : _summary(items),
-                    children: [
-                      for (final file in shown)
-                        _FileTile(
-                          file: file,
-                          onTap: showSkeleton
-                              ? null
-                              : () => _openItem(context, file),
-                        ),
-                    ],
+          final customScrollView = CustomScrollView(
+            slivers: [
+              // [CupertinoSliverRefreshControl] is the iOS specific pull-to-refresh indicator.
+              if (isIOS)
+                CupertinoSliverRefreshControl(
+                  onRefresh: () async {
+                    await load.execute();
+                  },
+                ),
+              SliverPadding(
+                padding: EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.xxxl + MediaQuery.paddingOf(context).bottom,
+                ),
+                sliver: SliverToBoxAdapter(
+                  child: Skeletonizer(
+                    enabled: showSkeleton,
+                    child: SettingsGroup(
+                      header: showSkeleton ? 'Betöltés...' : _summary(items),
+                      children: [
+                        for (final file in shown)
+                          _FileTile(
+                            file: file,
+                            onTap: showSkeleton
+                                ? null
+                                : () => _openItem(context, file),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           );
+
+          return isIOS
+              ? customScrollView
+              : RefreshIndicator(
+                  onRefresh: load.execute, child: customScrollView);
         },
       ),
     );
