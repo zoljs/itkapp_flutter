@@ -98,4 +98,28 @@ void main() {
     );
     handle.dispose();
   });
+
+  testWidgets('ink uses the theme by default', (tester) async {
+    await _pump(tester, onTap: () {});
+    expect(tester.widget<InkWell>(find.byType(InkWell)).overlayColor, isNull);
+  });
+
+  testWidgets('showInk: false makes every ink layer transparent',
+      (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Scaffold(
+        body: Center(
+          child: AppPressable(
+            onTap: () {},
+            showInk: false,
+            child: const SizedBox(width: 100, height: 48),
+          ),
+        ),
+      ),
+    ));
+    final overlay = tester.widget<InkWell>(find.byType(InkWell)).overlayColor;
+    for (final state in [WidgetState.pressed, WidgetState.hovered]) {
+      expect(overlay?.resolve({state}), Colors.transparent);
+    }
+  });
 }

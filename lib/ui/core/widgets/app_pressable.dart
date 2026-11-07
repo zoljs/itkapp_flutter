@@ -15,6 +15,7 @@ class AppPressable extends StatefulWidget {
     this.color,
     this.shape,
     this.pressedScale = 0.96,
+    this.showInk = true,
   });
 
   static const disabledOpacity = 0.4;
@@ -25,6 +26,7 @@ class AppPressable extends StatefulWidget {
   final String? semanticLabel;
   final Color? color;
   final ShapeBorder? shape;
+  final bool showInk;
 
   /// Scale while pressed (1 = no shrink).
   final double pressedScale;
@@ -59,6 +61,9 @@ class _AppPressableState extends State<AppPressable> {
           onTap: widget.onTap,
           onHighlightChanged: (value) => setState(() => _pressed = value),
           customBorder: widget.shape,
+          overlayColor: widget.showInk
+              ? null
+              : const WidgetStatePropertyAll(Colors.transparent),
 
           // Important to provide semantics for screen readers.
           // Inside the [Material], not around it: skeletonizer paints a

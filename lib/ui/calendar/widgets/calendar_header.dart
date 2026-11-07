@@ -70,6 +70,9 @@ class CalendarHeader extends StatelessWidget {
             children: [
               Expanded(
                 child: AppPressable(
+                  showInk: false,
+                  semanticLabel: 'Dátum választása',
+                  color: Colors.transparent,
                   onTap: onPickDate,
                   child: Column(
                     spacing: AppSpacing.xxs,
