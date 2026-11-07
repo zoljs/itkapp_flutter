@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hintful/hintful.dart';
 import 'package:infinite_calendar_view/infinite_calendar_view.dart'
     show
         CurrentHourIndicatorParam,
@@ -93,12 +94,17 @@ class CalendarPlanner extends StatelessWidget {
       // Headers
       daysHeaderParam: DaysHeaderParam(
         topLeftCellBuilder: (day) {
-          return BrandIconButton(
-            iconColor: scheme.onSurface,
-            backgroundColor: Colors.transparent,
-            icon: span.icon,
-            onPressed: () => onSpanChanged(span.next()),
-            semanticLabel: 'Nézet váltása',
+          return HintTarget(
+            focusShape: FocusShape.circle,
+            focusPadding: -AppSpacing.md,
+            id: 'calendar-viewchange',
+            child: BrandIconButton(
+              iconColor: scheme.onSurface,
+              backgroundColor: Colors.transparent,
+              icon: span.icon,
+              onPressed: () => onSpanChanged(span.next()),
+              semanticLabel: 'Nézet váltása',
+            ),
           );
         },
         daysHeaderHeight: landscape ? 32.0 : 70.0,
