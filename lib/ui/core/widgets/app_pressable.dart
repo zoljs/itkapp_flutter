@@ -17,6 +17,7 @@ class AppPressable extends StatefulWidget {
     this.pressedScale = 0.96,
   });
 
+  static const disabledOpacity = 0.4;
   static const duration = Duration(milliseconds: 250);
 
   final Widget child;

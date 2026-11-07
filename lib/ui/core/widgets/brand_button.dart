@@ -25,30 +25,36 @@ class BrandButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppPressable(
-      onTap: loading ? null : onTap,
-      color: backgroundColor,
-      shape: RoundedSuperellipseBorder(
-        borderRadius: BorderRadius.circular(AppRadius.xxl),
-      ),
-      child: SizedBox(
-        height: height,
-        child: Center(
-          child: loading
-              ? AppSpinner(color: foregroundColor)
-              : IconTheme.merge(
-                  data: IconThemeData(
-                    color: foregroundColor,
-                  ),
-                  child: DefaultTextStyle.merge(
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w600,
+    return AnimatedOpacity(
+      opacity: onTap == null && !loading ? AppPressable.disabledOpacity : 1.0,
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : AppPressable.duration,
+      child: AppPressable(
+        onTap: loading ? null : onTap,
+        color: backgroundColor,
+        shape: RoundedSuperellipseBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xxl),
+        ),
+        child: SizedBox(
+          height: height,
+          child: Center(
+            child: loading
+                ? AppSpinner(color: foregroundColor)
+                : IconTheme.merge(
+                    data: IconThemeData(
                       color: foregroundColor,
                     ),
-                    child: child,
+                    child: DefaultTextStyle.merge(
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: foregroundColor,
+                      ),
+                      child: child,
+                    ),
                   ),
-                ),
+          ),
         ),
       ),
     );

@@ -28,8 +28,10 @@ class BrandIconButton extends StatelessWidget {
     final background = backgroundColor;
 
     return AnimatedOpacity(
-      opacity: onPressed != null ? 1 : 0.4,
-      duration: const Duration(milliseconds: 150),
+      opacity: onPressed != null ? 1 : AppPressable.disabledOpacity,
+      duration: MediaQuery.disableAnimationsOf(context)
+          ? Duration.zero
+          : AppPressable.duration,
       child: DecoratedBox(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
