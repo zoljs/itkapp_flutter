@@ -14,6 +14,7 @@ import 'package:itk_app/ui/home/home_screen.dart';
 import 'package:itk_app/ui/login/login_screen.dart';
 import 'package:itk_app/ui/events/events_screen.dart';
 import 'package:itk_app/ui/onboarding/onboarding_screen.dart';
+import 'package:itk_app/ui/phonetics/phonetics_screen.dart';
 import 'package:itk_app/ui/videos/videos_screen.dart';
 import 'package:itk_app/ui/settings/settings_screen.dart';
 import 'package:itk_app/ui/wiki/wiki_files_setup_screen.dart';
@@ -142,6 +143,11 @@ GoRouter router(
         GoRoute(
           path: Routes.videos,
           pageBuilder: (context, state) => _page(state, const VideosScreen()),
+        ),
+        GoRoute(
+          path: Routes.phonetics,
+          pageBuilder: (context, state) =>
+              _page(state, const PhoneticsScreen()),
         ),
         GoRoute(
           path: Routes.calendarLinks,

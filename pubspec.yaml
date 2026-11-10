@@ -41,3 +41,6 @@ flutter:
     - family: GoogleSansFlex
       fonts:
         - asset: assets/fonts/GoogleSansFlex[wght,wdth,ROND].ttf
+    - family: NotoSansIPA
+      fonts:
+        - asset: assets/fonts/NotoSansIPA[wght].ttf

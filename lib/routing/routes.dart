@@ -13,6 +13,7 @@ abstract final class Routes {
   static const midterms = '/midterms';
   static const consultations = '/consultations';
   static const videos = '/videos';
+  static const phonetics = '/phonetics';
   static const absolutorium = '/absolutorium';
   static const absolutoriumCompletions = '/absolutorium/completions';
   static const absolutoriumGroups = '/absolutorium/groups';

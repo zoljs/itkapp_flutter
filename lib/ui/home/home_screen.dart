@@ -157,6 +157,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () => context.push(Routes.absolutorium),
                     ),
                   ),
+                  SettingsTile(
+                    icon: Icons.record_voice_over_rounded,
+                    iconColor: itkPrimary,
+                    title: 'Magyar hangok (IPA)',
+                    onTap: () => context.push(Routes.phonetics),
+                  ),
                 ],
               ),
               SettingsGroup(

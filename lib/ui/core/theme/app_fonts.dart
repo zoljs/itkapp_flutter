@@ -22,6 +22,13 @@ TextStyle get topBarTitleStyle => const TextStyle(
       ],
     );
 
+/// IPA symbols. GoogleSansFlex has no IPA glyphs (IPA Extensions, length
+/// mark, tie bar), so phonetic text uses the bundled Noto Sans subset.
+TextStyle get ipaStyle => const TextStyle(
+      fontFamily: 'NotoSansIPA',
+      fontVariations: [FontVariation('wght', 500)],
+    );
+
 TextTheme buildITKAppTextTheme(TextTheme base) {
   return base.copyWith(
     displayLarge: base.displayLarge?.merge(flexRounded),
