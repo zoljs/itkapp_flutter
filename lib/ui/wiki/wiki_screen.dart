@@ -143,6 +143,19 @@ class _WikiScreenState extends State<WikiScreen> {
                   onSiteTap: (site) => unawaited(_onSiteTap(site)),
                   checkingLogin: _viewModel.checkingLogin,
                 ),
+                if (_viewModel.filteredSites.isNotEmpty)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        AppSpacing.screenHorizontal + AppSpacing.lg,
+                        AppSpacing.screenHorizontal,
+                        AppSpacing.screenHorizontal + AppSpacing.lg,
+                        AppSpacing.bottomNavClearance,
+                      ),
+                      child: Text(
+                          "A wiki oldalait a szak hallgatói készítik. Az itt szereplő információ helyességéért nem vállalunk felelősséget."),
+                    ),
+                  )
               ],
             );
             return isIOS

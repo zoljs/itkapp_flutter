@@ -67,8 +67,10 @@ class WikiSitesListSliver extends StatelessWidget {
         }
 
         return SliverPadding(
-          padding: const EdgeInsets.fromLTRB(AppSpacing.screenHorizontal, 0,
-              AppSpacing.screenHorizontal, AppSpacing.bottomNavClearance),
+          padding: const EdgeInsets.only(
+            left: AppSpacing.screenHorizontal,
+            right: AppSpacing.screenHorizontal,
+          ),
           sliver: Skeletonizer.sliver(
             enabled: loading,
             child: SliverList.separated(

@@ -84,11 +84,9 @@ class EventsListSliver extends StatelessWidget {
     }
 
     return SliverPadding(
-      padding: EdgeInsets.fromLTRB(
-        AppSpacing.screenHorizontal,
-        0,
-        AppSpacing.screenHorizontal,
-        MediaQuery.paddingOf(context).bottom + 120,
+      padding: const EdgeInsets.only(
+        left: AppSpacing.screenHorizontal,
+        right: AppSpacing.screenHorizontal,
       ),
       sliver: Skeletonizer.sliver(
         enabled: loading,

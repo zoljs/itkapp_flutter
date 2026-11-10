@@ -94,18 +94,21 @@ class CalendarPlanner extends StatelessWidget {
       // Headers
       daysHeaderParam: DaysHeaderParam(
         topLeftCellBuilder: (day) {
-          return HintTarget(
-            focusShape: FocusShape.circle,
-            focusPadding: -AppSpacing.md,
-            id: 'calendar-viewchange',
-            child: BrandIconButton(
-              iconColor: scheme.onSurface,
-              backgroundColor: Colors.transparent,
-              icon: span.icon,
-              onPressed: () => onSpanChanged(span.next()),
-              semanticLabel: 'Nézet váltása',
-            ),
-          );
+          if (!landscape) {
+            return HintTarget(
+              focusShape: FocusShape.circle,
+              focusPadding: -AppSpacing.md,
+              id: 'calendar-viewchange',
+              child: BrandIconButton(
+                iconColor: scheme.onSurface,
+                backgroundColor: Colors.transparent,
+                icon: span.icon,
+                onPressed: () => onSpanChanged(span.next()),
+                semanticLabel: 'Nézet váltása',
+              ),
+            );
+          }
+          return const SizedBox.shrink();
         },
         daysHeaderHeight: landscape ? 32.0 : 70.0,
         dayHeaderBuilder: (day, isToday) {
@@ -152,7 +155,7 @@ class CalendarPlanner extends StatelessWidget {
       // Daytime
       dayParam: DayParam(
         dayColor: scheme.surface,
-        todayColor: span.days > 1
+        todayColor: days > 1
             ? scheme.primaryContainer.withValues(alpha: 0.25)
             : scheme.surface,
         dayEventBuilder: (event, height, width, heightPerMinute) =>

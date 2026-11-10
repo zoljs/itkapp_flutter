@@ -7,6 +7,7 @@ import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/domain/models/event.dart';
+import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
 import 'package:itk_app/ui/events/add_event_screen.dart';
@@ -119,6 +120,19 @@ class _EventsScreenState extends State<EventsScreen> {
                   onDelete: _deleteEvent,
                   timeRangeActive: _viewModel.selectedTimeRange != null,
                 ),
+                if (_viewModel.filteredEvents.isNotEmpty)
+                  const SliverToBoxAdapter(
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        AppSpacing.screenHorizontal + AppSpacing.lg,
+                        AppSpacing.screenHorizontal,
+                        AppSpacing.screenHorizontal + AppSpacing.lg,
+                        AppSpacing.bottomNavClearance,
+                      ),
+                      child: Text(
+                          "Ez egy évfolyamfelelősök által kezelt lista. Az itt szereplő információ helyességéért nem vállalunk felelősséget."),
+                    ),
+                  )
               ],
             );
             return Scaffold(
