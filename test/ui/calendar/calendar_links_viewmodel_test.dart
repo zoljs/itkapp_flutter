@@ -95,7 +95,7 @@ void main() {
 
     expect(viewModel.add.errorMessage, 'Ez a link már fel van véve.');
     expect(viewModel.canAdd, isTrue);
-    expect(calendar.clearCount, 0);
+    expect(calendar.invalidateCount, 0);
     viewModel.dispose();
   });
 
@@ -109,7 +109,7 @@ void main() {
 
       expect(links.deletedIds, [1]);
       expect(viewModel.links.map((l) => l.id), [2]);
-      expect(calendar.clearCount, 1);
+      expect(calendar.invalidateCount, 1);
       viewModel.dispose();
     });
 

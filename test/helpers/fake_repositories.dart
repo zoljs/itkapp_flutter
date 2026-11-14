@@ -131,7 +131,8 @@ class FakeCalendarLinksRepository implements CalendarLinksRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class FakeCalendarRepository implements CalendarRepository {
+class FakeCalendarRepository extends ChangeNotifier
+    implements CalendarRepository {
   Result<List<CalendarEvent>> getResult = const Ok([]);
   int clearCount = 0;
   int invalidateCount = 0;
