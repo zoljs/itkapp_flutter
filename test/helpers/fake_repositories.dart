@@ -134,10 +134,17 @@ class FakeCalendarLinksRepository implements CalendarLinksRepository {
 class FakeCalendarRepository implements CalendarRepository {
   Result<List<CalendarEvent>> getResult = const Ok([]);
   int clearCount = 0;
+  int invalidateCount = 0;
 
   @override
   Future<Result<List<CalendarEvent>>> get({bool forceReload = false}) async =>
       getResult;
+
+  @override
+  void invalidateCache() {
+    invalidateCount++;
+    notifyListeners();
+  }
 
   @override
   void clearCache() => clearCount++;

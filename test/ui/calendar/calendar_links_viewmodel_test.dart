@@ -80,7 +80,7 @@ void main() {
     expect(links.lastAdd?.url, 'https://x/c.ics');
     expect(links.lastAdd?.syncInterval, SyncInterval.hourly);
     expect(viewModel.canAdd, isFalse, reason: 'a mezőknek ki kell ürülniük');
-    expect(calendar.clearCount, 1);
+    expect(calendar.invalidateCount, 1);
     expect(links.getCount, loadsBefore + 1);
     viewModel.dispose();
   });
