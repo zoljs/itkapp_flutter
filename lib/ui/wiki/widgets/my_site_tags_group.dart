@@ -39,7 +39,10 @@ class MySiteTagsGroup extends StatelessWidget {
               id: tag,
               confirmTitle: 'Címke törlése',
               confirmMessage: 'Biztosan törlöd a "$tag" címkét?',
-              onDelete: () => onDelete(tag),
+              onDelete: () async {
+                onDelete(tag);
+                return true;
+              },
               child: SettingsTile(
                 title: tag,
               ),

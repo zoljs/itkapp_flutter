@@ -15,7 +15,7 @@ class EventListCard extends StatelessWidget {
   });
 
   final Event event;
-  final VoidCallback onDelete;
+  final Future<bool> Function() onDelete;
   final String confirmTitle;
   final String confirmMessage;
   final bool deletable;

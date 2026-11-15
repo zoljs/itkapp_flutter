@@ -21,7 +21,7 @@ class SwipeToDelete extends StatefulWidget {
   final String confirmTitle;
   final String confirmMessage;
   final String confirmLabel;
-  final VoidCallback onDelete;
+  final Future<bool> Function() onDelete;
   final Widget child;
 
   @override
@@ -66,16 +66,19 @@ class _SwipeToDeleteState extends State<SwipeToDelete> {
           ),
         );
       }),
-      confirmDismiss: (_) async =>
-          await showConfirmDialog(
-            context,
-            title: widget.confirmTitle,
-            message: widget.confirmMessage,
-            confirmLabel: widget.confirmLabel,
-            isDestructive: true,
-          ) ==
-          true,
-      onDismissed: (_) => widget.onDelete(),
+      confirmDismiss: (_) async {
+        final confirmed = await showConfirmDialog(
+              context,
+              title: widget.confirmTitle,
+              message: widget.confirmMessage,
+              confirmLabel: widget.confirmLabel,
+              isDestructive: true,
+            ) ==
+            true;
+        if (!confirmed) return false;
+        return widget.onDelete();
+      },
+      //onDismissed: (_) => widget.onDelete(),
       onUpdate: (details) async {
         setState(() {
           _progress = details.progress;

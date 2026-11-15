@@ -72,17 +72,18 @@ class _CalendarLinksScreenState extends State<CalendarLinksScreen> {
     context.showMessage('Naptár hozzáadva!');
   }
 
-  Future<void> _delete(int id) async {
+  Future<bool> _delete(int id) async {
     await _viewModel.delete.execute(id);
-    if (!mounted) return;
+    if (!mounted) return false;
     final error = _viewModel.delete.errorMessage;
 
     if (error != null) {
       context.showMessage(error);
-      return;
+      return false;
     }
 
     context.showMessage('Naptár törölve!');
+    return true;
   }
 
   @override

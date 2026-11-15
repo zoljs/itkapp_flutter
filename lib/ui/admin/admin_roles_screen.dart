@@ -70,9 +70,13 @@ class _AdminRolesScreenState extends State<AdminRolesScreen> {
       id: user.userId,
       onDelete: () async {
         await _viewModel.revoke.execute(user.userId);
-        if (!mounted) return;
+        if (!mounted) return false;
         final error = _viewModel.revoke.errorMessage;
-        if (error != null) context.showMessage(error);
+        if (error != null) {
+          context.showMessage(error);
+          return false;
+        }
+        return true;
       },
       icon: Icons.person_remove_rounded,
       confirmTitle: 'Rang visszavonása',

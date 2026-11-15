@@ -67,13 +67,15 @@ class _EventsScreenState extends State<EventsScreen> {
     await _viewModel.load.execute(true);
   }
 
-  Future<void> _deleteEvent(Event event) async {
+  Future<bool> _deleteEvent(Event event) async {
     await _viewModel.delete.execute(event.id);
-    if (!mounted) return;
+    if (!mounted) return false;
     final error = _viewModel.delete.errorMessage;
     if (error != null) {
       context.showMessage(error);
+      return false;
     }
+    return true;
   }
 
   @override

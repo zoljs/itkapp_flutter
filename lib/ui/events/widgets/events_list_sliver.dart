@@ -30,7 +30,7 @@ class EventsListSliver extends StatelessWidget {
   final String eventLabel;
   final bool canDelete;
   final VoidCallback onRetry;
-  final Future<void> Function(Event event) onDelete;
+  final Future<bool> Function(Event event) onDelete;
   final bool timeRangeActive;
 
   List<Event> get _skeletonItems => List.generate(
