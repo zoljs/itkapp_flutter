@@ -55,6 +55,7 @@ class EventsViewModel extends ChangeNotifier {
   // Getters
   UnmodifiableListView<Event> get events => UnmodifiableListView(_events);
   UnmodifiableSetView<EventType> get types => UnmodifiableSetView(_types);
+  DateTime? get offlineSince => _eventRepository.offlineSince;
 
   TimeRange? get selectedTimeRange => _selectedTimeRange;
   void setSelectedTimeRange(TimeRange range) {

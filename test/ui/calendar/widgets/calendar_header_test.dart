@@ -21,6 +21,7 @@ Future<void> _pump(
           errorMessage: errorMessage,
           onRefresh: () {},
           onPickDate: () {},
+          offlineSince: DateTime(2026, 11, 5),
         ),
       ),
     ));

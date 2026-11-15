@@ -6,8 +6,10 @@ import 'package:itk_app/routing/routes.dart';
 import 'package:itk_app/ui/calendar/viewmodels/calendar_viewmodel.dart';
 import 'package:itk_app/ui/core/theme/app_fonts.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
+import 'package:itk_app/ui/core/theme/app_themes.dart';
 import 'package:itk_app/ui/core/widgets/app_pressable.dart';
 import 'package:itk_app/ui/core/widgets/brand_icon_button.dart';
+import 'package:itk_app/ui/core/widgets/offline_banner.dart';
 import 'package:itk_app/ui/core/widgets/rolling_text.dart';
 
 /// Top of the calendar screen: visible date (or range), load error,
@@ -22,9 +24,11 @@ class CalendarHeader extends StatelessWidget {
     required this.errorMessage,
     required this.onRefresh,
     required this.onPickDate,
+    required this.offlineSince,
   });
 
   final DateTime firstDay;
+  final DateTime? offlineSince;
 
   /// Direction of the title's odometer roll: `true` when [firstDay] moved
   /// to a later day.
@@ -110,22 +114,22 @@ class CalendarHeader extends StatelessWidget {
                   ),
                 ),
               ),
-              Row(
-                spacing: AppSpacing.sm,
-                children: [
-                  HintTarget(
-                    focusShape: FocusShape.circle,
-                    id: 'calendar-links',
-                    child: BrandIconButton(
-                      icon: Icons.link_rounded,
-                      onPressed: () => context.push(Routes.calendarLinks),
-                      semanticLabel: 'Naptárak kezelése',
-                    ),
-                  ),
-                ],
+              HintTarget(
+                focusShape: FocusShape.circle,
+                id: 'calendar-links',
+                child: BrandIconButton(
+                  icon: Icons.link_rounded,
+                  onPressed: () => context.push(Routes.calendarLinks),
+                  semanticLabel: 'Naptárak kezelése',
+                ),
               ),
             ],
           ),
+          if (offlineSince != null)
+            OfflineBanner(
+              savedAt: offlineSince!,
+              color: itkDark,
+            ),
         ],
       ),
     );

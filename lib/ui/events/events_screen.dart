@@ -10,6 +10,7 @@ import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/ui/core/theme/app_spacing.dart';
 import 'package:itk_app/ui/core/widgets/adaptive_sheet.dart';
 import 'package:itk_app/ui/core/widgets/brand_appbar.dart';
+import 'package:itk_app/ui/core/widgets/offline_banner.dart';
 import 'package:itk_app/ui/events/add_event_screen.dart';
 import 'package:itk_app/ui/events/viewmodels/events_viewmodel.dart';
 import 'package:itk_app/ui/events/widgets/events_header.dart';
@@ -107,6 +108,14 @@ class _EventsScreenState extends State<EventsScreen> {
                     onRefresh: () async {
                       await _viewModel.load.execute(true);
                     },
+                  ),
+                if (_viewModel.offlineSince != null)
+                  SliverPadding(
+                    padding: const EdgeInsetsGeometry.all(
+                        AppSpacing.screenHorizontal),
+                    sliver: SliverToBoxAdapter(
+                      child: OfflineBanner(savedAt: _viewModel.offlineSince!),
+                    ),
                   ),
                 EventsListSliver(
                   events: _viewModel.filteredEvents,

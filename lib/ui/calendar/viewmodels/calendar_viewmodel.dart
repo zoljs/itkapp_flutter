@@ -51,6 +51,7 @@ class CalendarViewModel extends ChangeNotifier {
   /// The all-day bar takes space, so it is only shown when there is
   /// something to put in it.
   bool get hasAllDayEvents => _hasAllDayEvents;
+  DateTime? get offlineSince => _repository.offlineSince;
 
   CalendarSpan _span = CalendarSpan.threeDays;
   CalendarSpan get span => _span;

@@ -104,6 +104,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                               ? null
                               : () => unawaited(_viewModel.load.execute(true)),
                           onPickDate: _pickDate,
+                          offlineSince: _viewModel.offlineSince,
                         ),
                       Expanded(
                         child: Container(
