@@ -42,7 +42,5 @@ HintTheme buildITKAppHintTheme(ColorScheme scheme) {
   );
 }
 
-const itkLight = Color.fromARGB(255, 58, 195, 250);
 const itkPrimary = Color(0xFF00A6E7);
-const itkPrimaryDarker = Color.fromARGB(255, 0, 147, 206);
-const itkDark = Color(0xFF0b3468);
+const itkDark = Color(0xFF0a3163);
