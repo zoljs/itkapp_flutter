@@ -18,6 +18,7 @@ import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/theme_repository.dart';
 import 'package:itk_app/data/repositories/videos_repository.dart';
 import 'package:itk_app/data/repositories/wiki_files_repository.dart';
+import 'package:itk_app/data/services/offline_store.dart';
 import 'package:itk_app/data/services/shared_preferences_service.dart';
 import 'package:itk_app/data/services/users_client.dart';
 import 'package:itk_app/routing/router.dart';
@@ -40,6 +41,7 @@ Future<void> main() async {
   final onboardingRepository = OnboardingRepository(prefs: prefs);
   final hintRepository = HintRepository(prefs: prefs);
   final authRepository = AuthRepository(apiClient: apiClient, prefs: prefs);
+  final offlineStore = OfflineStore();
   unawaited(authRepository.refreshUser());
   hintRepository.configureStore();
   apiClient.onUnauthorized = handleSessionExpired;
@@ -60,13 +62,16 @@ Future<void> main() async {
           Provider.value(value: themeRepository),
           Provider.value(value: onboardingRepository),
           Provider.value(value: hintRepository),
+          Provider.value(value: offlineStore),
           ChangeNotifierProvider.value(value: authRepository),
           Provider(
               create: (context) => CalendarLinksRepository(
                   apiClient: context.read<ApiClient>())),
           ChangeNotifierProvider(
-              create: (context) =>
-                  CalendarRepository(apiClient: context.read<ApiClient>())),
+              create: (context) => CalendarRepository(
+                    apiClient: context.read<ApiClient>(),
+                    offlineStore: context.read<OfflineStore>(),
+                  )),
           Provider(
               create: (context) =>
                   EventRepository(apiClient: context.read<ApiClient>())),

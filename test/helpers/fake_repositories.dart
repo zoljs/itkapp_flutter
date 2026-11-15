@@ -135,6 +135,9 @@ class FakeCalendarRepository extends ChangeNotifier
     implements CalendarRepository {
   Result<List<CalendarEvent>> getResult = const Ok([]);
   int clearCount = 0;
+
+  @override
+  DateTime? offlineSince;
   int invalidateCount = 0;
 
   @override
