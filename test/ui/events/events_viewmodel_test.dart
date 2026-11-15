@@ -387,4 +387,15 @@ void main() {
       viewModel.dispose();
     });
   });
+
+  test('offlineSince a repository értékét adja tovább', () async {
+    final savedAt = DateTime(2026, 11, 14, 18, 5);
+    final viewModel = create({EventType.midterm});
+    await flush();
+    expect(viewModel.offlineSince, isNull);
+
+    events.offlineSince = savedAt;
+    expect(viewModel.offlineSince, savedAt);
+    viewModel.dispose();
+  });
 }
