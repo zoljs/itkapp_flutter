@@ -51,6 +51,9 @@ class FakeEventRepository implements EventRepository {
   Result<void> addResult = const Ok(null);
   Result<void> deleteResult = const Ok(null);
 
+  @override
+  DateTime? offlineSince;
+
   final getCalls = <({Set<EventType> types, bool forceReload})>[];
   final deletedIds = <int>[];
   ({

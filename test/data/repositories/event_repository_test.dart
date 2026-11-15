@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
+import 'package:itk_app/data/services/offline_store.dart';
 import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/utils/result.dart';
 
@@ -14,12 +17,21 @@ Map<String, dynamic> eventJson(int id, String type) => {
 
 void main() {
   late TestApiClient api;
+  late Directory root;
+  late OfflineStore store;
   late EventRepository repository;
 
-  setUp(() {
+  setUp(() async {
     api = TestApiClient();
     api.adapter.handler = (_) => jsonBody(200, [eventJson(1, 'MIDTERM')]);
-    repository = EventRepository(apiClient: api);
+    root = await Directory.systemTemp.createTemp('event_repository_test');
+    store =
+        OfflineStore(directory: () async => Directory('${root.path}/offline'));
+    repository = EventRepository(apiClient: api, offlineStore: store);
+  });
+
+  tearDown(() async {
+    if (await root.exists()) await root.delete(recursive: true);
   });
 
   group('get', () {
@@ -97,5 +109,79 @@ void main() {
 
     expect(api.adapter.last.method, 'DELETE');
     expect(api.adapter.last.path, '/api/midterms/42');
+  });
+
+  group('offline fallback', () {
+    final savedAt = DateTime.utc(2026, 11, 14, 18, 5);
+
+    test('sikeres letöltés után a típuskészlet kulcsán menti a választ',
+        () async {
+      await repository.get(types: {EventType.retake, EventType.midterm});
+
+      expect((await store.read('events_MIDTERM,RETAKE'))?.data, [
+        eventJson(1, 'MIDTERM'),
+      ]);
+      expect(repository.offlineSince, isNull);
+    });
+
+    test('szerver hiba esetén a mentett listát adja, mentési idővel',
+        () async {
+      await store.write('events_MIDTERM', [eventJson(7, 'MIDTERM')],
+          now: savedAt);
+      api.adapter.handler = (_) => jsonBody(500, null);
+
+      final result = await repository.get(types: {EventType.midterm});
+
+      expect(
+          result,
+          isA<Ok<List<Event>>>()
+              .having((r) => r.value.single.id, 'id', 7));
+      expect(repository.offlineSince?.toUtc(), savedAt);
+    });
+
+    test('más típuskészlet mentését nem használja', () async {
+      await store.write('events_MIDTERM', [eventJson(7, 'MIDTERM')],
+          now: savedAt);
+      api.adapter.handler = (_) => jsonBody(500, null);
+
+      final result = await repository
+          .get(types: {EventType.midterm, EventType.retake});
+
+      expect(result, isA<Err<List<Event>>>());
+      expect(repository.offlineSince, isNull);
+    });
+
+    test('hibás mentés: az eredeti Err, offlineSince null', () async {
+      await store.write('events_MIDTERM', {'nem': 'lista'}, now: savedAt);
+      api.adapter.handler = (_) => jsonBody(500, null);
+
+      expect(await repository.get(types: {EventType.midterm}),
+          isA<Err<List<Event>>>());
+      expect(repository.offlineSince, isNull);
+    });
+
+    test('a mentett adat nem kerül a memória cache-be', () async {
+      await store.write('events_MIDTERM', [eventJson(7, 'MIDTERM')],
+          now: savedAt);
+      api.adapter.handler = (_) => jsonBody(500, null);
+
+      await repository.get(types: {EventType.midterm});
+      await repository.get(types: {EventType.midterm});
+
+      expect(api.adapter.requests, hasLength(2));
+    });
+
+    test('újra sikeres letöltés után offlineSince null', () async {
+      await store.write('events_MIDTERM', [eventJson(7, 'MIDTERM')],
+          now: savedAt);
+      api.adapter.handler = (_) => jsonBody(500, null);
+      await repository.get(types: {EventType.midterm});
+      expect(repository.offlineSince, isNotNull);
+
+      api.adapter.handler = (_) => jsonBody(200, [eventJson(1, 'MIDTERM')]);
+      await repository.get(types: {EventType.midterm}, forceReload: true);
+
+      expect(repository.offlineSince, isNull);
+    });
   });
 }

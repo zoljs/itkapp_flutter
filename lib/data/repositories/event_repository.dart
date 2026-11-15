@@ -1,4 +1,5 @@
 import 'package:itk_app/data/services/api_client.dart';
+import 'package:itk_app/data/services/offline_store.dart';
 import 'package:itk_app/domain/models/event.dart';
 import 'package:itk_app/utils/result.dart';
 
@@ -7,13 +8,19 @@ class EventRepository {
 
   EventRepository({
     required ApiClient apiClient,
-  }) : _apiClient = apiClient;
+    required OfflineStore offlineStore,
+  })  : _offlineStore = offlineStore,
+        _apiClient = apiClient;
 
   final ApiClient _apiClient;
+  final OfflineStore _offlineStore;
+  static const _offlineKeyBase = 'events';
 
   //List<Event>? _cached;
   final Map<String, List<Event>> _cache = {};
+  DateTime? _offlineSince;
 
+  DateTime? get offlineSince => _offlineSince;
   //void clearCache() => _cached = null;
   void clearCache() => _cache.clear();
 
@@ -24,15 +31,39 @@ class EventRepository {
     // types: [MIDTERM, RETAKE] -> "MIDTERM,RETAKE"
     final String key =
         (types.map((type) => type.wire).toList()..sort()).join(',');
+    final offlineKey = '${_offlineKeyBase}_$key';
     final cache = _cache[key];
     if (cache != null && !forceReload) return Ok(cache);
 
+    Object? raw;
     final result = await _apiClient.getJson(
       _path,
-      parse: Event.parseList,
+      parse: (data) {
+        final events = Event.parseList(data);
+        raw = data;
+        return events;
+      },
       queryParameters: {'type': key},
     );
-    if (result case Ok(:final value)) _cache[key] = value;
+    _offlineSince = null;
+    if (result case Ok(:final value)) {
+      _cache[key] = value;
+      await _offlineStore.write(offlineKey, raw);
+    }
+    if (result is Err) {
+      final store = await _offlineStore.read(offlineKey);
+      if (store == null) return result;
+      final data = store.data;
+      if (data == null) return result;
+
+      try {
+        final events = Event.parseList(data);
+        _offlineSince = store.savedAt;
+        return Ok(events);
+      } on FormatException {
+        return result;
+      }
+    }
     return result;
   }
 

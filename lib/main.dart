@@ -68,13 +68,17 @@ Future<void> main() async {
               create: (context) => CalendarLinksRepository(
                   apiClient: context.read<ApiClient>())),
           ChangeNotifierProvider(
-              create: (context) => CalendarRepository(
-                    apiClient: context.read<ApiClient>(),
-                    offlineStore: context.read<OfflineStore>(),
-                  )),
+            create: (context) => CalendarRepository(
+              apiClient: context.read<ApiClient>(),
+              offlineStore: context.read<OfflineStore>(),
+            ),
+          ),
           Provider(
-              create: (context) =>
-                  EventRepository(apiClient: context.read<ApiClient>())),
+            create: (context) => EventRepository(
+              apiClient: context.read<ApiClient>(),
+              offlineStore: context.read<OfflineStore>(),
+            ),
+          ),
           Provider(
               create: (context) => CalendarLinksRepository(
                   apiClient: context.read<ApiClient>())),
