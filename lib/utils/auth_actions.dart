@@ -5,13 +5,17 @@ import 'package:itk_app/data/repositories/calendar_repository.dart';
 import 'package:itk_app/data/repositories/event_repository.dart';
 import 'package:itk_app/data/repositories/subjects_repository.dart';
 import 'package:itk_app/data/repositories/wiki_sites_repository.dart';
+import 'package:itk_app/data/services/offline_store.dart';
 import 'package:itk_app/ui/core/navigator_key.dart';
 import 'package:itk_app/utils/context_extensions.dart';
 import 'package:provider/provider.dart';
 
 Future<void> performLogout(BuildContext context) async {
+  final offlineStore = context.read<OfflineStore>();
+  final authRepository = context.read<AuthRepository>();
   clearAllCaches(context);
-  await context.read<AuthRepository>().logout();
+  await offlineStore.clear();
+  await authRepository.logout();
 }
 
 Future<void> handleSessionExpired() async {
@@ -22,7 +26,10 @@ Future<void> handleSessionExpired() async {
   navigator.context.showMessage('A munkameneted lejárt, jelentkezz be újra.');
 
   clearAllCaches(context);
-  await context.read<AuthRepository>().logout();
+  final offlineStore = context.read<OfflineStore>();
+  final authRepository = context.read<AuthRepository>();
+  await offlineStore.clear();
+  await authRepository.logout();
 }
 
 void clearAllCaches(BuildContext context) {
