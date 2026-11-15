@@ -212,4 +212,16 @@ void main() {
       viewModel.dispose();
     });
   });
+
+  test('offlineSince a repository értékét adja tovább', () async {
+    final savedAt = DateTime(2026, 11, 14, 18, 5);
+    final calendar = FakeCalendarRepository();
+    final viewModel = CalendarViewModel(repository: calendar);
+    await flush();
+    expect(viewModel.offlineSince, isNull);
+
+    calendar.offlineSince = savedAt;
+    expect(viewModel.offlineSince, savedAt);
+    viewModel.dispose();
+  });
 }

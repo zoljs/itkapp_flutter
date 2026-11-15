@@ -10,6 +10,7 @@ Future<void> _pump(
   CalendarSpan span = CalendarSpan.oneDay,
   bool showsToday = false,
   String? errorMessage,
+  DateTime? offlineSince,
 }) =>
     tester.pumpWidget(MaterialApp(
       home: Scaffold(
@@ -21,7 +22,7 @@ Future<void> _pump(
           errorMessage: errorMessage,
           onRefresh: () {},
           onPickDate: () {},
-          offlineSince: DateTime(2026, 11, 5),
+          offlineSince: offlineSince,
         ),
       ),
     ));
@@ -66,5 +67,15 @@ void main() {
 
     await _pump(tester, errorMessage: 'Nincs kapcsolat');
     expect(find.text('Nincs kapcsolat'), findsOneWidget);
+  });
+
+  testWidgets('az offline sáv csak offline adatnál jelenik meg',
+      (tester) async {
+    await _pump(tester);
+    expect(find.textContaining('Offline.'), findsNothing);
+
+    await _pump(tester, offlineSince: DateTime(2026, 11, 14, 18, 5));
+    expect(find.text('Offline. Utoljára frissítve: nov. 14. 18:05'),
+        findsOneWidget);
   });
 }
