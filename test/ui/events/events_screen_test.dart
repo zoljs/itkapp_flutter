@@ -237,7 +237,6 @@ void main() {
 
       expect(find.text('Nem sikerült törölni.'), findsOneWidget);
       expect(find.text('Analízis I.'), findsOneWidget);
-    },
-      skip: true); // bug: SwipeToDelete (lib/ui/core/widgets/swipe_to_delete.dart): failed delete leaves the dismissed Dismissible in the tree
+    });
   });
 }

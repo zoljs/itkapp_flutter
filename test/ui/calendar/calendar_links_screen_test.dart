@@ -212,7 +212,6 @@ void main() {
 
       expect(find.text('Nem sikerült törölni.'), findsOneWidget);
       expect(find.text('Naptár törölve!'), findsNothing);
-    },
-      skip: true); // bug: SwipeToDelete (lib/ui/core/widgets/swipe_to_delete.dart): failed delete leaves the dismissed Dismissible in the tree
+    });
   });
 }

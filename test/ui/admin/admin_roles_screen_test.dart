@@ -103,8 +103,7 @@ void main() {
     expect(find.text('Nem sikerült visszavonni.'), findsOneWidget);
     expect(roles.getCount, 2);
     expect(find.text('Kiss Béla'), findsOneWidget);
-  },
-      skip: true); // bug: SwipeToDelete (lib/ui/core/widgets/swipe_to_delete.dart): failed delete leaves the dismissed Dismissible in the tree
+  });
 
   testWidgets('a kinevezés gomb alapból a fejlécben van, FAB módban nem',
       (tester) async {

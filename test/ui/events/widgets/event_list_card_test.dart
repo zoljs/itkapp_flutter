@@ -22,9 +22,10 @@ void main() {
                   deletable: deletable,
                   confirmTitle: 'Vizsga törlése',
                   confirmMessage: 'Biztosan törlöd?',
-                  onDelete: () {
+                  onDelete: () async {
                     deleted.add(7);
                     setState(() => visible = false);
+                    return true;
                   },
                 )
               : const SizedBox(),

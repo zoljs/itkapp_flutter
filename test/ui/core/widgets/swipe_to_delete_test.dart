@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:itk_app/ui/core/widgets/swipe_to_delete.dart';
 
-Future<void> _pump(WidgetTester tester, {required VoidCallback onDelete}) {
+Future<void> _pump(WidgetTester tester,
+    {required Future<bool> Function() onDelete}) {
   // HapticFeedback talks to a platform channel that does not exist in tests.
   tester.binding.defaultBinaryMessenger
       .setMockMethodCallHandler(SystemChannels.platform, (call) async => null);
@@ -32,7 +33,10 @@ void main() {
   testWidgets('balra húzva megerősítő ablak jön, még nem töröl',
       (tester) async {
     var deleted = 0;
-    await _pump(tester, onDelete: () => deleted++);
+    await _pump(tester, onDelete: () async {
+      deleted++;
+      return true;
+    });
 
     await _swipeLeft(tester);
 
@@ -43,7 +47,10 @@ void main() {
 
   testWidgets('mégse: nem hívja az onDelete-et, az elem marad', (tester) async {
     var deleted = 0;
-    await _pump(tester, onDelete: () => deleted++);
+    await _pump(tester, onDelete: () async {
+      deleted++;
+      return true;
+    });
 
     await _swipeLeft(tester);
     await tester.tap(find.text('Mégse'));
@@ -56,7 +63,10 @@ void main() {
   testWidgets('megerősítés: pontosan egyszer hívja az onDelete-et',
       (tester) async {
     var deleted = 0;
-    await _pump(tester, onDelete: () => deleted++);
+    await _pump(tester, onDelete: () async {
+      deleted++;
+      return true;
+    });
 
     await _swipeLeft(tester);
     await tester.tap(find.widgetWithText(FilledButton, 'Törlés'));
@@ -67,12 +77,51 @@ void main() {
 
   testWidgets('jobbra húzva nincs megerősítő ablak', (tester) async {
     var deleted = 0;
-    await _pump(tester, onDelete: () => deleted++);
+    await _pump(tester, onDelete: () async {
+      deleted++;
+      return true;
+    });
 
     await tester.drag(find.text('Elem'), const Offset(600, 0));
     await tester.pumpAndSettle();
 
     expect(find.text('Elem törlése'), findsNothing);
     expect(deleted, 0);
+  });
+
+  testWidgets('sikertelen törlés: az elem visszacsúszik és a fában marad',
+      (tester) async {
+    var deleted = 0;
+    await _pump(tester, onDelete: () async {
+      deleted++;
+      return false;
+    });
+
+    await _swipeLeft(tester);
+    await tester.tap(find.widgetWithText(FilledButton, 'Törlés'));
+    await tester.pumpAndSettle();
+
+    expect(deleted, 1);
+    expect(find.text('Elem'), findsOneWidget);
+    // Back in its place: centered on the 800 px wide test screen.
+    expect(tester.getCenter(find.text('Elem')).dx, 400);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('sikertelen törlés után újra elhúzható', (tester) async {
+    var deleted = 0;
+    await _pump(tester, onDelete: () async {
+      deleted++;
+      return false;
+    });
+
+    for (var i = 0; i < 2; i++) {
+      await _swipeLeft(tester);
+      await tester.tap(find.widgetWithText(FilledButton, 'Törlés'));
+      await tester.pumpAndSettle();
+    }
+
+    expect(deleted, 2);
+    expect(find.text('Elem'), findsOneWidget);
   });
 }

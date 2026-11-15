@@ -23,7 +23,7 @@ Widget _wrap({
               eventLabel: 'zh',
               canDelete: false,
               onRetry: () {},
-              onDelete: (_) async {},
+              onDelete: (_) async => true,
             ),
           ],
         ),

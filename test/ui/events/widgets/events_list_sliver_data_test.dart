@@ -16,7 +16,7 @@ Widget _wrap({
   List<Event>? events,
   bool loading = false,
   bool canDelete = false,
-  Future<void> Function(Event event)? onDelete,
+  Future<bool> Function(Event event)? onDelete,
 }) =>
     MaterialApp(
       home: Scaffold(
@@ -32,7 +32,7 @@ Widget _wrap({
               eventLabel: 'zh',
               canDelete: canDelete,
               onRetry: () {},
-              onDelete: onDelete ?? (_) async {},
+              onDelete: onDelete ?? (_) async => true,
             ),
           ],
         ),
@@ -67,7 +67,10 @@ void main() {
     final deleted = <int>[];
     await tester.pumpWidget(_wrap(
       canDelete: true,
-      onDelete: (event) async => deleted.add(event.id),
+      onDelete: (event) async {
+        deleted.add(event.id);
+        return true;
+      },
     ));
 
     await tester.drag(find.text('Analízis I.'), const Offset(-600, 0));
