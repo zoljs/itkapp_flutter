@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:itk_app/data/repositories/onboarding_repository.dart';
@@ -23,33 +24,41 @@ import 'package:itk_app/ui/wiki/wiki_screen.dart';
 import '../data/repositories/auth_repository.dart';
 import 'routes.dart';
 
+String? authRedirect({
+  required bool loggedIn,
+  required bool seenOnboarding,
+  required String location,
+}) {
+  final onLogin = location == Routes.login;
+  final onOnboarding = location == Routes.onboarding;
+
+  // If not logged in and is on the login screen do nothing, else redirect
+  if (!loggedIn) return onLogin ? null : Routes.login;
+
+  // If has not seen onboarding and is on the onboarding screen do nothing, else redirect
+  if (!seenOnboarding) {
+    return onOnboarding ? null : Routes.onboarding;
+  }
+
+  // If logged in and seen onboarding but visits either of these screens, redirect home
+  if (onOnboarding || onLogin) return Routes.home;
+
+  return null;
+}
+
 GoRouter router(
   AuthRepository authRepository,
   OnboardingRepository onboardingRepository,
 ) =>
     GoRouter(
       initialLocation: Routes.home,
-      debugLogDiagnostics: true,
+      debugLogDiagnostics: kDebugMode,
       navigatorKey: navigatorKey,
-      redirect: (context, state) {
-        final loggedIn = authRepository.isAuthenticated;
-        final seenOnboarding = onboardingRepository.hasSeenOnboarding;
-        final onLogin = state.matchedLocation == Routes.login;
-        final onOnboarding = state.matchedLocation == Routes.onboarding;
-
-        // If not logged in and is on the login screen do nothing, else redirect
-        if (!loggedIn) return onLogin ? null : Routes.login;
-
-        // If has not seen onboarding and is on the onboarding screen do nothing, else redirect
-        if (!seenOnboarding.value) {
-          return onOnboarding ? null : Routes.onboarding;
-        }
-
-        // If logged in and seen onboarding but visits either of these screens, redirect home
-        if (onOnboarding || onLogin) return Routes.home;
-
-        return null;
-      },
+      redirect: (context, state) => authRedirect(
+        loggedIn: authRepository.isAuthenticated,
+        seenOnboarding: onboardingRepository.hasSeenOnboarding.value,
+        location: state.matchedLocation,
+      ),
       refreshListenable: Listenable.merge([
         authRepository,
         onboardingRepository.hasSeenOnboarding,
