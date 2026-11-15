@@ -32,6 +32,14 @@ class FakeAuthRepository extends ChangeNotifier implements AuthRepository {
 
   Result<void> loginResult = const Ok(null);
   final logins = <(String, String)>[];
+  int logoutCount = 0;
+
+  @override
+  Future<void> logout() async {
+    logoutCount++;
+    cachedUser = null;
+    notifyListeners();
+  }
 
   @override
   bool get isAuthenticated => cachedUser != null;
@@ -92,8 +100,10 @@ class FakeEventRepository implements EventRepository {
     return deleteResult;
   }
 
+  int clearCount = 0;
+
   @override
-  void clearCache() {}
+  void clearCache() => clearCount++;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -127,6 +137,13 @@ class FakeCalendarLinksRepository implements CalendarLinksRepository {
   @override
   Future<Result<void>> delete({required int id}) async {
     deletedIds.add(id);
+    final current = getResult;
+    if (deleteResult is Ok && current is Ok<List<CalendarLink>>) {
+      getResult = Ok([
+        for (final l in current.value)
+          if (l.id != id) l,
+      ]);
+    }
     return deleteResult;
   }
 
@@ -166,6 +183,11 @@ class FakeAbsolutoriumRepository implements AbsolutoriumRepository {
   @override
   ValueListenable<AbsolutoriumProgress?> get progress => _progress;
 
+  int clearCount = 0;
+
+  @override
+  void clearCache() => clearCount++;
+
   @override
   Future<Result<AbsolutoriumProgress?>> getProgress({
     bool forceReload = false,
@@ -184,8 +206,10 @@ class FakeSubjectsRepository implements SubjectsRepository {
   Future<Result<List<Subject>>> get({bool forceReload = false}) async =>
       getResult;
 
+  int clearCount = 0;
+
   @override
-  void clearCache() {}
+  void clearCache() => clearCount++;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -219,23 +243,40 @@ class FakeSitesRepository implements WikiSitesRepository {
   @override
   Ok<UserSite?>? cachedMySite;
 
+  int clearCount = 0;
+
+  @override
+  void clearCache() => clearCount++;
+
   @override
   List<UserSite> get cachedSites => const [];
 
+  Result<List<UserSite>> getAllResult = const Ok([]);
+
   @override
   Future<Result<List<UserSite>>> getAll({bool forceReload = false}) async =>
-      const Ok([]);
+      getAllResult;
+
+  Err<UserSite>? saveError;
 
   @override
   Future<Result<UserSite>> save(
       List<String> tags, bool isPublic, SiteColor color) async {
     lastSave = (tags: tags, isPublic: isPublic, color: color);
+    final error = saveError;
+    if (error != null) return error;
     return Ok(UserSite(
         name: 'Teszt', url: 'https://example.com', tags: tags, color: color));
   }
 
+  Result<void> deleteResult = const Ok(null);
+  int deleteCount = 0;
+
   @override
-  Future<Result<void>> delete() async => const Ok(null);
+  Future<Result<void>> delete() async {
+    deleteCount++;
+    return deleteResult;
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -253,11 +294,27 @@ class FakeAdminRolesRepository implements AdminRolesRepository {
     return getResult;
   }
 
-  @override
-  Future<Result<void>> assignCohortRep(int userId) async => assignResult;
+  final assignedIds = <int>[];
+  final revokedIds = <int>[];
 
   @override
-  Future<Result<void>> revokeRole(int userId) async => revokeResult;
+  Future<Result<void>> assignCohortRep(int userId) async {
+    assignedIds.add(userId);
+    return assignResult;
+  }
+
+  @override
+  Future<Result<void>> revokeRole(int userId) async {
+    revokedIds.add(userId);
+    final current = getResult;
+    if (revokeResult is Ok && current is Ok<List<UserSummary>>) {
+      getResult = Ok([
+        for (final u in current.value)
+          if (u.userId != userId) u,
+      ]);
+    }
+    return revokeResult;
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
